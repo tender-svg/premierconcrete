@@ -321,6 +321,7 @@
         if (vid) {
           var img = $('img', c); if (img) { img.setAttribute('src', r.thumb || img.getAttribute('src')); img.setAttribute('alt', r.title); }
           var sp = $$(':scope > span', c); if (sp[0]) sp[0].textContent = names.join(' · ') || 'General'; if (sp[1]) sp[1].textContent = r.title;
+          if (art && !editing() && sp[0]) sp[0].remove();   // a webinar card shows only its title
           if (link && !editing()) { c.style.cursor = 'pointer'; c.setAttribute('data-open', link); }
           if (editing()) {
             if (sp[1]) { ed(sp[1], r, 'title'); }
@@ -331,6 +332,7 @@
           var el = c; href(c, link || '#'); if (!link) c.removeAttribute('target'); else if (art) c.removeAttribute('target');
           var s2 = $$('span', c);   // type, [title, label], icon
           s2[0].textContent = (ext(r.file) || ({ 'Brochure': 'PDF', 'Data Sheet': 'PDF', 'Technical Note': 'PDF', 'Form': 'DOC' }[r.type]) || (r.type || 'DOC').slice(0, 4)).toUpperCase(); s2[2].textContent = r.title; s2[3].textContent = r.label || names.join(' · ') || 'General';
+          if (art && !editing()) s2[3].remove();   // a blog post / webinar card shows only its title (the text is on its own page); in edit mode the short text stays editable
           if (editing()) {
             el = asDiv(c); el.style.flexWrap = 'wrap'; var t = $$('span', el); ed(t[2], r, 'title'); ed(t[3], r, 'label');
             el.appendChild(strip(selectF(r, 'prod', prodSel('General')) + '<button type="button" class="dyn-add" data-eact="filelink" data-id="' + esc(r.id) + '" data-field="file" data-title="Link / file of the resource" data-folder="resources">🔗 ' + (r.file ? 'Change file / link' : 'Add file / link') + '</button>' + delBtn(r, 'Delete')));

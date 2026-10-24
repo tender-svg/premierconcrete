@@ -65,6 +65,9 @@ function load(file, search) {
   ok(count('sheets') === exp(x => x === 'Data Sheet'), 'datasheets tab = ' + exp(x => x === 'Data Sheet') + ' resources of the CMS');
   ok(count('downloads') === exp(x => !['Data Sheet', 'Webinar', 'Video', 'Blog Post', 'Technical Note'].includes(x)), 'downloads tab = brochures + forms');
   ok(count('videos') === exp(x => x === 'Video'), 'videos tab = videos');
+  const blogs = DATA.resources.filter(r => r.document_type === 'Blog Post'), webs = DATA.resources.filter(r => r.document_type === 'Webinar');
+  if (blogs.length) { const bi = col('blog').querySelector('[data-dyn-item]'); ok(bi && bi.textContent.includes(blogs[0].title) && !bi.textContent.includes('How off-site'), 'blog card: only the title (no description)'); }
+  if (webs.length) { const wi = col('webinars').querySelector('[data-dyn-item]'); ok(wi && wi.textContent.includes(webs[0].title) && wi.querySelectorAll(':scope > span').length === 1, 'webinar card: only the title (no product line above it)'); }
   const boxes = [...t.d.querySelectorAll('aside input[type=checkbox]')]; ok(boxes.length === titles.length, 'filter = one checkbox per solution');
   boxes[0].checked = true; boxes[0].dispatchEvent(new t.w.Event('change', { bubbles: true }));
   const shown = [...col('sheets').querySelectorAll('[data-dyn-item]')].filter(e => !e.hidden).length; ok(shown > 0 && shown < count('sheets'), 'a product checkbox filters the list (' + shown + ' of ' + count('sheets') + ')');
