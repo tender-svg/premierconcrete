@@ -17,4 +17,16 @@
 #pc-consent .pcc-row { display: flex; gap: 16px; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--color-divider, #e3e7e2); }
 #pc-consent .pcc-row small { display: block; margin-top: 3px; font-size: 13px; line-height: 1.45; color: var(--color-neutral-700, #555); }
 #pc-consent .pcc-row input { width: 20px; height: 20px; accent-color: var(--color-accent-700, #1f6a2a); flex: none; }
-@media (max-width: 520px) { #pc-consent { right: 12px; left: 12px; bottom: 12px; width: auto; } #pc-consent .pcc-b { flex: 1 1 auto; text-align: center; } }
+@media (max-width: 520px) {
+  #pc-consent { right: 8px; left: 8px; bottom: 8px; width: auto; }
+  #pc-consent .pcc-in { padding: 12px 14px 10px; border-radius: 10px; }
+  #pc-consent h2 { margin: 0 26px 6px 0; padding-bottom: 6px; font-size: 14.5px; }
+  #pc-consent p { margin: 0 0 6px; font-size: 12.5px; line-height: 1.4; }
+  #pc-consent .pcc-x { top: 6px; right: 8px; font-size: 20px; }
+  #pc-consent .pcc-btns { flex-wrap: nowrap; gap: 6px; margin-top: 8px; }
+  #pc-consent .pcc-b { flex: 1 1 0; min-width: 0; padding: 9px 6px; font-size: 12.5px; text-align: center; white-space: nowrap; }
+  #pc-consent .pcc-b.pri { padding-left: 6px; padding-right: 6px; }
+  #pc-consent .pcc-dns { margin-top: 8px; font-size: 11.5px; }
+  #pc-consent .pcc-row { padding: 8px 0; gap: 10px; }
+  #pc-consent .pcc-row small { font-size: 12px; }
+}
