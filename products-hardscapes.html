@@ -11,6 +11,7 @@
 <noscript><style>#pc-loader{display:none}html.pc-loading{overflow:auto}</style></noscript>
 <script>(function(){var d=document,n=0,ready=false,hid=false,t0=Date.now(),c=false;d.documentElement.classList.add("pc-loading");try{var nv=performance.getEntriesByType("navigation")[0];if(nv&&nv.type==="reload"){localStorage.removeItem("pc-cache-v1");localStorage.removeItem("pc-cache-t")}}catch(e){}try{var t=+localStorage.getItem("pc-cache-t");c=!!(t&&Date.now()-t<864e5&&!localStorage.getItem("pc-admin"))}catch(e){}if(c)d.documentElement.classList.add("pc-cached");function hide(){if(hid)return;hid=true;var e=d.getElementById("pc-loader");d.documentElement.classList.remove("pc-loading");d.documentElement.classList.remove("pc-cached");if(e){e.classList.add("done");setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e)},600)}}function check(){if(ready&&n<=0)setTimeout(function(){if(n<=0)hide()},Math.max(30,(PCL.cached?0:380)-(Date.now()-t0)))}window.PCL={cached:c,cachedUsed:false,hold:function(){n++},release:function(){n=Math.max(0,n-1);check()},miss:function(){PCL.cached=false;d.documentElement.classList.remove("pc-cached")}};d.addEventListener("DOMContentLoaded",function(){ready=true;check()});setTimeout(hide,c?2500:12000)})();</script>
 <script>(function(){var d=document.documentElement;if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("pcm-pre");setTimeout(function(){d.classList.remove("pcm-pre")},9000)})();</script>
+<link rel="preload" href="fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/design.css">
 <link rel="stylesheet" href="css/site.css">
@@ -305,17 +306,17 @@
                     
                       <button data-set="{&quot;gal&quot;:0}" aria-label="Show photo" style="padding:0;border:2px solid var(--color-accent);border-radius:8px;overflow:hidden;aspect-ratio:1/1;cursor:pointer;background:var(--color-surface);opacity:1" class="hv-9"><img src="images/hs/wall8-terrace.webp" alt style="width:100%;height:100%;object-fit:cover"></button>
                     
-                      <button data-set="{&quot;gal&quot;:1}" aria-label="Show photo" style="padding:0;border:2px solid transparent;border-radius:8px;overflow:hidden;aspect-ratio:1/1;cursor:pointer;background:var(--color-surface);opacity:0.6" class="hv-9"><img src="images/hs/wall8-garden.webp" alt style="width:100%;height:100%;object-fit:cover"></button>
+                      <button data-set="{&quot;gal&quot;:1}" aria-label="Show photo" style="padding:0;border:2px solid transparent;border-radius:8px;overflow:hidden;aspect-ratio:1/1;cursor:pointer;background:var(--color-surface);opacity:0.6" class="hv-9"><img loading="lazy" decoding="async" src="images/hs/wall8-garden.webp" alt style="width:100%;height:100%;object-fit:cover"></button>
                     
-                      <button data-set="{&quot;gal&quot;:2}" aria-label="Show photo" style="padding:0;border:2px solid transparent;border-radius:8px;overflow:hidden;aspect-ratio:1/1;cursor:pointer;background:var(--color-surface);opacity:0.6" class="hv-9"><img src="images/hs/project-patio-columns.webp" alt style="width:100%;height:100%;object-fit:cover"></button>
+                      <button data-set="{&quot;gal&quot;:2}" aria-label="Show photo" style="padding:0;border:2px solid transparent;border-radius:8px;overflow:hidden;aspect-ratio:1/1;cursor:pointer;background:var(--color-surface);opacity:0.6" class="hv-9"><img loading="lazy" decoding="async" src="images/hs/project-patio-columns.webp" alt style="width:100%;height:100%;object-fit:cover"></button>
                     
-                      <button data-set="{&quot;gal&quot;:3}" aria-label="Show photo" style="padding:0;border:2px solid transparent;border-radius:8px;overflow:hidden;aspect-ratio:1/1;cursor:pointer;background:var(--color-surface);opacity:0.6" class="hv-9"><img src="images/hs/wall6-house.webp" alt style="width:100%;height:100%;object-fit:cover"></button>
+                      <button data-set="{&quot;gal&quot;:3}" aria-label="Show photo" style="padding:0;border:2px solid transparent;border-radius:8px;overflow:hidden;aspect-ratio:1/1;cursor:pointer;background:var(--color-surface);opacity:0.6" class="hv-9"><img loading="lazy" decoding="async" src="images/hs/wall6-house.webp" alt style="width:100%;height:100%;object-fit:cover"></button>
                     
                   </div>
                 
                 <div style="flex:1;min-width:0;aspect-ratio:5/4;position:relative;border-radius:12px;overflow:hidden;background:var(--color-surface)">
                   
-                    <img src="images/hs/wall8-terrace.webp" alt="Hardscapes" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" data-cms="img-images-hs-wall8-terrace-webp-db5d-2" data-cms-type="image">
+                    <img loading="lazy" decoding="async" src="images/hs/wall8-terrace.webp" alt="Hardscapes" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" data-cms="img-images-hs-wall8-terrace-webp-db5d-2" data-cms-type="image">
                     
                       <button data-act="gal-prev" aria-label="Previous photo" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(22,50,23,.2)" class="hv-10"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
                       <button data-act="gal-next" aria-label="Next photo" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:999px;border:0;background:rgba(255,255,255,.92);color:var(--color-accent-800);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(22,50,23,.2)" class="hv-10"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
@@ -377,7 +378,7 @@
                           <div style="padding-top:8px"><a href="#" target="_blank" class="btn btn-primary" style="padding:12px 22px;border-radius:999px;text-decoration:none;color:#fff" data-cms="txt-download-submittal-2746" data-cms-type="text"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>Download submittal</a></div>
                         </div>
                         <div style="flex:1 1 300px;aspect-ratio:4/3;position:relative;border-radius:12px;overflow:hidden">
-                          <img src="images/hs/wall8-garden.webp" alt="Walls" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply" data-cms="img-images-hs-wall8-garden-webp-f26b" data-cms-type="image">
+                          <img loading="lazy" decoding="async" src="images/hs/wall8-garden.webp" alt="Walls" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply" data-cms="img-images-hs-wall8-garden-webp-f26b" data-cms-type="image">
                           
                         </div>
                       </div>
@@ -401,7 +402,7 @@
                           <div data-acc-body hidden style="display:contents">
                             <div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">
                               <div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative;background:transparent">
-                                <img src="images/hs/wall6-house.webp" alt="Premier 6” Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-wall6-house-webp-844b" data-cms-type="image">
+                                <img loading="lazy" decoding="async" src="images/hs/wall6-house.webp" alt="Premier 6” Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-wall6-house-webp-844b" data-cms-type="image">
                                 
                               </div>
                               <div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px">
@@ -430,7 +431,7 @@
                           <div data-acc-body hidden style="display:contents">
                             <div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">
                               <div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative;background:transparent">
-                                <img src="images/hs/wall8-terrace.webp" alt="Premier 8” Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-wall8-terrace-webp-db5d-3" data-cms-type="image">
+                                <img loading="lazy" decoding="async" src="images/hs/wall8-terrace.webp" alt="Premier 8” Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-wall8-terrace-webp-db5d-3" data-cms-type="image">
                                 
                               </div>
                               <div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px">
@@ -459,7 +460,7 @@
                           <div data-acc-body hidden style="display:contents">
                             <div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">
                               <div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative;background:transparent">
-                                <img src="images/hs/mandeville-column.webp" alt="Mandeville Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-mandeville-column-we-3d5c" data-cms-type="image">
+                                <img loading="lazy" decoding="async" src="images/hs/mandeville-column.webp" alt="Mandeville Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-mandeville-column-we-3d5c" data-cms-type="image">
                                 
                               </div>
                               <div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px">
@@ -488,7 +489,7 @@
                           <div data-acc-body hidden style="display:contents">
                             <div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">
                               <div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative;background:transparent">
-                                <img src="images/hs/mandeville-tumble-cap.webp" alt="Mandeville Tumble Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-mandeville-tumble-ca-76f9" data-cms-type="image">
+                                <img loading="lazy" decoding="async" src="images/hs/mandeville-tumble-cap.webp" alt="Mandeville Tumble Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-mandeville-tumble-ca-76f9" data-cms-type="image">
                                 
                               </div>
                               <div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px">
@@ -517,7 +518,7 @@
                           <div data-acc-body hidden style="display:contents">
                             <div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">
                               <div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative;background:transparent">
-                                <img src="images/hs/tallulah-tree-ring.webp" alt="Tallulah Garden Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-tallulah-tree-ring-80fd" data-cms-type="image">
+                                <img loading="lazy" decoding="async" src="images/hs/tallulah-tree-ring.webp" alt="Tallulah Garden Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-tallulah-tree-ring-80fd" data-cms-type="image">
                                 
                               </div>
                               <div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px">
@@ -546,7 +547,7 @@
                           <div data-acc-body hidden style="display:contents">
                             <div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">
                               <div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative;background:transparent">
-                                <img src="images/hs/tallulah-tumble-border.webp" alt="Tallulah Tumble Garden Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-tallulah-tumble-bord-a9f7" data-cms-type="image">
+                                <img loading="lazy" decoding="async" src="images/hs/tallulah-tumble-border.webp" alt="Tallulah Tumble Garden Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-tallulah-tumble-bord-a9f7" data-cms-type="image">
                                 
                               </div>
                               <div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px">
@@ -575,7 +576,7 @@
                           <div data-acc-body hidden style="display:contents">
                             <div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">
                               <div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative;background:transparent">
-                                <img src="images/hs/cap-garden-steps.webp" alt="Universal Cap" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-cap-garden-steps-d8c8" data-cms-type="image">
+                                <img loading="lazy" decoding="async" src="images/hs/cap-garden-steps.webp" alt="Universal Cap" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-hs-cap-garden-steps-d8c8" data-cms-type="image">
                                 
                               </div>
                               <div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px">
@@ -615,7 +616,7 @@
                           <div style="padding-top:8px"><a href="#" target="_blank" class="btn btn-primary" style="padding:12px 22px;border-radius:999px;text-decoration:none;color:#fff" data-cms="txt-download-submittal-2746-9" data-cms-type="text"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>Download submittal</a></div>
                         </div>
                         <div style="flex:1 1 300px;aspect-ratio:4/3;position:relative;border-radius:12px;overflow:hidden">
-                          <img src="images/ext/photo-1786996561187-80e0cb5f8bb2-16c69d.webp" alt="Pavers" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply" data-cms="img-images-ext-photo-1786996561187-da8d" data-cms-type="image">
+                          <img loading="lazy" decoding="async" src="images/ext/photo-1786996561187-80e0cb5f8bb2-16c69d.webp" alt="Pavers" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply" data-cms="img-images-ext-photo-1786996561187-da8d" data-cms-type="image">
                           
                         </div>
                       </div>
@@ -639,7 +640,7 @@
                           <div data-acc-body hidden style="display:contents">
                             <div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">
                               <div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative;background:transparent">
-                                <img src="images/ext/photo-1676984290997-b862e8f0919c-9342ce.webp" alt="Pavers" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-ext-photo-1676984290997-9fc2" data-cms-type="image">
+                                <img loading="lazy" decoding="async" src="images/ext/photo-1676984290997-b862e8f0919c-9342ce.webp" alt="Pavers" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-ext-photo-1676984290997-9fc2" data-cms-type="image">
                                 
                               </div>
                               <div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px">
@@ -679,7 +680,7 @@
                           <div style="padding-top:8px"><a href="#" target="_blank" class="btn btn-primary" style="padding:12px 22px;border-radius:999px;text-decoration:none;color:#fff" data-cms="txt-download-submittal-2746-11" data-cms-type="text"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>Download submittal</a></div>
                         </div>
                         <div style="flex:1 1 300px;aspect-ratio:4/3;position:relative;border-radius:12px;overflow:hidden">
-                          <img src="images/firepits/circle-photo.webp" alt="Fire Pits" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply" data-cms="img-images-firepits-circle-photo-w-412a" data-cms-type="image">
+                          <img loading="lazy" decoding="async" src="images/firepits/circle-photo.webp" alt="Fire Pits" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply" data-cms="img-images-firepits-circle-photo-w-412a" data-cms-type="image">
                           
                         </div>
                       </div>
@@ -703,7 +704,7 @@
                           <div data-acc-body hidden style="display:contents">
                             <div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">
                               <div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative;background:transparent">
-                                <img src="images/firepits/circle-photo.webp" alt="Circle Fire Pit | Staggered Style" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-firepits-circle-photo-w-412a-2" data-cms-type="image">
+                                <img loading="lazy" decoding="async" src="images/firepits/circle-photo.webp" alt="Circle Fire Pit | Staggered Style" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-firepits-circle-photo-w-412a-2" data-cms-type="image">
                                 
                               </div>
                               <div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px">
@@ -732,7 +733,7 @@
                           <div data-acc-body hidden style="display:contents">
                             <div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">
                               <div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative;background:transparent">
-                                <img src="images/firepits/circle-diagram.webp" alt="Circle Fire Pit | Stacked Style" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-firepits-circle-diagram-63c5" data-cms-type="image">
+                                <img loading="lazy" decoding="async" src="images/firepits/circle-diagram.webp" alt="Circle Fire Pit | Stacked Style" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-firepits-circle-diagram-63c5" data-cms-type="image">
                                 
                               </div>
                               <div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px">
@@ -761,7 +762,7 @@
                           <div data-acc-body hidden style="display:contents">
                             <div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">
                               <div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative;background:transparent">
-                                <img src="images/firepits/square-diagram.webp" alt="Square Fire Pit | Mandeville Tumble Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-firepits-square-diagram-7996" data-cms-type="image">
+                                <img loading="lazy" decoding="async" src="images/firepits/square-diagram.webp" alt="Square Fire Pit | Mandeville Tumble Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-firepits-square-diagram-7996" data-cms-type="image">
                                 
                               </div>
                               <div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px">
@@ -790,7 +791,7 @@
                           <div data-acc-body hidden style="display:contents">
                             <div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">
                               <div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative;background:transparent">
-                                <img src="images/firepits/square-photo.webp" alt="Square Fire Pit | Mandeville Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-firepits-square-photo-w-2efd" data-cms-type="image">
+                                <img loading="lazy" decoding="async" src="images/firepits/square-photo.webp" alt="Square Fire Pit | Mandeville Wall" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="img-images-firepits-square-photo-w-2efd" data-cms-type="image">
                                 
                               </div>
                               <div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px">
@@ -830,7 +831,7 @@
                           <div style="padding-top:8px"><a href="#" target="_blank" class="btn btn-primary" style="padding:12px 22px;border-radius:999px;text-decoration:none;color:#fff" data-cms="txt-download-submittal-2746-16" data-cms-type="text"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>Download submittal</a></div>
                         </div>
                         <div style="flex:1 1 300px;aspect-ratio:4/3;position:relative;border-radius:12px;overflow:hidden">
-                          <img src="images/masonry/grassy-paver.webp" alt="Permeable Pavers" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply" data-cms="img-images-masonry-grassy-paver-we-3647" data-cms-type="image">
+                          <img loading="lazy" decoding="async" src="images/masonry/grassy-paver.webp" alt="Permeable Pavers" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply" data-cms="img-images-masonry-grassy-paver-we-3647" data-cms-type="image">
                           
                         </div>
                       </div>
@@ -858,7 +859,7 @@
                           <div style="padding-top:8px"><a href="#" target="_blank" class="btn btn-primary" style="padding:12px 22px;border-radius:999px;text-decoration:none;color:#fff" data-cms="txt-download-submittal-2746-17" data-cms-type="text"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>Download submittal</a></div>
                         </div>
                         <div style="flex:1 1 300px;aspect-ratio:4/3;position:relative;border-radius:12px;overflow:hidden">
-                          <img src="images/masonry/dek-block-unit.webp" alt="Redi-Deck Block" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply" data-cms="img-images-masonry-dek-block-unit-a59c" data-cms-type="image">
+                          <img loading="lazy" decoding="async" src="images/masonry/dek-block-unit.webp" alt="Redi-Deck Block" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply" data-cms="img-images-masonry-dek-block-unit-a59c" data-cms-type="image">
                           
                         </div>
                       </div>
@@ -896,7 +897,7 @@
 <footer style="background:var(--color-accent-900);color:var(--color-accent-100)">
   <div style="max-width:1440px;margin:0 auto;padding-left:clamp(20px,3vw,48px);padding-right:clamp(20px,3vw,48px);padding-top:64px;padding-bottom:40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:48px">
     <div style="display:flex;flex-direction:column;gap:14px">
-      <img data-cms="footer-logo" data-cms-type="image" src="images/logo-white.webp" alt="Premier Concrete Products" style="height:56px;width:auto;align-self:flex-start">
+      <img loading="lazy" decoding="async" data-cms="footer-logo" data-cms-type="image" src="images/logo-white.webp" alt="Premier Concrete Products" style="height:56px;width:auto;align-self:flex-start">
       <span style="font-style:italic;font-size:14px" data-cms="g-txt-concrete-products-since-1996-bcc0" data-cms-type="text">Concrete Products Since 1996</span>
       <span style="font-size:14px;color:var(--color-accent-300)" data-cms="g-txt-38200-la-highway-16-denham-16ef" data-cms-type="text">38200 LA Highway 16 • Denham Springs, LA 70706</span>
     </div>
@@ -948,7 +949,7 @@
     </div>
   </div>
   <div style="max-width:1440px;margin:0 auto;padding-left:clamp(20px,3vw,48px);padding-right:clamp(20px,3vw,48px);padding-bottom:32px;display:flex;flex-wrap:wrap;gap:28px;align-items:center">
-    <a href="#" target="_blank"><img src="images/ext/Made-in-the-USA-ed120d.webp" alt="Made in the USA" style="height:52px;width:auto" data-cms="g-img-images-ext-made-in-the-731f" data-cms-type="image"></a><a href="https://ncma.org/" target="_blank" data-cms-link="lnk-g-link-0e21"><img src="images/ext/ncma-certified-plant-seal-817679.webp" alt="NCMA Certified Plant" style="height:52px;width:auto" data-cms="g-img-images-ext-ncma-certified-plan-ded3" data-cms-type="image"></a><a href="https://precast.org/certification/" target="_blank" data-cms-link="lnk-g-link-a9c0"><img src="images/ext/NPCA-Plant-Cert-logo-white-825ad5.webp" alt="NPCA Plant Certification" style="height:52px;width:auto" data-cms="g-img-images-ext-npca-plant-cert-26de" data-cms-type="image"></a><a href="https://www.concretepipe.org/" target="_blank" data-cms-link="lnk-g-link-65d9"><img src="images/ext/ACPA-Logo-New-Abbreviated-white-ab1b90.webp" alt="American Concrete Pipe Association" style="height:52px;width:auto" data-cms="g-img-images-ext-acpa-logo-new-d0c0" data-cms-type="image"></a>
+    <a href="#" target="_blank"><img loading="lazy" decoding="async" src="images/ext/Made-in-the-USA-ed120d.webp" alt="Made in the USA" style="height:52px;width:auto" data-cms="g-img-images-ext-made-in-the-731f" data-cms-type="image"></a><a href="https://ncma.org/" target="_blank" data-cms-link="lnk-g-link-0e21"><img loading="lazy" decoding="async" src="images/ext/ncma-certified-plant-seal-817679.webp" alt="NCMA Certified Plant" style="height:52px;width:auto" data-cms="g-img-images-ext-ncma-certified-plan-ded3" data-cms-type="image"></a><a href="https://precast.org/certification/" target="_blank" data-cms-link="lnk-g-link-a9c0"><img loading="lazy" decoding="async" src="images/ext/NPCA-Plant-Cert-logo-white-825ad5.webp" alt="NPCA Plant Certification" style="height:52px;width:auto" data-cms="g-img-images-ext-npca-plant-cert-26de" data-cms-type="image"></a><a href="https://www.concretepipe.org/" target="_blank" data-cms-link="lnk-g-link-65d9"><img loading="lazy" decoding="async" src="images/ext/ACPA-Logo-New-Abbreviated-white-ab1b90.webp" alt="American Concrete Pipe Association" style="height:52px;width:auto" data-cms="g-img-images-ext-acpa-logo-new-d0c0" data-cms-type="image"></a>
   </div>
   <div style="border-top:1px solid rgba(255,255,255,.12)">
     <div style="max-width:1440px;margin:0 auto;padding-left:clamp(20px,3vw,48px);padding-right:clamp(20px,3vw,48px);padding-top:18px;padding-bottom:18px;display:flex;flex-wrap:wrap;gap:20px;font-size:12px;color:var(--color-accent-300)">

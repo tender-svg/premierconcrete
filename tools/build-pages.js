@@ -342,6 +342,9 @@ function heroBand(html, bodyClass) {
   return $('#__root').html();
 }
 
+// speed: every photo after the first three (header logo, hero) is loaded only when it nears the screen
+function lazyImgs(html) { let n = 0; return html.replace(/<img\b(?![^>]*\bloading=)/g, m => ++n > 3 ? '<img loading="lazy" decoding="async"' : m); }
+
 function page(file, title, desc, bodyHtml, bodyClass) {
   const editor = bodyClass !== 'login';
   if (editor) bodyHtml = heroBand(bodyHtml, bodyClass);
@@ -350,11 +353,12 @@ function page(file, title, desc, bodyHtml, bodyClass) {
   if (editor) bodyHtml = markSlots(bodyHtml).html;
   const tagged = tagPage(bodyHtml, bodyClass, registry); bodyHtml = tagged.html;
   const rep = editor ? markRepeaters(bodyHtml, bodyClass) : { html: bodyHtml, lists: 0, slots: 0 }; bodyHtml = rep.html;
+  bodyHtml = lazyImgs(bodyHtml);
   tagStats[file] = tagged.tagged + (tagged.created ? ' (' + tagged.created + ' new keys)' : '') + (rep.lists || rep.slots ? ' [' + rep.lists + ' lists' + (rep.slots ? ', ' + rep.slots + ' photo slots' : '') + ']' : '');
   return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
     '<title>' + esc(title) + '</title>\n<meta name="description" content="' + escAttr(desc) + '">\n' +
     '<link rel="icon" type="image/png" sizes="64x64" href="images/favicon.png">\n<link rel="apple-touch-icon" href="images/apple-touch-icon.png">\n' + (editor ? LOADER_HEAD + PRE_HOLD : '') +
-    '<link rel="stylesheet" href="css/styles.css">\n<link rel="stylesheet" href="css/design.css">\n<link rel="stylesheet" href="css/site.css">\n<link rel="stylesheet" href="css/hover.css">\n<link rel="stylesheet" href="css/pages.css">\n' + (editor ? '<link rel="stylesheet" href="css/pc-motion.css">\n<link rel="stylesheet" href="css/cms.css">\n' : '') + '</head>\n' +
+    '<link rel="preload" href="fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>\n<link rel="stylesheet" href="css/styles.css">\n<link rel="stylesheet" href="css/design.css">\n<link rel="stylesheet" href="css/site.css">\n<link rel="stylesheet" href="css/hover.css">\n<link rel="stylesheet" href="css/pages.css">\n' + (editor ? '<link rel="stylesheet" href="css/pc-motion.css">\n<link rel="stylesheet" href="css/cms.css">\n' : '') + '</head>\n' +
     '<body data-page="' + escAttr(bodyClass) + '" data-state=\'' + JSON.stringify(Object.assign({ grp: 0, gal: 0 }, STATE[bodyClass.replace(/^products-.*/, 'products')] || {})) + '\'>\n' + (editor ? LOADER_BODY : '') + bodyHtml + '\n' +
     (/^products/.test(bodyClass) ? '<script src="js/search-index.js" defer></script>\n' : '') + '<script src="js/site.js" defer></script>\n<script src="js/pc-static.js" defer></script>\n<script src="js/pc-dialog.js" defer></script>\n<script src="js/pc-edit.js" defer></script>\n<script src="js/pc-cache.js" defer></script>\n<script src="js/pc-motion.js" defer></script>\n<script src="js/pc-content.js" defer></script>\n' + (editor ? '<script src="js/cms.js" defer></script>\n<script src="js/pc-repeat.js" defer></script>\n<script src="js/pc-toolbar.js" defer></script>\n' : '') + '</body>\n</html>\n';
 }
