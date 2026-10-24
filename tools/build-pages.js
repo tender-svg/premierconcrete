@@ -266,7 +266,7 @@ function assemble(view, patch) {
   $p('[data-act="gal-prev"]').each((i, el) => { const w = $p(el).parent().parent(); if (w.length) w.attr('data-gal', ''); });   // the photo gallery of a category page: its thumbnails go below the photo on phones (css/site.css)
   if (view === 'lunch' || view === 'credit') formNames($p, view);
   // the title band of the team page had only the title: one intro line (made only of what the site itself says: the four groups of the page, Louisiana, since 1996); editable like every text
-  if (view === 'team') $p('main h1').first().after('<p style="font-size:18px;line-height:1.6;margin:14px 0 0;max-width:720px;color:var(--color-neutral-800)">Meet the people behind Premier Concrete Products. Our leadership, management, engineering and business development, and operations and administration teams work together to design, manufacture and deliver concrete products from Louisiana, the way we have since 1996.</p>');
+  if (view === 'team') $p('main h1').first().after('<p style="font-size:18px;line-height:1.6;margin:14px 0 0;max-width:1000px;color:var(--color-neutral-800)">Meet the people behind Premier Concrete Products. Our leadership, management, engineering and business development, and operations and administration teams work together to design, manufacture and deliver concrete products from Louisiana, the way we have since 1996.</p>');
   $p('article[data-screen-label]').filter((i, el) => /display:none/.test(el.attribs.style || '')).remove();   // category page: only the selected category
   return { html: chrome($p('#__root').html()).replace(/ class(?=[ >])/g, ''), inst: r.inst };
 }
