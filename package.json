@@ -1,0 +1,15 @@
+{
+  "name": "premier-concrete-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Premier Concrete Products website (static pages + CMS front end)",
+  "scripts": {
+    "build": "node tools/build-pages.js",
+    "dev": "node tools/dev-server.js 5180"
+  },
+  "devDependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "jsdom": "^26.1.0",
+    "sharp": "^0.34.5"
+  }
+}

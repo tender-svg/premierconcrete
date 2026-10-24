@@ -1,0 +1,51 @@
+/* Premier Concrete - page behaviour that the design file did with its component runtime, plus the responsive rules.
+ * (The design itself is styled inline; css/styles.css + css/design.css hold the design tokens, css/hover.css the hover rules.) */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; overflow-x: hidden; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+button { font-family: inherit; }
+a.btn, button.btn { text-decoration: none; }
+
+/* ------------------------------------------------------------ header */
+.pc-burger { display: none; width: 44px; height: 44px; padding: 0; border: 1px solid var(--color-divider); background: #fff; cursor: pointer; flex-direction: column; align-items: center; justify-content: center; gap: 5px; margin-left: auto; }
+.pc-burger span { display: block; width: 22px; height: 2px; background: var(--color-text); transition: transform .2s, opacity .2s; }
+body.nav-open .pc-burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+body.nav-open .pc-burger span:nth-child(2) { opacity: 0; }
+body.nav-open .pc-burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+header > div > button:first-child { margin-right: auto; }
+header img { max-width: 100%; }
+
+@media (max-width: 960px) {
+  .pc-burger { display: flex; }
+  header > div { flex-wrap: wrap !important; gap: 12px !important; }
+  header > div > button:first-child { margin-right: 0 !important; }
+  header nav { display: none !important; width: 100%; flex-direction: column !important; align-items: stretch !important; gap: 0 !important; order: 3; padding-bottom: 8px; border-top: 1px solid var(--color-divider); }
+  body.nav-open header nav { display: flex !important; }
+  header nav > div { border-bottom: 1px solid var(--color-divider); }
+  header nav > div > button { width: 100%; text-align: left; padding: 14px 0 !important; border-bottom: 0 !important; }
+  body.nav-open header [data-dd] { display: block !important; position: static !important; padding: 0 0 8px 12px !important; }
+  body.nav-open header [data-dd] > div { box-shadow: none !important; padding: 0 !important; }
+  header [data-mega] { display: none !important; }
+}
+
+/* ------------------------------------------------------------ pages */
+@media (max-width: 960px) {
+  main aside { position: static !important; flex: 1 1 100% !important; max-width: none !important; }
+  main h1 { font-size: clamp(34px, 9vw, 52px) !important; }
+}
+@media (max-width: 600px) {
+  main h2 { overflow-wrap: anywhere; }
+  footer > div { padding-left: 20px !important; padding-right: 20px !important; }
+  [role="tablist"] button { flex: 1 1 auto; }
+}
+table { max-width: 100%; }
+
+/* ------------------------------------------------------------ large screens (4K): the design is scaled up, not stretched */
+@media (min-width: 1920px) { html { zoom: 1.25; } }
+@media (min-width: 2400px) { html { zoom: 1.6; } }
+@media (min-width: 3000px) { html { zoom: 2; } }
+@media (min-width: 3600px) { html { zoom: 2.4; } }
+
+@media (prefers-reduced-motion: reduce) { * { transition-duration: .01ms !important; scroll-behavior: auto !important; } }

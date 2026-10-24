@@ -1,0 +1,13 @@
+node_modules/
+.DS_Store
+__MACOSX/
+Thumbs.db
+*.log
+# working material, not part of the deployed site
+_original/
+tools/_tmp/
+.env
+.env.*
+*.pdf
+*.docx
+Premier Concrete Template (7)/

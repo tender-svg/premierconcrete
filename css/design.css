@@ -1,0 +1,20 @@
+/* Premier Concrete - brand colours and rich-text styles of the design file */
+
+:root{--color-bg:#ffffff;--color-surface:#f3f5f2;--color-text:#25292a;--color-divider:#dde2db;--radius-sm:4px;--radius-md:6px;--radius-lg:10px;
+--color-accent:#3f7d3a;--color-accent-100:#eef5ec;--color-accent-200:#d9ead4;--color-accent-300:#b7d7ad;--color-accent-400:#86ba78;--color-accent-500:#5a9c4c;--color-accent-600:#34702f;--color-accent-700:#2c6128;--color-accent-800:#214a1f;--color-accent-900:#163217;
+--color-neutral-100:#f6f7f5;--color-neutral-200:#e8ebe6;--color-neutral-300:#d3d8d1;--color-neutral-400:#b3b9b1;--color-neutral-500:#8f968d;--color-neutral-600:#6f766d;--color-neutral-700:#545a53;--color-neutral-800:#3a3f39;--color-neutral-900:#242824;}
+body{margin:0;background:#fff}
+h1,h2,h3,h4,h5{text-transform:capitalize}
+.pcp-rte{font-size:15px;line-height:1.7;color:var(--color-neutral-800)}
+.pcp-rte>*:first-child{margin-top:0}.pcp-rte>*:last-child{margin-bottom:0}
+.pcp-rte p{margin:0 0 16px;text-wrap:pretty}
+.pcp-rte h4{margin:24px 0 10px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--color-accent-700)}
+.pcp-rte ul{margin:0 0 16px;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+.pcp-rte li{font-size:13px;line-height:1.4;padding:5px 12px;border-radius:999px;border:1px solid var(--color-accent-200);color:var(--color-accent-800)}
+.pcp-rte ul.pts{display:block;list-style:disc;padding-left:20px}
+.pcp-rte ul.pts li{border:0;border-radius:0;padding:0;margin:0 0 6px;font-size:inherit;line-height:1.6;color:inherit}
+.pcp-rte table{width:100%;border-collapse:collapse;margin:0 0 16px;font-size:14px;font-variant-numeric:tabular-nums}
+.pcp-rte th,.pcp-rte td{text-align:left;padding:9px 0;border-bottom:1px solid var(--color-divider);vertical-align:top}
+.pcp-rte th{width:45%;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-800)}
+.pcp-rte td{font-weight:600;color:var(--color-text)}
+.pcp-rte em{color:var(--color-neutral-500)} a{color:var(--color-accent-700)} a:hover{color:var(--color-accent-600)}

@@ -1,0 +1,10 @@
+{
+  "rewrites": [
+    { "source": "/product-detail-:slug.html", "destination": "/solution-reference.html" },
+    { "source": "/project-highlight-:slug.html", "destination": "/project-highlight.html" },
+    { "source": "/blog-:slug.html", "destination": "/blog-details.html" },
+    { "source": "/webinar-:slug.html", "destination": "/webinar-details.html" },
+    { "source": "/api/:path*", "destination": "https://cmsapi.qpaix.com/premierconcrete/api/:path*" },
+    { "source": "/admin/:path*", "destination": "https://cmsapi.qpaix.com/premierconcrete/admin/:path*" }
+  ]
+}
