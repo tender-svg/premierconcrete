@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Premier Concrete Products website (static pages + CMS front end)",
   "scripts": {
-    "build": "node tools/build-pages.js",
+    "build:pages": "node tools/build-pages.js",
     "dev": "node tools/dev-server.js 5180"
   },
   "devDependencies": {
