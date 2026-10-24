@@ -319,7 +319,7 @@
         if (r.prods.length) c.setAttribute('data-subs', r.prods.join('|')); else c.removeAttribute('data-subs');
         var link = art ? articleUrl(r) : r.file;
         if (vid) {
-          var img = $('img', c); if (img) { img.setAttribute('src', r.thumb || img.getAttribute('src')); img.setAttribute('alt', r.title); }
+          var img = $('img', c); if (img) { img.setAttribute('src', r.thumb || (videoOf(link) || {}).thumb || img.getAttribute('src')); img.setAttribute('alt', r.title); }
           var sp = $$(':scope > span', c); if (sp[0]) sp[0].textContent = names.join(' · ') || 'General'; if (sp[1]) sp[1].textContent = r.title;
           if (art && !editing() && sp[0]) sp[0].remove();   // a webinar card shows only its title
           if (link && !editing()) { c.style.cursor = 'pointer'; c.setAttribute('data-open', link); }
@@ -347,7 +347,22 @@
     });
     refresh();
   }
-  document.addEventListener('click', function (e) { var v = e.target.closest && e.target.closest('[data-open]'); if (v && !document.body.classList.contains('cms-editing')) { var u = v.getAttribute('data-open'); if (/^https?:/i.test(u)) window.open(u, '_blank', 'noopener'); else location.href = u; } });
+  /* videos play inside the website: a YouTube / Vimeo link (or a direct video file) opens in a pop-up player, everything else opens as before */
+  function videoOf(u) {
+    var m = /(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/i.exec(u || ''); if (m) return { kind: 'frame', src: 'https://www.youtube-nocookie.com/embed/' + m[1] + '?autoplay=1&rel=0&modestbranding=1', thumb: 'https://i.ytimg.com/vi/' + m[1] + '/hqdefault.jpg' };
+    m = /vimeo\.com\/(?:video\/)?(\d+)/i.exec(u || ''); if (m) return { kind: 'frame', src: 'https://player.vimeo.com/video/' + m[1] + '?autoplay=1' };
+    if (/\.(mp4|webm|ogg)(\?|#|$)/i.test(u || '')) return { kind: 'file', src: u };
+    return null;
+  }
+  function playVideo(v) {
+    var o = document.createElement('div'); o.className = 'pc-vid'; o.setAttribute('role', 'dialog'); o.setAttribute('aria-label', 'Video');
+    o.innerHTML = '<div class="pc-vid-box"><button type="button" class="pc-vid-x" aria-label="Close video">&times;</button>' + (v.kind === 'file' ? '<video src="' + esc(v.src) + '" controls autoplay playsinline></video>' : '<iframe src="' + esc(v.src) + '" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>') + '</div>';
+    function close() { document.removeEventListener('keydown', key); o.remove(); document.documentElement.classList.remove('pc-vid-open'); }
+    function key(e) { if (e.key === 'Escape') close(); }
+    o.addEventListener('click', function (e) { if (e.target === o || e.target.closest('.pc-vid-x')) close(); });
+    document.addEventListener('keydown', key); document.body.appendChild(o); document.documentElement.classList.add('pc-vid-open');
+  }
+  document.addEventListener('click', function (e) { var v = e.target.closest && e.target.closest('[data-open]'); if (v && !document.body.classList.contains('cms-editing')) { var u = v.getAttribute('data-open'), pv = videoOf(u); if (pv) playVideo(pv); else if (/^https?:/i.test(u)) window.open(u, '_blank', 'noopener'); else location.href = u; } });
 
   /* ================================================================= blog / webinar page */
   var fmtArticle = function (t, cards) {

@@ -60,3 +60,11 @@
 .st-img{position:relative;flex:1 1 280px;max-width:420px;aspect-ratio:4/3}.st-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 .st-txt{flex:1 1 360px;font-size:15px;line-height:1.7;color:var(--color-neutral-800);display:flex;flex-direction:column;gap:12px;align-items:flex-start}
 .st-empty{margin:0;color:var(--color-neutral-700)}
+
+/* video pop-up player (js/pc-content.js playVideo): YouTube / Vimeo / video files play inside the website */
+.pc-vid { position: fixed; inset: 0; z-index: 2147482000; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgba(8, 18, 9, .88); animation: pcvid-in .25s ease both; }
+.pc-vid-box { position: relative; width: min(1000px, 100%); aspect-ratio: 16 / 9; background: #000; border-radius: 10px; box-shadow: 0 30px 80px rgba(0, 0, 0, .6); }
+.pc-vid-box iframe, .pc-vid-box video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 10px; background: #000; }
+.pc-vid-x { position: absolute; top: -46px; right: 0; width: 38px; height: 38px; border: 0; border-radius: 50%; background: #fff; color: #111; font-size: 26px; line-height: 1; cursor: pointer; }
+html.pc-vid-open { overflow: hidden; }
+@keyframes pcvid-in { from { opacity: 0; } to { opacity: 1; } }
