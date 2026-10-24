@@ -28,7 +28,10 @@ function load(file, search) {
   ok(rows.length === titles.length && rows.every((r, i) => r.textContent.includes(titles[i])), 'home list = the solutions of the CMS (' + rows.length + ')');
   ok([...t.d.querySelectorAll('[data-dyn-item="cats:footer"]')].map(x => x.textContent.trim()).join('|') === titles.join('|'), 'footer product list = solutions');
   ok([...t.d.querySelectorAll('[data-dyn-item="cats:header"]')].length === titles.length, 'mega menu has a column per solution');
+  const sty0 = () => ''; const sty = i => rows[i].querySelector('button').getAttribute('style');
+  ok(sty(0) !== sty(1) && sty(1) === sty(2) && sty(0).includes('color:var(--color-accent-700)'), 'home list: only the first row is highlighted at first');
   rows[2].querySelector('button').dispatchEvent(new t.w.MouseEvent('mouseenter'));
+  ok(sty(2) === sty0(0) || sty(2) !== sty(1), 'home list: hovering a row moves the highlight to it');
   const imgs = [...rows[0].closest('ul').nextElementSibling.querySelectorAll('img')]; ok(imgs[2].style.opacity === '1', 'home hover list works after the redraw');
 
   t = load('products.html'); await wait(150);

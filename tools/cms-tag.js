@@ -74,7 +74,7 @@ function tagPage(html, pageKey, registry) {
   // parts that are not page content: filled from the CMS lists, menus that list the products, the mobile menu button
   const skipEl = (el, chrome) => {
     const a = el.attribs || {};
-    if (a['data-dyn'] !== undefined || a['data-mega'] !== undefined || a['data-dyn-item'] !== undefined || a['data-pdetail'] !== undefined) return true;
+    if (a['data-dyn'] !== undefined || a['data-mega'] !== undefined || a['data-dyn-item'] !== undefined || a['data-pdetail'] !== undefined || a['data-slot-text'] !== undefined) return true;   // (data-slot-text = the "Photo coming soon" text of an empty photo frame)
     if ((a.class || '').split(/\s+/).includes('pc-burger')) return true;
     if (chrome && /^products-/.test(a['data-href'] || '')) return true;   // product names in the footer / menus come from the product list
     return false;
@@ -96,7 +96,10 @@ function tagPage(html, pageKey, registry) {
       const src = String(a.src || '').split('?')[0]; if (!src) return;
       el.attribs['data-cms'] = keyFor('image', src, counters, chrome); el.attribs['data-cms-type'] = 'image'; tagged++; return;
     }
-    if ((a['data-set'] !== undefined || a['data-act'] !== undefined || a['data-scroll'] !== undefined || a['data-hover-set'] !== undefined) && el.name === 'button' && a['data-edit-label'] === undefined) return;   // tabs / controls keep their function
+    if ((a['data-set'] !== undefined || a['data-act'] !== undefined || a['data-scroll'] !== undefined || a['data-hover-set'] !== undefined) && el.name === 'button' && a['data-edit-label'] === undefined) {   // tabs / controls keep their function; the title of an accordion row (a button) is a text of the page
+      if (a['data-act'] === 'acc') for (const c of el.children || []) walk(c, counters, chrome);
+      return;
+    }
     if (isTextBlock(el)) {
       el.attribs['data-cms'] = keyFor('text', norm($.html(el.children)), counters, chrome); el.attribs['data-cms-type'] = 'text'; tagged++; return;
     }

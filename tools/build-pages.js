@@ -48,7 +48,7 @@ const PAGES = {
   contact:  { file: 'contact.html',             title: 'Contact Us | ' + NAME, desc: 'Contact Premier Concrete Products for pricing, availability, spec sheets or delivery.' },
 };
 const catFile = i => 'products-' + CATS[i].id + '.html';
-const projFile = id => 'project-' + id + '.html';
+const projFile = id => { const p = PROJECTS.find(x => x.id === id); return 'project-highlight-' + require('./design-data').slugify(p ? p.t : id) + '.html'; };   // the project page made from the template (same slug as the seeded story)
 const VIEW_FILE = Object.fromEntries(Object.entries(PAGES).map(([k, v]) => [k, v.file]));
 
 // ------------------------------------------------------------------ render helpers
@@ -214,7 +214,7 @@ function renderNode(n, scope, inst, ctx) {
     const as = n.attribs.as || 'item';
     return (Array.isArray(list) ? list : []).map((item, i) => {
       let h = renderNodes(n.children || [], Object.assign({}, scope, { [as]: item, $index: i }), inst, ctx);
-      if (DYN_LISTS[p]) h = h.replace(/^(\s*<[a-zA-Z0-9]+)/, '$1 data-dyn-item="' + DYN_LISTS[p] + (ctx.in ? ':' + ctx.in : '') + '"');   // items drawn from the CMS by js/pc-content.js
+      if (DYN_LISTS[p] && !/^\s*<article/.test(h)) h = h.replace(/^(\s*<[a-zA-Z0-9]+)/, '$1 data-dyn-item="' + DYN_LISTS[p] + (ctx.in ? ':' + ctx.in : '') + '"');   // items drawn from the CMS by js/pc-content.js
       if (p === 'c.groups') h = h.replace(/^(\s*<div)(?![^>]*role=)/, '$1 data-grp-panel="' + i + '"');   // a group of a category page (tab panel)
       return h;
     }).join('');
@@ -263,12 +263,13 @@ function assemble(view, patch) {
   const r = renderView(view, Object.assign({}, OPEN_ALL, patch || {}));
   const $p = parse(r.html);
   $p('[data-sec]').each((i, el) => { delete el.attribs['data-sec']; });
+  $p('[data-act="gal-prev"]').each((i, el) => { const w = $p(el).parent().parent(); if (w.length) w.attr('data-gal', ''); });   // the photo gallery of a category page: its thumbnails go below the photo on phones (css/site.css)
   if (view === 'lunch' || view === 'credit') formNames($p, view);
   $p('article[data-screen-label]').filter((i, el) => /display:none/.test(el.attribs.style || '')).remove();   // category page: only the selected category
   return { html: chrome($p('#__root').html()).replace(/ class(?=[ >])/g, ''), inst: r.inst };
 }
 
-// header: mobile menu button in front of the main navigation (shown by css/site.css below 960px)
+// header: mobile menu button in front of the main navigation (shown by css/site.css below 1100px)
 function chrome(html) {
   // footer: "CMS Login" link in the bottom bar (before the social links)
   const link = 'color:#fff;text-decoration:none';
@@ -303,7 +304,7 @@ function assembleResources() {
 
 // page-specific data the scripts need (search / filter of the project cards)
 function projectCards($p) {
-  $p('button[data-href^="project-"]').each((i, el) => {
+  $p('button[data-dyn-item="pcards"]').each((i, el) => {
     const pr = PROJECTS[i]; if (!pr) return;
     el.attribs['data-cat'] = pr.cat; el.attribs['data-q'] = [pr.t, pr.tag, pr.loc, pr.owner, pr.products].join(' ').toLowerCase();
   });
@@ -315,6 +316,7 @@ const STATE = { home: { hprod: 0 }, projects: { phCat: 'all' }, project: { phImg
 
 // stable CMS keys (see tools/cms-tag.js); the registry file keeps every key that was ever handed out
 const { tagPage } = require('./cms-tag');
+const { markSlots, markRepeaters } = require('./cms-repeat');   // lists + empty photo frames the live editor can add / remove
 const { LOADER_HEAD, LOADER_BODY } = require('./loader');
 // hero / banner titles are held invisible from the first paint until js/pc-motion.js starts their entrance animation (html.pcm-pre; lifted there and by a timeout)
 const PRE_HOLD = '<script>(function(){var d=document.documentElement;if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("pcm-pre");setTimeout(function(){d.classList.remove("pcm-pre")},9000)})();</script>\n';   // page loader (first visit only, see js/pc-cache.js)
@@ -323,16 +325,19 @@ const registry = fs.existsSync(REG_FILE) ? JSON.parse(fs.readFileSync(REG_FILE, 
 const tagStats = {};
 
 function page(file, title, desc, bodyHtml, bodyClass) {
+  const editor = bodyClass !== 'login';
   // the logos are the backend's global keys; every other text / image / link gets its stable key here
   bodyHtml = bodyHtml.replace('<img src="images/logo.webp"', '<img data-cms="site-logo" data-cms-type="image" src="images/logo.webp"').replace('<img src="images/logo-white.webp"', '<img data-cms="footer-logo" data-cms-type="image" src="images/logo-white.webp"');
-  const tagged = tagPage(bodyHtml, bodyClass, registry); bodyHtml = tagged.html; tagStats[file] = tagged.tagged + (tagged.created ? ' (' + tagged.created + ' new keys)' : '');
-  const editor = bodyClass !== 'login';
+  if (editor) bodyHtml = markSlots(bodyHtml).html;
+  const tagged = tagPage(bodyHtml, bodyClass, registry); bodyHtml = tagged.html;
+  const rep = editor ? markRepeaters(bodyHtml, bodyClass) : { html: bodyHtml, lists: 0, slots: 0 }; bodyHtml = rep.html;
+  tagStats[file] = tagged.tagged + (tagged.created ? ' (' + tagged.created + ' new keys)' : '') + (rep.lists || rep.slots ? ' [' + rep.lists + ' lists' + (rep.slots ? ', ' + rep.slots + ' photo slots' : '') + ']' : '');
   return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
     '<title>' + esc(title) + '</title>\n<meta name="description" content="' + escAttr(desc) + '">\n' +
     '<link rel="icon" type="image/png" sizes="64x64" href="images/favicon.png">\n<link rel="apple-touch-icon" href="images/apple-touch-icon.png">\n' + (editor ? LOADER_HEAD + PRE_HOLD : '') +
     '<link rel="stylesheet" href="css/styles.css">\n<link rel="stylesheet" href="css/design.css">\n<link rel="stylesheet" href="css/site.css">\n<link rel="stylesheet" href="css/hover.css">\n<link rel="stylesheet" href="css/pages.css">\n' + (editor ? '<link rel="stylesheet" href="css/pc-motion.css">\n<link rel="stylesheet" href="css/cms.css">\n' : '') + '</head>\n' +
     '<body data-page="' + escAttr(bodyClass) + '" data-state=\'' + JSON.stringify(Object.assign({ grp: 0, gal: 0 }, STATE[bodyClass.replace(/^products-.*/, 'products')] || {})) + '\'>\n' + (editor ? LOADER_BODY : '') + bodyHtml + '\n' +
-    (/^products/.test(bodyClass) ? '<script src="js/search-index.js" defer></script>\n' : '') + '<script src="js/site.js" defer></script>\n<script src="js/pc-static.js" defer></script>\n<script src="js/pc-dialog.js" defer></script>\n<script src="js/pc-edit.js" defer></script>\n<script src="js/pc-cache.js" defer></script>\n<script src="js/pc-motion.js" defer></script>\n<script src="js/pc-content.js" defer></script>\n' + (editor ? '<script src="js/cms.js" defer></script>\n<script src="js/pc-toolbar.js" defer></script>\n' : '') + '</body>\n</html>\n';
+    (/^products/.test(bodyClass) ? '<script src="js/search-index.js" defer></script>\n' : '') + '<script src="js/site.js" defer></script>\n<script src="js/pc-static.js" defer></script>\n<script src="js/pc-dialog.js" defer></script>\n<script src="js/pc-edit.js" defer></script>\n<script src="js/pc-cache.js" defer></script>\n<script src="js/pc-motion.js" defer></script>\n<script src="js/pc-content.js" defer></script>\n' + (editor ? '<script src="js/cms.js" defer></script>\n<script src="js/pc-repeat.js" defer></script>\n<script src="js/pc-toolbar.js" defer></script>\n' : '') + '</body>\n</html>\n';
 }
 
 // ------------------------------------------------------------------ build

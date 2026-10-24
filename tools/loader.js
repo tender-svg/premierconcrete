@@ -13,9 +13,10 @@ const LOADER_HEAD = '<style>' +
   '#pc-loader:after{content:"";position:absolute;left:0;right:0;bottom:calc(15% - 14px);height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent)}' +
   '#pc-loader .pcl-mark{position:relative;width:210px;height:210px;display:grid;place-items:center}' +
   '#pc-loader .pcl-ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,#86ba78,rgba(134,186,120,0) 38%,rgba(255,255,255,0) 52%,#fff 100%);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));animation:pcl-spin 1.25s linear infinite}' +
+  '#pc-loader .pcl-disc{position:absolute;inset:12px;border-radius:50%;background:#fff;box-shadow:0 8px 26px rgba(0,0,0,.35)}' +
   '#pc-loader .pcl-glow{position:absolute;inset:-26px;border-radius:50%;background:radial-gradient(circle,rgba(183,215,173,.3),rgba(183,215,173,0) 68%);animation:pcl-glow 2.2s ease-in-out infinite}' +
-    '#pc-loader img{position:relative;display:block;width:150px;height:auto;filter:drop-shadow(0 4px 12px rgba(0,0,0,.4));animation:pcl-pop 2.2s ease-in-out infinite}' +
-  '#pc-loader .pcl-tag{margin-top:-10px;font:600 clamp(12px,2.6vw,14px)/1.2 Archivo,Arial,sans-serif;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.75);animation:pcl-up .8s .25s both cubic-bezier(.2,.8,.2,1)}' +
+    '#pc-loader img{position:relative;display:block;width:150px;height:auto;filter:none;animation:pcl-pop 2.2s ease-in-out infinite}' +
+  '#pc-loader .pcl-tag{margin-top:-10px;font:600 clamp(12px,2.6vw,14px)/1.2 Archivo,Arial,sans-serif;letter-spacing:.26em;text-transform:uppercase;color:rgba(255,255,255,.78);animation:pcl-up .8s .25s both cubic-bezier(.2,.8,.2,1)}' +
   '#pc-loader .pcl-bar{width:min(230px,60vw);height:4px;border-radius:4px;background:rgba(255,255,255,.18);overflow:hidden;position:relative;animation:pcl-up .8s .4s both cubic-bezier(.2,.8,.2,1)}' +
   '#pc-loader .pcl-bar:after{content:"";position:absolute;top:0;bottom:0;width:44%;border-radius:4px;background:linear-gradient(90deg,transparent,#fff 45%,#86ba78);animation:pcl-slide 1.1s ease-in-out infinite}' +
   '@keyframes pcl-spin{to{transform:rotate(360deg)}}@keyframes pcl-slide{0%{left:-48%}100%{left:104%}}@keyframes pcl-brick{to{background-position:80px 0}}' +
@@ -29,7 +30,7 @@ const LOADER_HEAD = '<style>' +
   'function check(){if(ready&&n<=0)setTimeout(function(){if(n<=0)hide()},Math.max(30,(PCL.cached?0:380)-(Date.now()-t0)))}' +
   'window.PCL={cached:c,cachedUsed:false,hold:function(){n++},release:function(){n=Math.max(0,n-1);check()},miss:function(){PCL.cached=false;d.documentElement.classList.remove("pc-cached")}};' +
   'd.addEventListener("DOMContentLoaded",function(){ready=true;check()});setTimeout(hide,c?2500:12000)})();</script>\n';
-const LOADER_BODY = '<div id="pc-loader" role="status" aria-live="polite" aria-label="Loading"><div class="pcl-mark"><span class="pcl-glow"></span><span class="pcl-ring"></span><img src="images/logo-white.webp" alt="Premier Concrete Products" width="150" height="48"></div>' +
+const LOADER_BODY = '<div id="pc-loader" role="status" aria-live="polite" aria-label="Loading"><div class="pcl-mark"><span class="pcl-glow"></span><span class="pcl-ring"></span><span class="pcl-disc"></span><img src="images/logo.webp" alt="Premier Concrete Products" width="150" height="48"></div>' +
   '<div class="pcl-tag">Concrete Products Since 1996</div><div class="pcl-bar"></div></div>\n';
 
 module.exports = { LOADER_HEAD, LOADER_BODY };

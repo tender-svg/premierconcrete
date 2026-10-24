@@ -9,7 +9,7 @@
   if (!('IntersectionObserver' in window) || reduce || document.body.getAttribute('data-page') === 'login') { root.classList.remove('pcm-pre'); return; }
 
   // never animated: the header / footer / menus, the loader, controls and the sliders / photo lists that move or fade their own photos
-  var SKIP = 'header, footer, nav, #pc-loader, button, [data-hm], [data-dyn-item="himg"], [data-mega], [data-dd], .pcm-banner, #cms-admin-bar, #cms-dash';
+  var SKIP = 'header, footer, nav, #pc-loader, [data-hm], [data-dyn-item="himg"], [data-mega], [data-dd], .pcm-banner, #cms-admin-bar, #cms-dash';
   var seen = new WeakSet();
   var ready = false, pending = [], fresh = [];
 
@@ -19,7 +19,11 @@
   function reveal(el, extra) {
     if (extra) el.style.setProperty('--pcm-d', ((parseInt(el.style.getPropertyValue('--pcm-d'), 10) || 0) + extra) + 'ms');
     el.classList.add('pcm-in');
-    setTimeout(function () { el.style.setProperty('--pcm-d', '0ms'); }, 1800 + (extra || 0));   // after the entrance the delay goes, hovers stay snappy
+    // after the entrance the delay goes, hovers stay snappy (cards / boxes lose the animation classes completely, so their own hover transitions work again)
+    setTimeout(function () {
+      el.style.setProperty('--pcm-d', '0ms');
+      if (el.classList.contains('pcm-block')) { el.classList.remove('pcm', 'pcm-block', 'pcm-in', 'pcm-nt'); el.style.removeProperty('--pcm-d'); }
+    }, 1800 + (extra || 0));
   }
   var io = new IntersectionObserver(function (entries) {
     entries.forEach(function (en) {
@@ -58,7 +62,13 @@
       var e = el.previousElementSibling;   // the small label above a section heading
       if (e && /^(SPAN|DIV)$/.test(e.tagName) && !e.children.length && e.textContent.trim().length > 0 && e.textContent.trim().length < 60) add(e, 'pcm-up', 0, late);
     });
+    // the cards of the lists (products page, project highlights, resources) rise and settle one after another; their photos / texts then do not animate again
+    [].forEach.call(scope.querySelectorAll('main [data-dyn-item="cats"], main [data-dyn-item="pcards"], main [data-dyn-item="rvideos"], main [data-dyn-item="rdocs"]'), function (b) {
+      if (/^(BUTTON|LI|OPTION)$/.test(b.tagName) && b.getAttribute('data-dyn-item') === 'cats') return;   // the category tabs
+      add(b, 'pcm-block', Math.min(stagger(b), 440), late);
+    });
     [].forEach.call(scope.querySelectorAll('main img'), function (img) {
+      if (img.closest('[data-dyn-item="cats"],[data-dyn-item="pcards"],[data-dyn-item="rvideos"],[data-dyn-item="rdocs"]')) return;   // inside an animated card
       if (img.closest('.pcm-banner')) return;
       var frame = img.parentElement, clipped = false;
       try { clipped = getComputedStyle(frame).overflow === 'hidden'; } catch (e) { /* ignore */ }

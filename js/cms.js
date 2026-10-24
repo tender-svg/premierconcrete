@@ -35,6 +35,8 @@
   window.PCCMS.admin = false; window.PCCMS.editing = false;
   window.PCCMS.registerHook = function (id, h) { hooks[id] = h; refreshSave(); };   // h = { count(): number of unsaved changes, run(): Promise }
   window.PCCMS.refresh = function () { refreshSave(); };
+  var applyHooks = [];   // js/pc-repeat.js: the structure of the lists (items added / removed) is built before the texts are put in
+  window.PCCMS.onApply = function (fn) { applyHooks.push(fn); };
   window.PCCMS.reapply = function () { applySaved(savedRows); if (editing) makeEditable(true); };   // after a list was (re)drawn
 
   /* ---------------------------------------------------------------- 1) saved content for everybody */
@@ -43,14 +45,22 @@
   var isGlobalKey = function (k) { return !!GLOBAL[k] || /^(g-|lnk-g-)/.test(k); };   // stored with the home page, shown on every page
   var setUrl = function (el, url) { if (el.tagName === 'A') el.setAttribute('href', url); else el.setAttribute('data-href', url); };
   var urlOf = function (el) { return (el.tagName === 'A' ? el.getAttribute('href') : el.getAttribute('data-href')) || ''; };
+  // photos: a photo can be removed (saved as "__none__": the <img> stays hidden) and added again; a photo slot (data-slot) is the <img> of an empty photo frame
+  function syncImg(el) { if (el.hasAttribute('data-slot') && el.parentElement) el.parentElement.classList.toggle('pcr-has-img', !el.hidden && !!el.getAttribute('src')); }
+  function setImage(el, val) {
+    if (val === '__none__') { el.setAttribute('hidden', ''); el.setAttribute('data-removed', '1'); }
+    else { el.removeAttribute('hidden'); el.removeAttribute('data-removed'); el.removeAttribute('srcset'); el.setAttribute('src', val); el.removeAttribute('loading'); }
+    syncImg(el);
+  }
   function applySaved(rows) {
     savedRows = rows;
+    applyHooks.forEach(function (h) { try { h(rows); } catch (e) { /* a broken list must never stop the page texts */ } });
     rows.forEach(function (r) {
       var key = r.element_id, type = r.content_type, val = r.content_value; if (!key || val == null || val === '') return;
       if (/^lnk-/.test(key)) { if (dirty && dirty[key]) return; linkEls(key).forEach(function (el) { if (!/^\s*javascript:/i.test(val)) setUrl(el, String(val).trim()); }); return; }
       if (dirty && dirty[key]) return;   // keep what the admin is typing
       keyEls(key).forEach(function (el) {
-        if (type === 'image' || el.getAttribute('data-cms-type') === 'image') { if (el.tagName === 'IMG') { el.removeAttribute('srcset'); el.setAttribute('src', val); el.removeAttribute('loading'); } }
+        if (type === 'image' || el.getAttribute('data-cms-type') === 'image') { if (el.tagName === 'IMG') setImage(el, val); }
         else if (type === 'text' || el.getAttribute('data-cms-type') === 'text') { if (el !== document.activeElement) el.innerHTML = clean(val); }
       });
     });
@@ -171,12 +181,18 @@
   var badges = [];
   var DYN = [['[data-dyn="pf"]', 'stories', 'Edit project highlights in the Dashboard'], ['[data-dyn="pj"]', 'stories', 'Edit this project in the Dashboard'], ['[data-dyn="res"]', 'resources', 'Edit resources in the Dashboard'], ['[data-dyn="cat"]', 'solutions', 'Edit products in the Dashboard']];
   function offsetOf(el) { var x = 0, y = 0, n = el; while (n) { x += n.offsetLeft || 0; y += n.offsetTop || 0; n = n.offsetParent; } return { x: x, y: y }; }
-  function visible(el) { if (el.closest('[hidden]')) return false; if (!el.getClientRects().length) return false; return el.checkVisibility ? el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }) : true; }
+  function visible(el) { if (el.tagName === 'IMG' && el.hidden && el.parentElement) el = el.parentElement;   // a removed photo / empty slot: its frame is what is seen
+    if (el.closest('[hidden]')) return false; if (!el.getClientRects().length) return false; return el.checkVisibility ? el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }) : true; }
   function buildBadges() {
     badges = [];
     $$('img[data-cms][data-cms-type="image"]').forEach(function (img) {
-      var b = document.createElement('button'); b.type = 'button'; b.className = 'cms-img-badge'; b.textContent = '📷 Change image';
+      var gone = img.hidden || !img.getAttribute('src');
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'cms-img-badge'; b.textContent = gone ? '＋ Add image' : '📷 Change image';
       b.onclick = function (e) { e.preventDefault(); e.stopPropagation(); pickImage(img); }; document.body.appendChild(b); badges.push({ b: b, el: img, kind: 'img' });
+      if (!gone && !isGlobalKey(img.getAttribute('data-cms'))) {   // (the logos are shared by every page: they can be changed, not removed)
+        var x = document.createElement('button'); x.type = 'button'; x.className = 'cms-img-badge cms-img-x'; x.textContent = '✕ Remove image';
+        x.onclick = function (e) { e.preventDefault(); e.stopPropagation(); removeImage(img); }; document.body.appendChild(x); badges.push({ b: x, el: img, kind: 'imgx' });
+      }
     });
     DYN.forEach(function (d) { $$(d[0]).forEach(function (host) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'cms-dyn-badge'; b.textContent = '⚙ ' + d[2];
@@ -189,9 +205,10 @@
       badges.forEach(function (o) {
         var show = editing && document.body.contains(o.el) && visible(o.el);
         o.b.classList.toggle('show', !!show); if (!show) return;
-        var p = offsetOf(o.el), w = o.el.offsetWidth;
-        o.b.style.top = (p.y + 10) + 'px';
-        o.b.style.left = o.kind === 'img' ? Math.max(p.x + 6, p.x + w - o.b.offsetWidth - 10) + 'px' : (p.x + 10) + 'px';
+        var host = o.kind !== 'dyn' && o.el.tagName === 'IMG' && o.el.hidden && o.el.parentElement ? o.el.parentElement : o.el;
+        var p = offsetOf(host), w = host.offsetWidth;
+        o.b.style.top = (p.y + (o.kind === 'imgx' ? 50 : 10)) + 'px';
+        o.b.style.left = o.kind === 'img' || o.kind === 'imgx' ? Math.max(p.x + 6, p.x + w - o.b.offsetWidth - 10) + 'px' : (p.x + 10) + 'px';
       });
     }, 30);
   }
@@ -214,14 +231,20 @@
     if (!m) { m = document.createElement('div'); m.id = 'cms-confirm'; m.innerHTML = '<div class="card"><h3>Use this image?</h3><div class="pv"><img alt="" id="cms-confirm-img"></div><p>It is applied to the page now and kept for visitors after you press <b>SAVE</b>.</p><div class="row"><button type="button" class="no">Cancel</button><button type="button" class="yes">Use image</button></div></div>'; document.body.appendChild(m); }
     $('#cms-confirm-img').src = url; m.classList.add('open');
     $('.no', m).onclick = function () { m.classList.remove('open'); };
-    $('.yes', m).onclick = function () { m.classList.remove('open'); var key = img.getAttribute('data-cms'); keyEls(key).forEach(function (o) { if (o.tagName === 'IMG') { o.removeAttribute('srcset'); o.removeAttribute('loading'); o.setAttribute('src', url); } }); dirty[key] = 'image'; refreshSave(); positionBadges(); };
+    $('.yes', m).onclick = function () { m.classList.remove('open'); var key = img.getAttribute('data-cms'); keyEls(key).forEach(function (o) { if (o.tagName === 'IMG') setImage(o, url); }); dirty[key] = 'image'; refreshSave(); rebuildBadges(); positionBadges(); };
   }
+
+  function removeImage(img) {
+    var key = img.getAttribute('data-cms'); keyEls(key).forEach(function (o) { if (o.tagName === 'IMG') setImage(o, '__none__'); });
+    dirty[key] = 'image'; refreshSave(); rebuildBadges();
+  }
+  function rebuildBadges() { if (!editing) return; $$('.cms-img-badge,.cms-dyn-badge').forEach(function (b) { b.remove(); }); buildBadges(); positionBadges(); }
 
   /* ----- save */
   function valueOf(key, type) {
     if (type === 'link') { var le = linkEls(key)[0]; return le ? urlOf(le) : null; }
     var el = keyEls(key)[0]; if (!el) return null;
-    if (type === 'image') return el.getAttribute('src');
+    if (type === 'image') return el.hidden || el.getAttribute('data-removed') ? '__none__' : el.getAttribute('src');
     var c = el.cloneNode(true); ['contenteditable', 'spellcheck'].forEach(function (a) { c.removeAttribute(a); });
     return clean(c.innerHTML).replace(/\s+$/, '');
   }
@@ -278,7 +301,7 @@
     PCC.admin(true);   // a signed-in admin always works on fresh data
     if (window.PCL && PCL.cachedUsed) { location.reload(); return; }   // this view was drawn from the cache: load it again with fresh data
     buildBar(s);
-    Object.assign(window.PCCMS, { admin: true, setEditing: setEditing, save: save, uploadImage: uploadImage, openDashboard: openDashboard, dirty: dirty, markDirty: markDirty, badges: function () { return badges; } });   // also used by tools/test-cms.js
+    Object.assign(window.PCCMS, { admin: true, setEditing: setEditing, save: save, uploadImage: uploadImage, openDashboard: openDashboard, dirty: dirty, markDirty: markDirty, badges: function () { return badges; }, slug: slug, keyEls: keyEls, makeEditable: makeEditable, rebuildBadges: rebuildBadges, isGlobalKey: isGlobalKey, markKey: function (key, type) { dirty[key] = type; refreshSave(); } });   // also used by tools/test-cms.js
     document.dispatchEvent(new CustomEvent('pc-admin', { detail: {} }));
     document.addEventListener('input', onInput); document.addEventListener('keydown', onKey, true); document.addEventListener('paste', onPaste, true); document.addEventListener('click', onClickCapture, true);
     if (location.hash === '#edit') setEditing(true);

@@ -112,9 +112,11 @@
 
   /* ---------- helpers: prototypes, clones, edit attributes ---------- */
   var PROTO = {};
+  // a prototype is cloned from an element that may already carry the scroll-animation classes (js/pc-motion.js): the clones start clean
+  function plain(el) { [el].concat([].slice.call(el.querySelectorAll('*'))).forEach(function (e) { [].slice.call(e.classList).forEach(function (c) { if (/^pcm/.test(c)) e.classList.remove(c); }); e.style.removeProperty('--pcm-d'); }); return el; }
   function swap(name, els, list, fill) {
     els = els.filter(function (e) { return e.parentNode; });
-    if (!PROTO[name] && els.length) PROTO[name] = els[0].cloneNode(true);
+    if (!PROTO[name] && els.length) PROTO[name] = plain(els[0].cloneNode(true));
     if (!PROTO[name] || !els.length || !list.length) return false;
     var parent = els[0].parentNode, ref = els[els.length - 1].nextSibling;
     els.forEach(function (e) { e.remove(); });
@@ -161,7 +163,7 @@
     var products = productsList(); if (!products.length) return;
     // mega menu: one column per product with the links to its groups (the group names of the shipped pages)
     var cols = swap('mega', items('cats:header'), products, function (c, p) {
-      var title = c.children[0], links = c.children[1], lproto = links.children[0] ? links.children[0].cloneNode(true) : null;
+      var title = c.children[0], links = c.children[1], lproto = links.children[0] ? plain(links.children[0].cloneNode(true)) : null;
       href(title, p.url); setText(title, p.title); links.innerHTML = '';
       if (lproto) p.groups.forEach(function (g, gi) { var l = lproto.cloneNode(true); href(l, p.url + (gi ? '?grp=' + gi : '')); l.textContent = g; links.appendChild(l); });
     });
@@ -194,8 +196,10 @@
     var rows = items('hrows', 'LI'), imgs = items('hrows', 'IMG');
     if (rows.length) {
       var ul = rows[0].parentNode;
+      if (!PROTO.hrowOn && rows.length > 1) { var bt = function (r) { var b = $('button', r); return { b: b.getAttribute('style'), arrow: b.lastElementChild.getAttribute('style') }; }; PROTO.hrowOn = bt(rows[0]); PROTO.hrowOff = bt(rows[1]); }   // the first row looks selected, the others plain: hovering moves the highlight
       swap('hrow', rows, products, function (li, p, i) {
         var b = $('button', li), sp = $$('span', b);
+        if (PROTO.hrowOn) { var st = i === 0 ? PROTO.hrowOn : PROTO.hrowOff; b.setAttribute('style', st.b); b.lastElementChild.setAttribute('style', st.arrow); }
         b.setAttribute('data-href', p.url); b.setAttribute('data-hover-set', JSON.stringify({ hprod: i }));
         sp[0].textContent = String(i + 1).padStart(2, '0'); sp[1].textContent = p.title;
       });
@@ -302,8 +306,8 @@
         d.innerHTML = '<label style="display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;padding:22px 0;cursor:pointer;color:var(--color-text)"><input type="checkbox" data-prod="' + esc(p.slug) + '" style="' + PROTO.cbStyle + '"' + (checked.indexOf(p.slug) >= 0 ? ' checked' : '') + '><span>' + esc(p.title) + '</span></label>';
       });
     }
-    var protoDoc = PROTO.rdoc || (PROTO.rdoc = ($('[data-dyn-item="rdocs"]') || {}).cloneNode && $('[data-dyn-item="rdocs"]').cloneNode(true));
-    var protoVid = PROTO.rvid || (PROTO.rvid = $('[data-dyn-item="rvideos"]') && $('[data-dyn-item="rvideos"]').cloneNode(true));
+    var protoDoc = PROTO.rdoc || (PROTO.rdoc = $('[data-dyn-item="rdocs"]') && plain($('[data-dyn-item="rdocs"]').cloneNode(true)));
+    var protoVid = PROTO.rvid || (PROTO.rvid = $('[data-dyn-item="rvideos"]') && plain($('[data-dyn-item="rvideos"]').cloneNode(true)));
     $$('[data-vgroup="res"]').forEach(function (col) {
       var tab = (JSON.parse(col.getAttribute('data-vstate') || '{}')).resTab, inTab = TABS[tab]; if (!inTab) return;
       var list = ress.rows.filter(function (r) { return inTab(r.type); });
@@ -326,7 +330,7 @@
         } else {
           var el = c; href(c, link || '#'); if (!link) c.removeAttribute('target'); else if (art) c.removeAttribute('target');
           var s2 = $$('span', c);   // type, [title, label], icon
-          s2[0].textContent = (ext(r.file) || (r.type || 'DOC').slice(0, 4)).toUpperCase(); s2[2].textContent = r.title; s2[3].textContent = r.label || names.join(' · ') || 'General';
+          s2[0].textContent = (ext(r.file) || ({ 'Brochure': 'PDF', 'Data Sheet': 'PDF', 'Technical Note': 'PDF', 'Form': 'DOC' }[r.type]) || (r.type || 'DOC').slice(0, 4)).toUpperCase(); s2[2].textContent = r.title; s2[3].textContent = r.label || names.join(' · ') || 'General';
           if (editing()) {
             el = asDiv(c); el.style.flexWrap = 'wrap'; var t = $$('span', el); ed(t[2], r, 'title'); ed(t[3], r, 'label');
             el.appendChild(strip(selectF(r, 'prod', prodSel('General')) + '<button type="button" class="dyn-add" data-eact="filelink" data-id="' + esc(r.id) + '" data-field="file" data-title="Link / file of the resource" data-folder="resources">🔗 ' + (r.file ? 'Change file / link' : 'Add file / link') + '</button>' + delBtn(r, 'Delete')));

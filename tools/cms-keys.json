@@ -321,7 +321,17 @@
   "link|request a quote|contact.html|8": "lnk-request-a-quote-54d6-8",
   "link|request a quote|contact.html|9": "lnk-request-a-quote-54d6-9",
   "link|request a quote|contact.html|10": "lnk-request-a-quote-54d6-10",
-  "link|request a quote|contact.html|11": "lnk-request-a-quote-54d6-11"
+  "link|request a quote|contact.html|11": "lnk-request-a-quote-54d6-11",
+  "text|round rcp|1": "txt-round-rcp-347f",
+  "text|headwalls|1": "txt-headwalls-6e18",
+  "text|safety ends|1": "txt-safety-ends-01bc",
+  "text|flared end sections|1": "txt-flared-end-sections-05e4",
+  "text|bends, tees &amp; wyes|1": "txt-bends-tees-amp-wyes-bb5a",
+  "text|rcpa pipe|1": "txt-rcpa-pipe-6651",
+  "text|headwalls|2": "txt-headwalls-6e18-2",
+  "text|safety ends|2": "txt-safety-ends-01bc-2",
+  "text|flared end sections|2": "txt-flared-end-sections-05e4-2",
+  "text|bends, tees &amp; wyes|2": "txt-bends-tees-amp-wyes-bb5a-2"
  },
  "products-box": {
   "text|home › products › box culverts|1": "txt-home-products-box-culverts-5fe5",
@@ -418,7 +428,10 @@
   "link|brochure|https://www.premier-concrete.com/wp-content/uploads/2025/01/Bro_Concrete-Pipe_PCP_JB3-SPR.-WE-MANFACTURE.pdf|1": "lnk-brochure-9aef",
   "link|request a quote|contact.html|2": "lnk-request-a-quote-54d6-2",
   "link|request a quote|contact.html|3": "lnk-request-a-quote-54d6-3",
-  "link|request a quote|contact.html|4": "lnk-request-a-quote-54d6-4"
+  "link|request a quote|contact.html|4": "lnk-request-a-quote-54d6-4",
+  "text|headwalls|1": "txt-headwalls-6e18",
+  "text|safety ends|1": "txt-safety-ends-01bc",
+  "text|bends &amp; fittings|1": "txt-bends-amp-fittings-3271"
  },
  "products-drainage": {
   "text|home › products › drainage &amp; site solutions|1": "txt-home-products-drainage-amp-sit-3760",
@@ -539,7 +552,17 @@
   "link|request a quote|contact.html|8": "lnk-request-a-quote-54d6-8",
   "link|request a quote|contact.html|9": "lnk-request-a-quote-54d6-9",
   "link|request a quote|contact.html|10": "lnk-request-a-quote-54d6-10",
-  "link|request a quote|contact.html|11": "lnk-request-a-quote-54d6-11"
+  "link|request a quote|contact.html|11": "lnk-request-a-quote-54d6-11",
+  "text|catch basins|1": "txt-catch-basins-36e0",
+  "text|manholes|1": "txt-manholes-d910",
+  "text|outlet control structures|1": "txt-outlet-control-structures-56b8",
+  "text|weir inlets|1": "txt-weir-inlets-1acf",
+  "text|highway trench drains|1": "txt-highway-trench-drains-313e",
+  "text|airport trench drains|1": "txt-airport-trench-drains-94e8",
+  "text|custom drainage solutions|1": "txt-custom-drainage-solutions-1737",
+  "text|jersey barriers|1": "txt-jersey-barriers-ef02",
+  "text|v-block barriers|1": "txt-v-block-barriers-b2cd",
+  "text|parking bumpers|1": "txt-parking-bumpers-d17b"
  },
  "products-utility": {
   "text|home › products › utility structures|1": "txt-home-products-utility-structur-1168",
@@ -711,7 +734,14 @@
   "link|request a quote|contact.html|5": "lnk-request-a-quote-54d6-5",
   "link|request a quote|contact.html|6": "lnk-request-a-quote-54d6-6",
   "link|request a quote|contact.html|7": "lnk-request-a-quote-54d6-7",
-  "link|request a quote|contact.html|8": "lnk-request-a-quote-54d6-8"
+  "link|request a quote|contact.html|8": "lnk-request-a-quote-54d6-8",
+  "text|full-depth deck panels|1": "txt-full-depth-deck-panels-b232",
+  "text|partial-depth deck panels|1": "txt-partial-depth-deck-panels-9387",
+  "text|intermediate bent caps|1": "txt-intermediate-bent-caps-10b2",
+  "text|abutment caps|1": "txt-abutment-caps-48c0",
+  "text|approach slabs|3": "txt-approach-slabs-0429-3",
+  "text|wharves|1": "txt-wharves-273e",
+  "text|movable concrete barriers|1": "txt-movable-concrete-barriers-fd66"
  },
  "products-erosion": {
   "text|home › products › erosion control|1": "txt-home-products-erosion-control-16ce",
@@ -903,7 +933,23 @@
   "link|request a quote|contact.html|14": "lnk-request-a-quote-54d6-14",
   "link|request a quote|contact.html|15": "lnk-request-a-quote-54d6-15",
   "link|request a quote|contact.html|16": "lnk-request-a-quote-54d6-16",
-  "link|request a quote|contact.html|17": "lnk-request-a-quote-54d6-17"
+  "link|request a quote|contact.html|17": "lnk-request-a-quote-54d6-17",
+  "text|shoreblock® bd | open cell|1": "txt-shoreblock-bd-open-cell-46fd",
+  "text|shoreblock® bd | closed cell|1": "txt-shoreblock-bd-closed-cell-71f0",
+  "text|shoreblock® sd | open cell|1": "txt-shoreblock-sd-open-cell-fe1d",
+  "text|shoreblock® sd | closed cell|1": "txt-shoreblock-sd-closed-cell-dde7",
+  "text|shoreloc® hp | open cell|1": "txt-shoreloc-hp-open-cell-3cdb",
+  "text|shoreloc® hp | closed cell|1": "txt-shoreloc-hp-closed-cell-3ad1",
+  "text|shoreflex® ultra uv|1": "txt-shoreflex-ultra-uv-afef",
+  "text|shoreflex® pro|1": "txt-shoreflex-pro-884b",
+  "text|shoreflex® ultra uv pro|1": "txt-shoreflex-ultra-uv-pro-ba46",
+  "text|shoreflex®|6": "txt-shoreflex-2752-6",
+  "text|sj-24|1": "txt-sj-24-ba1e",
+  "text|sj-48|1": "txt-sj-48-8e50",
+  "text|sj-72|1": "txt-sj-72-e200",
+  "text|baselok® geocell layer|1": "txt-baselok-geocell-layer-0b63",
+  "text|shoreblock® acb layer|1": "txt-shoreblock-acb-layer-581c",
+  "text|optional geosynthetic layers|1": "txt-optional-geosynthetic-layers-cb94"
  },
  "products-pipeline": {
   "text|home › products › pipeline|1": "txt-home-products-pipeline-4a1e",
@@ -1022,7 +1068,14 @@
   "link|request a quote|contact.html|5": "lnk-request-a-quote-54d6-5",
   "link|request a quote|contact.html|6": "lnk-request-a-quote-54d6-6",
   "link|request a quote|contact.html|7": "lnk-request-a-quote-54d6-7",
-  "link|request a quote|contact.html|8": "lnk-request-a-quote-54d6-8"
+  "link|request a quote|contact.html|8": "lnk-request-a-quote-54d6-8",
+  "text|4.5″ os mat|1": "txt-4-5-os-mat-9848",
+  "text|9″ os mat|1": "txt-9-os-mat-99e6",
+  "text|12″ os mat|1": "txt-12-os-mat-65fd",
+  "text|sb1010 standard — orange|1": "txt-sb1010-standard-orange-8369",
+  "text|sb101 standard — white|1": "txt-sb101-standard-white-a133",
+  "text|sb1010hd heavy duty — orange|1": "txt-sb1010hd-heavy-duty-orange-0dc5",
+  "text|3:1 sand-cement bag — 60 lb|1": "txt-3-1-sand-cement-bag-7a07"
  },
  "products-masonry": {
   "text|home › products › masonry|1": "txt-home-products-masonry-6c17",
@@ -1177,7 +1230,17 @@
   "link|request a quote|contact.html|8": "lnk-request-a-quote-54d6-8",
   "link|request a quote|contact.html|9": "lnk-request-a-quote-54d6-9",
   "link|request a quote|contact.html|10": "lnk-request-a-quote-54d6-10",
-  "link|request a quote|contact.html|11": "lnk-request-a-quote-54d6-11"
+  "link|request a quote|contact.html|11": "lnk-request-a-quote-54d6-11",
+  "text|1-5/8 × 8 × 16 solid|1": "txt-1-5-8-8-16-0a5b",
+  "text|2-1/4 × 8 × 16 solid|1": "txt-2-1-4-8-16-22a2",
+  "text|4 × 8 × 16 solid|1": "txt-4-8-16-solid-382a",
+  "text|16 × 4 × 16 full pad|1": "txt-16-4-16-full-pad-6d03",
+  "text|8 × 8 × 16 regular|1": "txt-8-8-16-regular-2f98",
+  "text|8 × 8 × 8|1": "txt-8-8-8-1fe4",
+  "text|8 × 8 × 16|1": "txt-8-8-16-1211",
+  "text|6 × 8 × 16|1": "txt-6-8-16-d56b",
+  "text|utility brick 2 × 4 × 8|1": "txt-utility-brick-2-4-8-c31c",
+  "text|jumbo brick 4 × 4 × 8|1": "txt-jumbo-brick-4-4-8-2074"
  },
  "products-hardscapes": {
   "text|home › products › hardscapes|1": "txt-home-products-hardscapes-c92b",
@@ -1359,7 +1422,19 @@
   "link|request a quote|contact.html|10": "lnk-request-a-quote-54d6-10",
   "link|request a quote|contact.html|11": "lnk-request-a-quote-54d6-11",
   "link|request a quote|contact.html|12": "lnk-request-a-quote-54d6-12",
-  "link|request a quote|contact.html|13": "lnk-request-a-quote-54d6-13"
+  "link|request a quote|contact.html|13": "lnk-request-a-quote-54d6-13",
+  "text|premier 6” wall|1": "txt-premier-6-wall-f4a9",
+  "text|premier 8” wall|1": "txt-premier-8-wall-8836",
+  "text|tallulah garden wall|1": "txt-tallulah-garden-wall-af66",
+  "text|tallulah tumble garden wall|1": "txt-tallulah-tumble-garden-wall-b674",
+  "text|universal cap|1": "txt-universal-cap-672b",
+  "text|pavers|3": "txt-pavers-6de1-3",
+  "text|circle fire pit | staggered style|1": "txt-circle-fire-pit-staggered-styl-06ca",
+  "text|circle fire pit | stacked style|1": "txt-circle-fire-pit-stacked-style-41e5",
+  "text|square fire pit | mandeville tumble wall|1": "txt-square-fire-pit-mandeville-tum-de16",
+  "text|mandeville tumble wall|2": "txt-mandeville-tumble-wall-f5d1-2",
+  "text|square fire pit | mandeville wall|1": "txt-square-fire-pit-mandeville-wal-5142",
+  "text|mandeville wall|2": "txt-mandeville-wall-d650-2"
  },
  "about": {
   "text|home › about › our story|1": "txt-home-about-our-story-0bcd",

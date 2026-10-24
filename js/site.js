@@ -118,7 +118,7 @@
   (function () {
     var header = $('header'); if (!header) return;
     var mega = $('[data-mega]', header), megaBtn = $('[data-mega-open]', header);
-    var wide = function () { return window.innerWidth > 960; };
+    var wide = function () { return window.innerWidth > 1100; };
     if (mega && megaBtn) {
       megaBtn.addEventListener('mouseenter', function () { if (wide()) { mega.hidden = false; closeDd(); } });
       header.addEventListener('mouseleave', function () { mega.hidden = true; closeDd(); });

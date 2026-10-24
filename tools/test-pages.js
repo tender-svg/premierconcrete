@@ -46,7 +46,7 @@ console.log(files.length + ' pages load');
 }
 // header
 {
-  const { w, d } = load('index.html');
+  const { w, d } = load('index.html'); w.innerWidth = 1366;
   const mega = d.querySelector('[data-mega]'); ok(mega.hidden, 'mega menu starts closed');
   d.querySelector('[data-mega-open]').dispatchEvent(new w.MouseEvent('mouseenter')); ok(!mega.hidden, 'mega menu opens on hover');
   const rows = [...d.querySelectorAll('[data-hover-set]')]; rows[3].dispatchEvent(new w.MouseEvent('mouseenter'));

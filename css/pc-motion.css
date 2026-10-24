@@ -42,3 +42,7 @@ body.cms-editing main>:first-child h1,body.cms-editing main>:first-child h1~*,bo
   html.pc-motion .pcm-banner-on *,html.pc-motion .pcm-banner-on{animation:none!important}
   html.pcm-pre main>:first-child h1,html.pcm-pre main>:first-child h1~*,html.pcm-pre main>:first-child :has(+h1){opacity:1!important}
 }
+
+/* ---- cards (products, project highlights, resources): rise and settle as one piece ---- */
+html.pc-motion .pcm-block{transform:translateY(42px) scale(.965)}
+html.pc-motion .pcm-block.pcm-in{transform:none}
