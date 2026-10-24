@@ -45,4 +45,4 @@ Local-testing Supabase project: iuvjtyvmhajxxewqnwik, schema `premier_concrete` 
 - 2026-10-24 Our Team intro line: wider (max-width 720 -> 1000 px) so it fits in 3 lines on a laptop screen instead of 4 (tools/build-pages.js).
 - 2026-10-24 Resources page: the cards of a Blog Post and of a Webinar show only the title (no short text / product line); in edit mode the short text stays editable; the text is on the article's own page (js/pc-content.js, test in tools/test-content.js).
 - 2026-10-24: Title band of every inner page has a photo behind the title (tools/build-pages.js heroBand/HERO_IMG, css/site.css .pc-hero); photo is changeable with 'Change image' in the editor.
-- 2026-10-24: Loader redesigned again: the logo starts faded grey and is 'poured' in full colour from the bottom with a wavy concrete-pour edge, looping until the page is ready (tools/loader.js); the road dashes / progress bar are gone.
+- 2026-10-24: Loader: colour fill of the logo made faster (1.5 s per fill instead of 3.4 s) (tools/loader.js); the logo is 'poured' in full colour from the bottom with a wavy edge, looping until the page is ready; road dashes / progress bar gone.
