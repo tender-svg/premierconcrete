@@ -67,8 +67,14 @@
       if (/^(BUTTON|LI|OPTION)$/.test(b.tagName) && b.getAttribute('data-dyn-item') === 'cats') return;   // the category tabs
       add(b, 'pcm-block', Math.min(stagger(b), 440), late);
     });
+    // the items of the lists the editor can add to / remove from (people of the team, core values, office cards, reasons, steps ...): each rises as one piece, one after another
+    [].forEach.call(scope.querySelectorAll('main [data-rep-item], main [data-rep-new]'), function (b) {
+      if (!/^(DIV|ARTICLE|SECTION)$/.test(b.tagName) || b.querySelector('[data-act]') || b.closest('.pcm-banner')) return;   // (not the accordion rows of the product pages)
+      add(b, 'pcm-block', Math.min(stagger(b), 440), late);
+    });
     [].forEach.call(scope.querySelectorAll('main img'), function (img) {
       if (img.closest('[data-dyn-item="cats"],[data-dyn-item="pcards"],[data-dyn-item="rvideos"],[data-dyn-item="rdocs"]')) return;   // inside an animated card
+      if (img.closest('[data-rep-item].pcm, [data-rep-new].pcm')) return;   // inside an animated list item
       if (img.closest('.pcm-banner')) return;
       var frame = img.parentElement, clipped = false;
       try { clipped = getComputedStyle(frame).overflow === 'hidden'; } catch (e) { /* ignore */ }
