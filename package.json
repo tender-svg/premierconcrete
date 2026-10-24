@@ -5,7 +5,7 @@
   "description": "Premier Concrete Products website (static pages + CMS front end)",
   "scripts": {
     "build:pages": "node tools/build-pages.js",
-    "dev": "node tools/dev-server.js 5180"
+    "dev": "node tools/dev-server.js 5181"
   },
   "devDependencies": {
     "cheerio": "^1.0.0-rc.12",
