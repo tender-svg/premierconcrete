@@ -36,10 +36,11 @@ function load(storage, nav) {
   // reload clears the cache
   w = load(saved, 'reload');
   ok(!w.document.documentElement.classList.contains('pc-cached') && !w.localStorage.getItem('pc-cache-t'), 'a reload (F5) clears the cache: fresh data, loader shown once');
-  // admin never uses the cache
+  // a signed-in admin uses the cache too (no loader on every page switch); the cache is cleared only when signing in / out
   w = load(Object.assign({ 'pc-admin': '1' }, saved));
-  ok(!w.document.documentElement.classList.contains('pc-cached') && !w.PCC.usable(), 'a signed-in admin never uses the cache');
-  w.PCC.admin(true); ok(!w.localStorage.getItem('pc-cache-v1'), 'signing in clears the cache');
+  ok(w.document.documentElement.classList.contains('pc-cached') && w.PCC.usable(), 'a signed-in admin uses the cache (no loader when switching pages)');
+  w.PCC.admin(true); ok(!!w.localStorage.getItem('pc-cache-v1'), 'admin(true) on every page keeps the cache');
+  w = load(Object.assign({}, saved)); w.PCC.admin(true); ok(!w.localStorage.getItem('pc-cache-v1'), 'signing in (visitor becomes admin) clears the cache');
   // old cache
   w = load({ 'pc-cache-v1': saved['pc-cache-v1'], 'pc-cache-t': String(Date.now() - 25 * 3600e3) });
   ok(!w.document.documentElement.classList.contains('pc-cached'), 'a cache older than 24 h is not used');

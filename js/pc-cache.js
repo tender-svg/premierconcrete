@@ -2,7 +2,7 @@
  * The first time a visitor opens the website the page shows its loader while the CMS data of that page is fetched; the data is kept in the browser
  * (localStorage) and, once the page is shown, the data of ALL other pages and lists is fetched in the background too.
  * After that every page is drawn at once from the cache (no loader) and refreshed from the CMS in the background (js/cms.js, js/pc-content.js).
- * An admin who is signed in never uses the cache (always fresh data); signing in / out clears it.
+ * An admin who is signed in uses it too (no loader on every page switch; fresh data is still fetched in the background); signing in / out and every SAVE clear it.
  * Nothing here is required: if localStorage is blocked or full everything works as before (loader on every page).
  */
 (function () {
@@ -22,15 +22,15 @@
     timer = setTimeout(function () { ls(function (s) { s.setItem(KEY, JSON.stringify(mem)); s.setItem(T, String(Date.now())); }); }, 60);
   }
   var PCC = window.PCC = {
-    // may the cache be used for drawing the page? (not for a signed-in admin, not when older than a day)
-    usable: function () { return !!ls(function (s) { var t = +s.getItem(T); return t && Date.now() - t < MAX && !s.getItem(ADMIN); }); },
+    // may the cache be used for drawing the page? (not when older than a day)
+    usable: function () { return !!ls(function (s) { var t = +s.getItem(T); return t && Date.now() - t < MAX; }); },
     page: function (slug) { var e = load().pages[slug]; return e ? e.d : null; },
     list: function (path) { var e = load().lists[path]; return e ? e.d : null; },
-    setPage: function (slug, rows) { if (Array.isArray(rows) && !ls(function (s) { return s.getItem(ADMIN); })) { load().pages[slug] = { t: Date.now(), d: rows }; flush(); } },
-    setList: function (path, rows) { if (Array.isArray(rows) && !ls(function (s) { return s.getItem(ADMIN); })) { load().lists[path] = { t: Date.now(), d: rows }; flush(); } },
+    setPage: function (slug, rows) { if (Array.isArray(rows)) { load().pages[slug] = { t: Date.now(), d: rows }; flush(); } },
+    setList: function (path, rows) { if (Array.isArray(rows)) { load().lists[path] = { t: Date.now(), d: rows }; flush(); } },
     clear: function () { clearTimeout(timer); mem = { v: 1, pages: {}, lists: {} }; ls(function (s) { s.removeItem(KEY); s.removeItem(T); }); },
-    // a signed-in admin always gets fresh data: set / unset by js/cms.js and js/login.js
-    admin: function (on) { if (on) { ls(function (s) { s.setItem(ADMIN, '1'); }); PCC.clear(); } else ls(function (s) { s.removeItem(ADMIN); }); }
+    // flag of a signed-in admin (set / unset by js/cms.js and js/login.js); the cache is cleared when it changes (sign-in / sign-out), not on every page
+    admin: function (on) { var was = !!ls(function (s) { return s.getItem(ADMIN); }); if (on) ls(function (s) { s.setItem(ADMIN, '1'); }); else ls(function (s) { s.removeItem(ADMIN); }); if (on !== was) PCC.clear(); }
   };
 
   /* background: fetch the data of the rest of the website once the page is shown (only what is missing or older than 10 minutes) */

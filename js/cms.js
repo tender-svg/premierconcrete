@@ -264,7 +264,7 @@
     if (window.PCE && PCE.pending) queued++;
     (function next(i) {
       if (i >= keys.length) {
-        btn.disabled = false; if (!queued) logPage(savedKeys);
+        btn.disabled = false; if (!queued) logPage(savedKeys); PCC.clear();   // the other pages are then read fresh once
         if (failed.length) toast('Saved ' + done + ', but ' + failed.length + ' failed: ' + failed[0], true); else if (queued) toast('Submitted ' + done + ' change' + (done === 1 ? '' : 's') + ' for admin approval. The website is updated once an admin approves.'); else toast('Saved ' + done + ' change' + (done === 1 ? '' : 's') + '. The website is updated.');
         refreshSave(); return;
       }
@@ -298,8 +298,7 @@
   fetch('/api/admin/status', { credentials: 'include', cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : { loggedIn: false }; }).catch(function () { return { loggedIn: false }; }).then(function (s) {
     if (heldStatus) release();
     if (!s || !s.loggedIn) { PCC.admin(false); return; }
-    PCC.admin(true);   // a signed-in admin always works on fresh data
-    if (window.PCL && PCL.cachedUsed) { location.reload(); return; }   // this view was drawn from the cache: load it again with fresh data
+    PCC.admin(true);   // flag of a signed-in admin (the cache is cleared when it changes and after every save)
     buildBar(s);
     Object.assign(window.PCCMS, { admin: true, setEditing: setEditing, save: save, uploadImage: uploadImage, openDashboard: openDashboard, dirty: dirty, markDirty: markDirty, badges: function () { return badges; }, slug: slug, keyEls: keyEls, makeEditable: makeEditable, rebuildBadges: rebuildBadges, isGlobalKey: isGlobalKey, markKey: function (key, type) { dirty[key] = type; refreshSave(); } });   // also used by tools/test-cms.js
     document.dispatchEvent(new CustomEvent('pc-admin', { detail: {} }));
