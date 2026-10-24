@@ -148,10 +148,20 @@
     function show(i) {
       rows.forEach(function (r, k) { var s = k === i ? on : off; r.setAttribute('style', s.b); r.lastElementChild.setAttribute('style', s.arrow); });
       imgs.forEach(function (im, k) { im.style.opacity = k === i ? 1 : 0; });
-      if (tagSpans.length > 1) { tagSpans[0].textContent = rows[i].children[0].textContent; tagSpans[1].textContent = rows[i].children[1].textContent; }
+      if (tagSpans.length > 1 && rows[i]) { var rs = $$('span', rows[i]); tagSpans[0].textContent = rs[0].textContent; tagSpans[1].textContent = rs[1].textContent; }
     }
     rows.forEach(function (r, i) { r.addEventListener('mouseenter', function () { show(i); }); r.addEventListener('focus', function () { show(i); }); });
-    show(0);
+    // phones / tablets have no hover: the big photo is hidden (css/site.css) and every row shows its own small photo; a tap opens the page
+    panel.classList.add('pc-hpanel');
+    rows.forEach(function (r, i) {
+      var old = $('.pc-hthumb', r); if (old) old.remove();
+      var im = imgs[i], sp = $$('span', r); if (!im || sp.length < 2) return;
+      var t = document.createElement('img'); t.className = 'pc-hthumb'; t.alt = ''; t.loading = 'lazy'; t.src = im.getAttribute('src') || ''; r.insertBefore(t, sp[1]);
+    });
+    var mq = window.matchMedia ? window.matchMedia('(max-width: 900px)') : null;
+    var first = function () { show(mq && mq.matches ? -1 : 0); };
+    if (mq) mq.onchange = first;
+    first();
   }
   initHome();
   var hm = (function () {
