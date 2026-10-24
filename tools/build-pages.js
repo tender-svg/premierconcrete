@@ -367,12 +367,22 @@ for (const [key, p] of Object.entries(PAGES)) {
     d('main > div').eq(1).html('<div data-pdetail data-dyn="pj" style="display:contents"><p style="font-size:16px;margin:24px 0">Loading…</p></div>');
     write('project-highlight.html', page('project-highlight.html', 'Project Highlight | ' + NAME, p.desc, d('#__root').html(), 'project-highlight'));
     // the other template pages drawn from CMS rows: solution (/product-detail-<slug>.html), blog (/blog-<slug>.html), webinar (/webinar-<slug>.html); routes in vercel.json
-    const shell = inner => { const e = parse(assemble('projects', {}).html); e('main').html(inner); return e('#__root').html(); };
+    // the shell is the Project Highlights page: its menu item is the "selected" one; a blog / webinar page selects Resources, a product page Products
+    const ACTIVE = /border-bottom:2px solid var\(--color-accent\)/;
+    const shell = (inner, menu) => {
+      const e = parse(assemble('projects', {}).html); e('main').html(inner);
+      if (menu) {
+        const btns = e('header nav > div > button'), act = btns.filter((i, b) => ACTIVE.test(e(b).attr('style') || '')).first();
+        const target = btns.filter((i, b) => e(b).text().trim() === menu).first(), plain = btns.filter((i, b) => !ACTIVE.test(e(b).attr('style') || '') && e(b).attr('data-href')).first();
+        if (act.length && target.length && plain.length) { const a = act.attr('style'), p = plain.attr('style'); target.attr('style', a); act.attr('style', p); }
+      }
+      return e('#__root').html();
+    };
     const band = (crumb, h1) => { const b = parse(assemble('projects', {}).html)('main > div').eq(0); b.find('span').first().html('Home › <span style="color:var(--color-accent-700);font-weight:600">' + crumb + '</span>'); b.find('h1').text(h1); return parse('').html && b.toString(); };
     const wrapStyle = 'max-width:1440px;margin:0 auto;padding:40px clamp(20px,3vw,48px) 96px';
-    write('solution-reference.html', page('solution-reference.html', 'Product | ' + NAME, PAGES.products.desc, shell(band('Products', 'Products') + '<div data-soltpl data-dyn="cat" style="' + wrapStyle + '"><p style="font-size:16px;margin:24px 0">Loading…</p></div>'), 'ref-solution'));
-    write('blog-details.html', page('blog-details.html', 'Blog Post | ' + NAME, 'Premier Concrete Products blog.', shell('<div data-article="blog" data-dyn="res"><p style="font-size:16px;margin:40px clamp(20px,3vw,48px)">Loading…</p></div>'), 'ref-blog'));
-    write('webinar-details.html', page('webinar-details.html', 'Webinar | ' + NAME, 'Premier Concrete Products webinars.', shell('<div data-article="webinar" data-dyn="res"><p style="font-size:16px;margin:40px clamp(20px,3vw,48px)">Loading…</p></div>'), 'ref-webinar'));
+    write('solution-reference.html', page('solution-reference.html', 'Product | ' + NAME, PAGES.products.desc, shell(band('Products', 'Products') + '<div data-soltpl data-dyn="cat" style="' + wrapStyle + '"><p style="font-size:16px;margin:24px 0">Loading…</p></div>', 'Products'), 'ref-solution'));
+    write('blog-details.html', page('blog-details.html', 'Blog Post | ' + NAME, 'Premier Concrete Products blog.', shell('<div data-article="blog" data-dyn="res"><p style="font-size:16px;margin:40px clamp(20px,3vw,48px)">Loading…</p></div>', 'Resources'), 'ref-blog'));
+    write('webinar-details.html', page('webinar-details.html', 'Webinar | ' + NAME, 'Premier Concrete Products webinars.', shell('<div data-article="webinar" data-dyn="res"><p style="font-size:16px;margin:40px clamp(20px,3vw,48px)">Loading…</p></div>', 'Resources'), 'ref-webinar'));
     continue;
   }
   const a = assemble(key, key === 'credit' ? { crStep: 0 } : {});
