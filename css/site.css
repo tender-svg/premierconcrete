@@ -68,3 +68,13 @@ table { max-width: 100%; }
   main h1 { font-size: clamp(30px, 9.5vw, 42px) !important; }
   .btn { padding-left: 18px; padding-right: 18px; }
 }
+
+/* ------------------------------------------------------------ title band with a photo behind it (tools/build-pages.js heroBand) */
+.pc-hero, .pc-hero h1, .pc-hero p, .pc-hero a, .pc-hero button, .pc-hero > div > span, .pc-hero > div > div > span { color: #fff !important; }
+.pc-hero span span { color: var(--color-accent-200) !important; }   /* the current page in the breadcrumb */
+.pc-hero label { color: var(--color-text) !important; }              /* the search box of the products page keeps its white pill */
+.pc-hero label svg, .pc-hero label input { color: var(--color-text) !important; }
+.pc-hero [data-set] { color: #fff !important; }
+.pc-hero [data-set]:not([style*="border-bottom:3px"]) { opacity: .88; }
+.pc-hero h1 { text-shadow: 0 2px 18px rgba(0, 0, 0, .25); }
+.pc-hero [data-set][style*="background:#fff"] { color: var(--color-accent-700) !important; opacity: 1 !important; }

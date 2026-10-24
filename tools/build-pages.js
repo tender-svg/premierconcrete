@@ -326,8 +326,25 @@ const REG_FILE = path.join(__dirname, 'cms-keys.json');
 const registry = fs.existsSync(REG_FILE) ? JSON.parse(fs.readFileSync(REG_FILE, 'utf8')) : {};
 const tagStats = {};
 
+// the title band of every inner page gets a photo behind the title (an image of the site; the editor changes it with "Change image"): photo + dark green
+// overlay, the texts of the band turn white (css/site.css .pc-hero). The blog / webinar pages and the home page have their own hero.
+const HERO_IMG = { products: 'images/pcp/pipe-stack.webp', about: 'images/ext/pcp-home-main-photo-2025-fa49d9.webp', team: 'images/masonry/masonry-blocks.webp', projects: 'images/pcp/box-lake-2.webp', resources: 'images/osmat/img-1.webp',
+  lunch: 'images/hs/project-house.webp', credit: 'images/masonry/masonry-staple.webp', contact: 'images/pcp/pipe-handler.webp', 'project-highlight': 'images/pcp/box-lake.webp', 'ref-solution': 'images/pcp/pipe-stack.webp' };
+function heroBand(html, bodyClass) {
+  let src = HERO_IMG[bodyClass];
+  if (!src && /^products-/.test(bodyClass)) { const p = require('./design-data').products().find(x => 'products-' + x.key === bodyClass); src = p && p.image.replace(/^\//, ''); }
+  if (!src) return html;
+  const $ = parse(html), band = $('main > div').first();
+  if (!band.length || !band.find('h1').length || band.children('img').length) return html;
+  band.attr('class', 'pc-hero').attr('style', 'position:relative;overflow:hidden;background:var(--color-accent-900)');
+  band.children('div').first().attr('style', (band.children('div').first().attr('style') || '') + ';position:relative');
+  band.prepend('<img src="' + src + '" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"><div style="position:absolute;inset:0;background:linear-gradient(100deg,rgba(22,50,23,.93) 0%,rgba(22,50,23,.8) 55%,rgba(22,50,23,.5) 100%)"></div>');
+  return $('#__root').html();
+}
+
 function page(file, title, desc, bodyHtml, bodyClass) {
   const editor = bodyClass !== 'login';
+  if (editor) bodyHtml = heroBand(bodyHtml, bodyClass);
   // the logos are the backend's global keys; every other text / image / link gets its stable key here
   bodyHtml = bodyHtml.replace('<img src="images/logo.webp"', '<img data-cms="site-logo" data-cms-type="image" src="images/logo.webp"').replace('<img src="images/logo-white.webp"', '<img data-cms="footer-logo" data-cms-type="image" src="images/logo-white.webp"');
   if (editor) bodyHtml = markSlots(bodyHtml).html;

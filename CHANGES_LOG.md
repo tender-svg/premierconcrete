@@ -44,3 +44,4 @@ Local-testing Supabase project: iuvjtyvmhajxxewqnwik, schema `premier_concrete` 
 - 2026-10-24 Menu: the blog / webinar pages showed 'Project Highlights' as the selected menu item (their shell is the Project Highlights page); now Resources is selected on blog / webinar pages and Products on the product (template) pages (tools/build-pages.js).
 - 2026-10-24 Our Team intro line: wider (max-width 720 -> 1000 px) so it fits in 3 lines on a laptop screen instead of 4 (tools/build-pages.js).
 - 2026-10-24 Resources page: the cards of a Blog Post and of a Webinar show only the title (no short text / product line); in edit mode the short text stays editable; the text is on the article's own page (js/pc-content.js, test in tools/test-content.js).
+- 2026-10-24: Title band of every inner page has a photo behind the title (tools/build-pages.js heroBand/HERO_IMG, css/site.css .pc-hero); photo is changeable with 'Change image' in the editor.

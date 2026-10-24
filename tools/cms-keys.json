@@ -200,7 +200,8 @@
   "link||products-masonry.html|1": "lnk-link-4fee",
   "link|masonry 4″ units · 6″ units · 8″ units · 12″ units · architectural masonry · mobile home block · foundation block|products-masonry.html|1": "lnk-masonry-4-units-6-dab9",
   "link||products-hardscapes.html|1": "lnk-link-8f04",
-  "link|hardscapes walls · pavers · fire pits · permeable pavers · redi-deck block|products-hardscapes.html|1": "lnk-hardscapes-walls-pavers-fi-66df"
+  "link|hardscapes walls · pavers · fire pits · permeable pavers · redi-deck block|products-hardscapes.html|1": "lnk-hardscapes-walls-pavers-fi-66df",
+  "image|images/pcp/pipe-stack.webp|1": "img-images-pcp-pipe-stack-webp-e35a"
  },
  "products-pipe": {
   "text|home › products › pipe culverts|1": "txt-home-products-pipe-culverts-0f64",
@@ -331,7 +332,8 @@
   "text|headwalls|2": "txt-headwalls-6e18-2",
   "text|safety ends|2": "txt-safety-ends-01bc-2",
   "text|flared end sections|2": "txt-flared-end-sections-05e4-2",
-  "text|bends, tees &amp; wyes|2": "txt-bends-tees-amp-wyes-bb5a-2"
+  "text|bends, tees &amp; wyes|2": "txt-bends-tees-amp-wyes-bb5a-2",
+  "image|images/pcp/pipe-interior.webp|2": "img-images-pcp-pipe-interior-webp-b7ca-2"
  },
  "products-box": {
   "text|home › products › box culverts|1": "txt-home-products-box-culverts-5fe5",
@@ -431,7 +433,8 @@
   "link|request a quote|contact.html|4": "lnk-request-a-quote-54d6-4",
   "text|headwalls|1": "txt-headwalls-6e18",
   "text|safety ends|1": "txt-safety-ends-01bc",
-  "text|bends &amp; fittings|1": "txt-bends-amp-fittings-3271"
+  "text|bends &amp; fittings|1": "txt-bends-amp-fittings-3271",
+  "image|images/pcp/box-lake.webp|2": "img-images-pcp-box-lake-webp-17b6-2"
  },
  "products-drainage": {
   "text|home › products › drainage &amp; site solutions|1": "txt-home-products-drainage-amp-sit-3760",
@@ -562,7 +565,8 @@
   "text|custom drainage solutions|1": "txt-custom-drainage-solutions-1737",
   "text|jersey barriers|1": "txt-jersey-barriers-ef02",
   "text|v-block barriers|1": "txt-v-block-barriers-b2cd",
-  "text|parking bumpers|1": "txt-parking-bumpers-d17b"
+  "text|parking bumpers|1": "txt-parking-bumpers-d17b",
+  "image|images/ext/photo-1604762537426-c1f33f8c573b-1ab8a8.webp|3": "img-images-ext-photo-1604762537426-2bb1-3"
  },
  "products-utility": {
   "text|home › products › utility structures|1": "txt-home-products-utility-structur-1168",
@@ -622,7 +626,8 @@
   "link|pipeline|products-pipeline.html|1": "lnk-pipeline-c489",
   "link|masonry|products-masonry.html|1": "lnk-masonry-8fe3",
   "link|hardscapes|products-hardscapes.html|1": "lnk-hardscapes-f581",
-  "link|request a quote|contact.html|1": "lnk-request-a-quote-54d6"
+  "link|request a quote|contact.html|1": "lnk-request-a-quote-54d6",
+  "image|images/ext/photo-1669170930713-f7c778496177-a93394.webp|5": "img-images-ext-photo-1669170930713-e2cd-5"
  },
  "products-bridges": {
   "text|home › products › precast bridges|1": "txt-home-products-precast-bridges-90b8",
@@ -741,7 +746,8 @@
   "text|abutment caps|1": "txt-abutment-caps-48c0",
   "text|approach slabs|3": "txt-approach-slabs-0429-3",
   "text|wharves|1": "txt-wharves-273e",
-  "text|movable concrete barriers|1": "txt-movable-concrete-barriers-fd66"
+  "text|movable concrete barriers|1": "txt-movable-concrete-barriers-fd66",
+  "image|images/bridges/cypress-bayou-side.webp|3": "img-images-bridges-cypress-bayou-s-186e-3"
  },
  "products-erosion": {
   "text|home › products › erosion control|1": "txt-home-products-erosion-control-16ce",
@@ -949,7 +955,8 @@
   "text|sj-72|1": "txt-sj-72-e200",
   "text|baselok® geocell layer|1": "txt-baselok-geocell-layer-0b63",
   "text|shoreblock® acb layer|1": "txt-shoreblock-acb-layer-581c",
-  "text|optional geosynthetic layers|1": "txt-optional-geosynthetic-layers-cb94"
+  "text|optional geosynthetic layers|1": "txt-optional-geosynthetic-layers-cb94",
+  "image|images/ext/DJI_0115_crop-efec0c.webp|2": "img-images-ext-dji-0115-crop-e22f-2"
  },
  "products-pipeline": {
   "text|home › products › pipeline|1": "txt-home-products-pipeline-4a1e",
@@ -1075,7 +1082,8 @@
   "text|sb1010 standard — orange|1": "txt-sb1010-standard-orange-8369",
   "text|sb101 standard — white|1": "txt-sb101-standard-white-a133",
   "text|sb1010hd heavy duty — orange|1": "txt-sb1010hd-heavy-duty-orange-0dc5",
-  "text|3:1 sand-cement bag — 60 lb|1": "txt-3-1-sand-cement-bag-7a07"
+  "text|3:1 sand-cement bag — 60 lb|1": "txt-3-1-sand-cement-bag-7a07",
+  "image|images/osmat/img-5.webp|2": "img-images-osmat-img-5-webp-ff8a-2"
  },
  "products-masonry": {
   "text|home › products › masonry|1": "txt-home-products-masonry-6c17",
@@ -1240,7 +1248,8 @@
   "text|8 × 8 × 16|1": "txt-8-8-16-1211",
   "text|6 × 8 × 16|1": "txt-6-8-16-d56b",
   "text|utility brick 2 × 4 × 8|1": "txt-utility-brick-2-4-8-c31c",
-  "text|jumbo brick 4 × 4 × 8|1": "txt-jumbo-brick-4-4-8-2074"
+  "text|jumbo brick 4 × 4 × 8|1": "txt-jumbo-brick-4-4-8-2074",
+  "image|images/masonry/masonry-staple.webp|2": "img-images-masonry-masonry-staple-c9fa-2"
  },
  "products-hardscapes": {
   "text|home › products › hardscapes|1": "txt-home-products-hardscapes-c92b",
@@ -1434,7 +1443,8 @@
   "text|square fire pit | mandeville tumble wall|1": "txt-square-fire-pit-mandeville-tum-de16",
   "text|mandeville tumble wall|2": "txt-mandeville-tumble-wall-f5d1-2",
   "text|square fire pit | mandeville wall|1": "txt-square-fire-pit-mandeville-wal-5142",
-  "text|mandeville wall|2": "txt-mandeville-wall-d650-2"
+  "text|mandeville wall|2": "txt-mandeville-wall-d650-2",
+  "image|images/hs/wall8-terrace.webp|3": "img-images-hs-wall8-terrace-webp-db5d-3"
  },
  "about": {
   "text|home › about › our story|1": "txt-home-about-our-story-0bcd",
@@ -1451,7 +1461,8 @@
   "image|images/ext/ACPA-Logo-New-Abbreviated-white-ab1b90.webp|1": "img-images-ext-acpa-logo-new-d0c0",
   "link||https://ncma.org/|1": "lnk-link-0e21",
   "link||https://precast.org/certification/|1": "lnk-link-a9c0",
-  "link||https://www.concretepipe.org/|1": "lnk-link-65d9"
+  "link||https://www.concretepipe.org/|1": "lnk-link-65d9",
+  "image|images/ext/pcp-home-main-photo-2025-fa49d9.webp|2": "img-images-ext-pcp-home-main-1c04-2"
  },
  "team": {
   "text|about › our team|1": "txt-about-our-team-da48",
@@ -1559,7 +1570,8 @@
   "text|accounts payable|1": "txt-accounts-payable-623f",
   "text|ap@premier-concrete.com|1": "txt-ap-premier-concrete-com-a6c8",
   "text|phone tbd|15": "txt-phone-tbd-b633-15",
-  "text|meet the people behind premier concrete products. our leadership, management, engineering and business development, and operations and administration teams work together to design, manufacture and deliver concrete products from louisiana, the way we have since 1996.|1": "txt-meet-the-people-behind-premier-4a91"
+  "text|meet the people behind premier concrete products. our leadership, management, engineering and business development, and operations and administration teams work together to design, manufacture and deliver concrete products from louisiana, the way we have since 1996.|1": "txt-meet-the-people-behind-premier-4a91",
+  "image|images/masonry/masonry-blocks.webp|1": "img-images-masonry-masonry-blocks-6ea4"
  },
  "projects": {
   "text|home › project highlights|1": "txt-home-project-highlights-63d1",
@@ -1580,7 +1592,8 @@
   "text|a subsea pipeline crossing required scour protection and separation from an existing cable in deep water.|1": "txt-a-subsea-pipeline-crossing-req-2fd1",
   "text|read more|2": "txt-read-more-d959-2",
   "link|box culverts livingston parish, la lakeside box culvert replacement an aging corrugated metal crossing under a lakeside road had failed, restricting flow and threatening the roadway during heavy rain events. read more|project-p1.html|1": "lnk-box-culverts-livingston-pa-58e1",
-  "link|pipeline gulf of mexico offshore pipeline protection a subsea pipeline crossing required scour protection and separation from an existing cable in deep water. read more|project-p3.html|1": "lnk-pipeline-gulf-of-mexico-8892"
+  "link|pipeline gulf of mexico offshore pipeline protection a subsea pipeline crossing required scour protection and separation from an existing cable in deep water. read more|project-p3.html|1": "lnk-pipeline-gulf-of-mexico-8892",
+  "image|images/pcp/box-lake-2.webp|1": "img-images-pcp-box-lake-2-fa3f"
  },
  "project": {
   "text|home › project highlights|1": "txt-home-project-highlights-63d1",
@@ -2554,7 +2567,8 @@
   "text|no technical notes match the selected filters yet.|1": "txt-no-technical-notes-match-the-57c6",
   "link|pdf pcp precast concrete brochure pipe culverts · box culverts|https://www.premier-concrete.com/wp-content/uploads/2025/01/Bro_Concrete-Pipe_PCP_JB3-SPR.-WE-MANFACTURE.pdf|1": "lnk-pdf-pcp-precast-concrete-4985",
   "link|pdf hardscapes installation brochure walls · pavers|https://www.premier-concrete.com/wp-content/uploads/2024/11/Bro_Installation-_Hadscapes_PCP_pavers.pdf|1": "lnk-pdf-hardscapes-installatio-f088",
-  "link|docx credit application general|https://www.premier-concrete.com/wp-content/uploads/2023/05/pcp-credit-application.docx|1": "lnk-docx-credit-application-ge-3758"
+  "link|docx credit application general|https://www.premier-concrete.com/wp-content/uploads/2023/05/pcp-credit-application.docx|1": "lnk-docx-credit-application-ge-3758",
+  "image|images/osmat/img-1.webp|1": "img-images-osmat-img-1-webp-c9a8"
  },
  "lunch": {
   "text|home › resources › lunch &amp; learn|1": "txt-home-resources-lunch-amp-learn-304f",
@@ -2596,7 +2610,8 @@
   "text|masonry|1": "txt-masonry-3f6d",
   "text|hardscapes|1": "txt-hardscapes-200b",
   "text|dietary needs or notes|1": "txt-dietary-needs-or-notes-1994",
-  "text|request a lunch &amp; learn|1": "txt-request-a-lunch-amp-learn-1d16"
+  "text|request a lunch &amp; learn|1": "txt-request-a-lunch-amp-learn-1d16",
+  "image|images/hs/project-house.webp|1": "img-images-hs-project-house-webp-a251"
  },
  "credit": {
   "text|home › credit application|1": "txt-home-credit-application-6147",
@@ -2738,7 +2753,8 @@
   "link|download printable form|https://www.premier-concrete.com/wp-content/uploads/2023/05/pcp-credit-application.docx|1": "lnk-download-printable-form-352e",
   "link|download guaranty|https://www.premier-concrete.com/wp-content/uploads/2023/05/pcp-credit-application.docx|1": "lnk-download-guaranty-5ffb",
   "link|print guaranty|https://www.premier-concrete.com/wp-content/uploads/2023/05/pcp-credit-application.docx|1": "lnk-print-guaranty-0e55",
-  "text|please email your signed tax exempt certificate to credit@premier-concrete.com after you submit this application.|1": "txt-please-email-your-signed-tax-24a9"
+  "text|please email your signed tax exempt certificate to credit@premier-concrete.com after you submit this application.|1": "txt-please-email-your-signed-tax-24a9",
+  "image|images/masonry/masonry-staple.webp|1": "img-images-masonry-masonry-staple-c9fa"
  },
  "contact": {
   "text|home › contact us|1": "txt-home-contact-us-d703",
@@ -2775,7 +2791,8 @@
   "text|phone|1": "txt-phone-f7a4",
   "text|subject|1": "txt-subject-b5e3",
   "text|message|1": "txt-message-78e7",
-  "text|send message|1": "txt-send-message-da29"
+  "text|send message|1": "txt-send-message-da29",
+  "image|images/pcp/pipe-handler.webp|1": "img-images-pcp-pipe-handler-webp-cd4b"
  },
  "project-highlight": {
   "text|home › project highlights|1": "txt-home-project-highlights-63d1",
