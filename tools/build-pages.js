@@ -275,7 +275,7 @@ function assemble(view, patch) {
 function chrome(html) {
   // footer: "CMS Login" link in the bottom bar (before the social links)
   const link = 'color:#fff;text-decoration:none';
-  html = html.replace('<a href="https://www.facebook.com/', '<a href="login.html" rel="nofollow" style="' + link + '">CMS Login</a>\n      <a href="https://www.facebook.com/');
+  html = html.replace('<a href="https://www.facebook.com/', '<a href="privacy-policy.html" style="' + link + '">Privacy Policy</a>\n      <a href="#" data-cookie-settings style="' + link + '">Cookie Settings</a>\n      <a href="login.html" rel="nofollow" style="' + link + '">CMS Login</a>\n      <a href="https://www.facebook.com/');
   return html.replace('<nav style=', '<button class="pc-burger" aria-label="Open menu" aria-expanded="false" aria-controls="pc-nav"><span></span><span></span><span></span></button><nav id="pc-nav" style=');
 }
 
@@ -329,7 +329,7 @@ const tagStats = {};
 // the title band of every inner page gets a photo behind the title (an image of the site; the editor changes it with "Change image"): photo + dark green
 // overlay, the texts of the band turn white (css/site.css .pc-hero). The blog / webinar pages and the home page have their own hero.
 const HERO_IMG = { products: 'images/pcp/pipe-stack.webp', about: 'images/ext/pcp-home-main-photo-2025-fa49d9.webp', team: 'images/masonry/masonry-blocks.webp', projects: 'images/pcp/box-lake-2.webp', resources: 'images/osmat/img-1.webp',
-  lunch: 'images/hs/project-house.webp', credit: 'images/masonry/masonry-staple.webp', contact: 'images/pcp/pipe-handler.webp', 'project-highlight': 'images/pcp/box-lake.webp', 'ref-solution': 'images/pcp/pipe-stack.webp' };
+  lunch: 'images/hs/project-house.webp', credit: 'images/masonry/masonry-staple.webp', contact: 'images/pcp/pipe-handler.webp', 'project-highlight': 'images/pcp/box-lake.webp', 'ref-solution': 'images/pcp/pipe-stack.webp', 'privacy-policy': 'images/bridges/cypress-bayou-side.webp' };
 function heroBand(html, bodyClass) {
   let src = HERO_IMG[bodyClass];
   if (!src && /^products-/.test(bodyClass)) { const p = require('./design-data').products().find(x => 'products-' + x.key === bodyClass); src = p && p.image.replace(/^\//, ''); }
@@ -358,9 +358,9 @@ function page(file, title, desc, bodyHtml, bodyClass) {
   return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
     '<title>' + esc(title) + '</title>\n<meta name="description" content="' + escAttr(desc) + '">\n' +
     '<link rel="icon" type="image/png" sizes="64x64" href="images/favicon.png">\n<link rel="apple-touch-icon" href="images/apple-touch-icon.png">\n' + (editor ? LOADER_HEAD + PRE_HOLD : '') +
-    '<link rel="preload" href="fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>\n<link rel="stylesheet" href="css/styles.css">\n<link rel="stylesheet" href="css/design.css">\n<link rel="stylesheet" href="css/site.css">\n<link rel="stylesheet" href="css/hover.css">\n<link rel="stylesheet" href="css/pages.css">\n' + (editor ? '<link rel="stylesheet" href="css/pc-motion.css">\n<link rel="stylesheet" href="css/cms.css">\n' : '') + '</head>\n' +
+    '<link rel="preload" href="fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>\n<link rel="stylesheet" href="css/styles.css">\n<link rel="stylesheet" href="css/design.css">\n<link rel="stylesheet" href="css/site.css">\n<link rel="stylesheet" href="css/hover.css">\n<link rel="stylesheet" href="css/pages.css">\n' + (editor ? '<link rel="stylesheet" href="css/pc-motion.css">\n<link rel="stylesheet" href="css/cms.css">\n<link rel="stylesheet" href="css/pc-consent.css">\n' : '') + '</head>\n' +
     '<body data-page="' + escAttr(bodyClass) + '" data-state=\'' + JSON.stringify(Object.assign({ grp: 0, gal: 0 }, STATE[bodyClass.replace(/^products-.*/, 'products')] || {})) + '\'>\n' + (editor ? LOADER_BODY : '') + bodyHtml + '\n' +
-    (/^products/.test(bodyClass) ? '<script src="js/search-index.js" defer></script>\n' : '') + '<script src="js/site.js" defer></script>\n<script src="js/pc-static.js" defer></script>\n<script src="js/pc-dialog.js" defer></script>\n<script src="js/pc-edit.js" defer></script>\n<script src="js/pc-cache.js" defer></script>\n<script src="js/pc-motion.js" defer></script>\n<script src="js/pc-content.js" defer></script>\n' + (editor ? '<script src="js/cms.js" defer></script>\n<script src="js/pc-repeat.js" defer></script>\n<script src="js/pc-toolbar.js" defer></script>\n' : '') + '</body>\n</html>\n';
+    (/^products/.test(bodyClass) ? '<script src="js/search-index.js" defer></script>\n' : '') + '<script src="js/site.js" defer></script>\n<script src="js/pc-static.js" defer></script>\n<script src="js/pc-dialog.js" defer></script>\n<script src="js/pc-edit.js" defer></script>\n<script src="js/pc-cache.js" defer></script>\n<script src="js/pc-motion.js" defer></script>\n<script src="js/pc-content.js" defer></script>\n' + (editor ? '<script src="js/cms.js" defer></script>\n<script src="js/pc-repeat.js" defer></script>\n<script src="js/pc-toolbar.js" defer></script>\n<script src="js/pc-consent.js" defer></script>\n' : '') + '</body>\n</html>\n';
 }
 
 // ------------------------------------------------------------------ build
@@ -395,6 +395,7 @@ for (const [key, p] of Object.entries(PAGES)) {
       if (menu) {
         const btns = e('header nav > div > button'), act = btns.filter((i, b) => ACTIVE.test(e(b).attr('style') || '')).first();
         const target = btns.filter((i, b) => e(b).text().trim() === menu).first(), plain = btns.filter((i, b) => !ACTIVE.test(e(b).attr('style') || '') && e(b).attr('data-href')).first();
+        if (menu === 'none' && act.length && plain.length) act.attr('style', plain.attr('style'));   // a page that is not in the menu: nothing selected
         if (act.length && target.length && plain.length) { const a = act.attr('style'), p = plain.attr('style'); target.attr('style', a); act.attr('style', p); }
       }
       return e('#__root').html();
@@ -403,6 +404,7 @@ for (const [key, p] of Object.entries(PAGES)) {
     const wrapStyle = 'max-width:1440px;margin:0 auto;padding:40px clamp(20px,3vw,48px) 96px';
     write('solution-reference.html', page('solution-reference.html', 'Product | ' + NAME, PAGES.products.desc, shell(band('Products', 'Products') + '<div data-soltpl data-dyn="cat" style="' + wrapStyle + '"><p style="font-size:16px;margin:24px 0">Loading…</p></div>', 'Products'), 'ref-solution'));
     write('blog-details.html', page('blog-details.html', 'Blog Post | ' + NAME, 'Premier Concrete Products blog.', shell('<div data-article="blog" data-dyn="res"><p style="font-size:16px;margin:40px clamp(20px,3vw,48px)">Loading…</p></div>', 'Resources'), 'ref-blog'));
+    write('privacy-policy.html', page('privacy-policy.html', 'Privacy Policy | ' + NAME, 'How Premier Concrete Products handles information, cookies, the CMS login and third parties such as ZoomInfo.', shell(band('Privacy Policy', 'Privacy Policy') + require('./privacy-content')(wrapStyle), 'none'), 'privacy-policy'));
     write('webinar-details.html', page('webinar-details.html', 'Webinar | ' + NAME, 'Premier Concrete Products webinars.', shell('<div data-article="webinar" data-dyn="res"><p style="font-size:16px;margin:40px clamp(20px,3vw,48px)">Loading…</p></div>', 'Resources'), 'ref-webinar'));
     continue;
   }

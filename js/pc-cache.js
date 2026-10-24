@@ -8,7 +8,7 @@
 (function () {
   'use strict';
   var KEY = 'pc-cache-v1', T = 'pc-cache-t', ADMIN = 'pc-admin', MAX = 24 * 3600e3, FRESH = 10 * 60e3;
-  var PAGES = ['index', 'products', 'products-pipe', 'products-box', 'products-drainage', 'products-utility', 'products-bridges', 'products-erosion', 'products-pipeline', 'products-masonry', 'products-hardscapes', 'about', 'our-team', 'project-highlights', 'resources', 'contact', 'lunch-learn', 'credit-application'];
+  var PAGES = ['index', 'products', 'products-pipe', 'products-box', 'products-drainage', 'products-utility', 'products-bridges', 'products-erosion', 'products-pipeline', 'products-masonry', 'products-hardscapes', 'about', 'our-team', 'project-highlights', 'resources', 'contact', 'lunch-learn', 'credit-application', 'privacy-policy'];
   var LISTS = ['solutions', 'stories', 'resources'];
   var mem = null, timer = 0;
   function ls(f) { try { return f(window.localStorage); } catch (e) { return null; } }
