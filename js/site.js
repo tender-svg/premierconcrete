@@ -197,10 +197,10 @@
     var panels = $$('[data-grp-panel]');
     if (panels.length) {
       var m = /[?&]grp=(\d+)/.exec(location.search); if (m && +m[1] < panels.length) { state.grp = +m[1]; paintGroups(); }
-      var showGrp = function () { panels = $$('[data-grp-panel]'); var all = body.classList.contains('cms-editing'); panels.forEach(function (p, i) { p.style.display = all || i === state.grp ? 'block' : 'none'; }); };
+      var showGrp = function () { panels = $$('[data-grp-panel]'); panels.forEach(function (p, i) { p.style.display = i === state.grp ? 'block' : 'none'; }); };   // (also in edit mode: only the tab you are on is shown and edited)
       document.addEventListener('pc-edit-mode', showGrp);
       window.__pcShowGrp = showGrp;   // (js/pc-groups.js adds / removes groups)
-      showGrp(); hooks.push(function (p) { if ('grp' in p) { showGrp(); toggleAllClosed(); } });
+      showGrp(); hooks.push(function (p) { if ('grp' in p) { showGrp(); if (!body.classList.contains('cms-editing')) toggleAllClosed(); } });
       if (m) { var tabs = $('[role="tablist"]'); if (tabs) setTimeout(function () { tabs.scrollIntoView({ block: 'center' }); }, 60); }
     }
     function toggleAllClosed() { $$('[data-act="acc"]').forEach(function (b) { toggleBody(b, false); }); }

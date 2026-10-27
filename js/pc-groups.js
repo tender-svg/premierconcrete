@@ -71,7 +71,7 @@
     S.extra.forEach(function (g) { list.push({ key: g.id, extra: g, tab: extraTab(g), panel: extraPanel(g) }); });
     list.forEach(function (g, i) {
       g.tab.setAttribute('data-set', JSON.stringify({ grp: i, open: [] })); g.tab.setAttribute('style', i === (select || 0) ? ON : OFF);
-      g.panel.setAttribute('data-grp-panel', String(i)); g.panel.style.display = (editing() || i === (select || 0)) ? 'block' : 'none';
+      g.panel.setAttribute('data-grp-panel', String(i)); g.panel.style.display = i === (select || 0) ? 'block' : 'none';
       tablist.appendChild(g.tab); host.insertBefore(g.panel, endMark);
     });
     if (window.PC && window.PC.selectGroup) window.PC.selectGroup(select || 0);

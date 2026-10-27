@@ -81,6 +81,12 @@ const panelsOf = d => [...d.querySelectorAll('[data-grp-panel]')];
   ok(vdd.querySelectorAll(':scope > [data-rep-new]').length === 2 && /Saved dropdown title/.test(vdd.textContent), 'visitor: the saved dropdowns appear in the group');
   const dl = t.d.querySelector('a[data-pc-file][data-cms-link]'); ok(!!dl, 'the "Download submittal" link has its own link key');
   click(t.w, dl); await wait(40); ok(!!t.d.querySelector('#cms-linked #cl-up') && !!t.d.querySelector('#cms-linked #cl-url'), 'clicking it in edit mode opens the link editor with "upload a file"');
+  // edit mode shows only the tab you are on (not all tabs one under the other), and it keeps the tab you were on
+  const ed2 = load([], true); await wait(300); click(ed2.w, tabsOf(ed2.d)[1]); await wait(40); ed2.d.getElementById('cms-toggle').click(); await wait(100);
+  const shown = panelsOf(ed2.d).filter(p => p.style.display !== 'none');
+  ok(shown.length === 1 && shown[0].getAttribute('data-grp-panel') === '1', 'edit mode: only the tab you were on (Pavers) is shown, the others are hidden');
+  click(ed2.w, tabsOf(ed2.d)[3]); await wait(40);
+  ok(panelsOf(ed2.d).filter(p => p.style.display !== 'none').length === 1 && panelsOf(ed2.d)[3].style.display === 'block', 'edit mode: switching tabs shows only that tab');
   // regression: the tabs of a page are NOT a list of the generic add / remove (an old saved list of tab panels, "New text" copies, must not appear)
   const bad = { element_id: 'rep-txt-permeable-pavers-f9fe', content_value: JSON.stringify({ order: [keys[3], keys[4], 'n9cv43'], news: { n9cv43: keys[3] } }) };
   const badTxt = { element_id: keys[3] + '~n9cv43', content_value: 'New text' };
