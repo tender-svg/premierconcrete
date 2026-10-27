@@ -239,6 +239,7 @@
     var vals = row ? m.toForm(row) : m.defaults();
     $('#modalTitle').textContent = (row ? 'Edit ' : 'Add ') + m.one;
     $('#editorBody').innerHTML = m.fields.map(function (f) { return fieldHtml(f, vals[f.name] != null ? vals[f.name] : ''); }).join('');
+    if (key === 'solutions' && row) $('#editorBody').insertAdjacentHTML('beforeend', '<div class="db-field full"><span>Tabs of this product page</span><div><button type="button" class="db-btn db-btn-ghost" data-tabs-edit>✎ Edit tabs and their data…</button></div><small>The tabs (groups) of the product page, their texts, photos, files and dropdowns. Add or remove tabs and dropdowns.</small></div>');
     $('#formMsg').textContent = ''; $('#saveBtn').disabled = false; $('#saveBtn').textContent = 'Save';
     $('#modal').hidden = false; document.body.style.overflow = 'hidden';
     if (key === 'resources') syncResForm();
@@ -555,6 +556,8 @@
   document.addEventListener('keydown', function (e) { if (e.key !== 'Escape') return; ['pwModal', 'histView', 'userModal', 'resetModal'].forEach(function (id) { var o = document.getElementById(id); if (o) o.remove(); }); if (!$('#modal').hidden) closeEditor(); });
   $('#menuBtn').addEventListener('click', function () { var o = document.body.classList.toggle('menu-open'); $('#menuBtn').setAttribute('aria-expanded', o ? 'true' : 'false'); });
   $('#logoutBtn').addEventListener('click', function () { fetch('/api/admin/logout', { method: 'POST', credentials: 'include' }).catch(function () { }).then(goLogin); });
+
+  window.PCDash = { api: api, upload: upload, esc: esc, toast: toast, notify: notify, logHistory: logHistory, row: function () { return editing && editing.row; }, pending: function (v) { if (v !== undefined) pendingFlag = v; return pendingFlag; } };   // used by js/dashboard-tabs.js
 
   /* ---------------------------------------------------------------- start: must be signed in */
   fetch('/api/admin/status', { credentials: 'include' }).then(function (r) { return r.ok ? r.json() : { loggedIn: false }; }).catch(function () { return { loggedIn: false }; }).then(function (s) {

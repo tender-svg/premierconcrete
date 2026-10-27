@@ -179,3 +179,22 @@ html.embed .db-modal{padding-top:16px}
 
 .db-fsel{min-width:260px;max-width:100%;padding:9px 34px 9px 12px;border:1px solid #CECFD1;background:#fff;font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:.05em;text-transform:uppercase;font-size:15px;color:#2C2E35;cursor:pointer}
 .db-fsel:focus{outline:none;border-color:#2c6128;box-shadow:0 0 0 3px rgba(44,97,40,.14)}
+
+/* Products > (a product) > Edit tabs and their data (js/dashboard-tabs.js) */
+.dt-box{max-width:1000px}
+.dt-main{padding:22px 24px}
+.dt-help{margin:0 0 16px;color:#5A5B60;font-size:14.5px;line-height:1.5}
+.dt-group{border:1px solid #CED0D4;border-top:4px solid #3f7d3a;background:#fff;margin:0 0 16px}
+.dt-group>summary,.dt-item>summary{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;list-style:none;background:#F7F8FA}
+.dt-group>summary b{font-family:'Archivo',sans-serif;font-size:17px;flex:1}
+.dt-item{border:1px solid #E1E2E5;margin:0 0 10px;background:#fff}
+.dt-item>summary b{font-size:15px;flex:1;font-weight:600}
+.dt-body{padding:16px;display:grid;gap:16px}
+.dt-fields{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;padding:14px 16px}
+.dt-body>.dt-f{padding:0}
+.dt-list h4{margin:6px 0 10px;font-family:'Archivo',sans-serif;font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:#2c6128}
+.dt-badge{font-size:12px;font-weight:700;color:#1C5930;background:#DDF1E3;border-radius:20px;padding:2px 10px}
+.dt-badge:empty{display:none}
+.dt-gone{opacity:.45}
+.dt-gone>summary b{text-decoration:line-through}
+@media (max-width:760px){.dt-fields{grid-template-columns:1fr}}
