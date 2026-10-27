@@ -50,6 +50,7 @@ const WEBINAR = {
   thumb: '/images/pcp/pipe-stack.webp',
   short: 'Our team comes to your office, brings lunch, and walks your group through the products you work with.',
   body: text([
+    ['[meta: Format | At your office]', '[meta: Cost | Lunch is on us]'],
     ['About the program', 'Have lunch on us and learn more about Premier Concrete Products at our Lunch & Learn program. Our team comes to your office, brings lunch, and walks your group through the products you work with.'],
     ['How it works',
       '• Request a date: Fill out the form with your group size and preferred dates.',

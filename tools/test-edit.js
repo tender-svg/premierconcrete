@@ -78,7 +78,7 @@ const confirmYes = async t => { await wait(30); const y = t.d.querySelector('#rg
 
   // ---- blog page
   t = load('blog-details.html', '?slug=test-blog'); await wait(250);
-  ok(!!t.d.querySelector('[data-article] h1[data-e="title"]'), 'blog page: title editable');
+  ok(!!t.d.querySelector('[data-article] h2[data-e="title"]'), 'blog page: title editable');
   input(t.w, t.d.querySelector('[data-e="body"]'), 'Edited text of the page'); await saveAll(t);
   const bp = t.writes.find(x => x.m === 'PATCH' && x.url === 'resources/blog-1'); ok(bp && /\[page\]\s*Edited text of the page/.test(bp.body.description) && /^\[product:pipe-culverts\] Short text/.test(bp.body.description), 'blog page: short text + [page] text saved in one description');
 

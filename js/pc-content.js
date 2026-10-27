@@ -381,6 +381,9 @@
       flush(); return out;
     }).join('');
   };
+  // lines like "[meta: Duration | 45 minutes]" in the page text are the facts shown above a webinar's text (the date comes from the resource itself)
+  var META_RE = /^\s*\[meta:\s*([^|\]]+?)\s*\|\s*([^\]]+?)\s*\]\s*$/i;
+  function splitMeta(t) { var meta = [], keep = []; String(t || '').split('\n').forEach(function (l) { var m = META_RE.exec(l); if (m) meta.push([m[1], m[2]]); else keep.push(l); }); return { body: keep.join('\n'), meta: meta }; }
   function articlePage(kind) {
     var host = $('[data-article]'); if (!host || !ress) return;
     var type = kind === 'blog' ? 'Blog Post' : 'Webinar', pid = null;
@@ -393,17 +396,24 @@
       var cover = r.thumb || 'images/pcp/pipe-handler.webp', words = String(r.body || '').split(/\s+/).filter(Boolean).length, mins = Math.max(1, Math.round(words / 200));
       var E = function (f, multi) { return editing() ? ' contenteditable="true" spellcheck="false" data-e="' + f + '" data-id="' + esc(r.id) + '"' + (multi ? ' data-multi="1"' : '') : ''; };
       var photo = editing() ? '<button type="button" class="dyn-photo" data-eact="photo" data-id="' + esc(r.id) + '" data-field="thumb" data-folder="resources">📷 Change photo</button>' : '';
-      var facts = [['Product', r.prods.map(prodTitle).filter(Boolean).join(', ') || 'General'], ['Posted', when]].concat(kind === 'blog' ? [['Reading time', mins + ' min']] : [['Questions?', '<a href="tel:+12256674545">+1 225.667.4545</a>']]).filter(function (x) { return x[1]; })
-        .map(function (x) { return '<div><dt>' + x[0] + '</dt><dd>' + (x[0] === 'Questions?' ? x[1] : esc(x[1])) + '</dd></div>'; }).join('');
-      var cta = kind === 'webinar' ? (r.file && !/^https?:/i.test(r.file) ? '<a href="' + esc(r.file) + '" class="wb-cta">Request this session →</a>' : r.file ? '<a href="' + esc(r.file) + '" target="_blank" rel="noopener" class="wb-cta">Watch / Register →</a>' : '<a href="contact.html" class="wb-cta">Contact us to register →</a>') : '<a href="resources.html" class="wb-cta">More resources →</a>';
+      var parts = editing() ? { body: r.body, meta: [] } : splitMeta(r.body);
+      var words2 = String(parts.body || '').split(/\s+/).filter(Boolean).length, mins2 = Math.max(1, Math.round(words2 / 200));
+      var tags = r.prods.map(function (sl) { var p = productsList().filter(function (x) { return x.slug === sl; })[0]; return p ? '<a class="ar-tag" href="' + esc(p.url) + '">' + esc(p.title) + '</a>' : ''; }).join('');
+      var cta = kind === 'webinar' ? (r.file && !/^https?:/i.test(r.file) ? '<a href="' + esc(r.file) + '" class="ar-btn">Request this session →</a>' : r.file ? '<a href="' + esc(r.file) + '" target="_blank" rel="noopener" class="ar-btn">Watch / Register →</a>' : '<a href="contact.html" class="ar-btn">Contact us to register →</a>') : '';
       var strip2 = editing() ? '<div class="app-strip"><label>Product ' + selectF(r, 'prod', prodSel('General')) + '</label><button type="button" class="dyn-add" data-eact="filelink" data-id="' + esc(r.id) + '" data-field="file" data-title="Link of the ' + kind + '" data-folder="resources">🔗 ' + (r.file ? 'Change link' : 'Add link') + '</button>' + delBtn(r, 'Delete this page') + '</div>' : '';
-      var ins = editing() ? '<div class="art-ins"><button type="button" class="dyn-add" data-ins-img="1">＋ Insert image in the text</button><span>The picture is put where the cursor is in the text below (or at the end). It is a line like [image: /images/photo.webp | caption].</span></div>' : '';
-      var body = '<div class="' + (editing() ? 'ed-multi' : 'art art-cards') + '" style="font-size:18px;line-height:1.8;min-height:60px"' + E('body', true) + '>' + (editing() ? esc(r.body) : fmtArticle(r.body, true)) + '</div>';
-      host.innerHTML = '<section class="wb-hero"><img src="' + esc(cover) + '" alt=""><div class="wb-ov"></div><div class="wb-hin"><span class="wb-pill"><i></i>' + type + '</span><h1' + E('title') + '>' + esc(r.title) + '</h1>' +
-        '<div class="wb-crumb"><a href="index.html">Home</a> › <a href="resources.html">Resources</a> › <span>' + esc(r.title) + '</span></div>' + (kind === 'blog' ? '<div class="bl-meta">' + (when ? esc(when) + ' · ' : '') + mins + ' min read</div>' : '') + '<div style="position:relative;margin-top:16px">' + photo + '</div></div></section>' +
-        '<section class="wb-sec"><div class="wb-wrap"><div class="wb-main">' + strip2 + ins + (kind === 'blog' ? '<figure class="bl-fig"><img src="' + esc(cover) + '" alt="' + esc(r.title) + '"></figure>' : '') + body + '</div>' +
-        '<aside class="wb-side"><div class="wb-card">' + (kind === 'webinar' ? '<div class="wb-img"><img src="' + esc(cover) + '" alt="' + esc(r.title) + '"><span class="wb-play" aria-hidden="true"></span></div>' : '') + '<div class="wb-body"><span class="wb-badge">' + type + '</span><dl class="wb-dl">' + facts + '</dl>' + cta + '</div></div>' +
-        '<div class="bl-help"><b>Need specifications or help choosing a product?</b><span>Talk to the Premier Concrete team.</span><a href="contact.html">Contact us →</a></div></aside></div></section>';
+      var ins = editing() ? '<div class="art-ins"><button type="button" class="dyn-add" data-ins-img="1">＋ Insert image in the text</button><span>The picture is put where the cursor is in the text below (or at the end): a line like [image: /images/photo.webp | caption]. A line like [meta: Duration | 45 minutes] adds a fact above the text of a webinar.</span></div>' : '';
+      var body = '<div class="ar-content ' + (editing() ? 'ed-multi' : 'art') + '"' + E('body', true) + '>' + (editing() ? esc(r.body) : fmtArticle(parts.body, false)) + '</div>';
+      var title = '<h2 class="ar-title"' + E('title') + '>' + esc(r.title) + '</h2>';
+      var hero = '<section class="wb-hero ar-hero"><img src="' + esc(cover) + '" alt=""><div class="wb-ov"></div><div class="wb-hin"><h1>' + (kind === 'blog' ? 'Blog' : 'Webinar') + '</h1><div class="wb-crumb"><a href="index.html">Home</a> › <a href="resources.html">Resources</a> › <span>' + (kind === 'blog' ? 'Blog' : 'Webinar') + '</span></div></div></section>';
+      var back = '<a class="ar-back" href="resources.html">← Back to Resources</a>';
+      if (kind === 'blog') {
+        host.innerHTML = hero + '<section class="ar-sec"><div class="ar-wrap">' + back + strip2 + ins + '<article class="ar-card"><div class="ar-img"><img src="' + esc(cover) + '" alt="' + esc(r.title) + '">' + photo + '</div><div class="ar-body"><div class="ar-meta">' + (when ? '<span>' + esc(when) + '</span>' : '') + '<span>' + mins2 + ' min read</span></div>' + title + body + (tags ? '<div class="ar-tags">' + tags + '</div>' : '') + '</div></article></div></section>';
+      } else {
+        var items = [['Date', when]].concat(parts.meta).filter(function (x) { return x[1]; });
+        host.innerHTML = hero + '<section class="ar-sec"><div class="ar-wrap">' + back + strip2 + ins + '<div class="ar-grid"><article class="ar-card"><div class="ar-body"><div class="ar-thumbbox"><img class="ar-thumb" src="' + esc(cover) + '" alt="' + esc(r.title) + '">' + photo + '</div><span class="ar-badge">Webinar</span>' + title +
+          (items.length ? '<div class="ar-mgrid">' + items.map(function (x) { return '<div class="ar-mitem"><strong>' + esc(x[0]) + '</strong><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div>' : '') + body + (tags ? '<div class="ar-tags">' + tags + '</div>' : '') + '</div></article>' +
+          '<aside class="ar-reg"><span class="ar-lbl">Register</span><h3>Reserve your place</h3><p>Contact our team to confirm your place and to receive the details of this session.</p><a class="ar-tel" href="tel:+12256674545">+1 225.667.4545</a>' + cta + '</aside></div></div></section>';
+      }
       focusEnd(host, focus); reapply();
     }
     bindOnce(host, ress, { redraw: draw, afterDelete: function () { ress.deleted = true; } });
