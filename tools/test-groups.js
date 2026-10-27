@@ -81,6 +81,12 @@ const panelsOf = d => [...d.querySelectorAll('[data-grp-panel]')];
   ok(vdd.querySelectorAll(':scope > [data-rep-new]').length === 2 && /Saved dropdown title/.test(vdd.textContent), 'visitor: the saved dropdowns appear in the group');
   const dl = t.d.querySelector('a[data-pc-file][data-cms-link]'); ok(!!dl, 'the "Download submittal" link has its own link key');
   click(t.w, dl); await wait(40); ok(!!t.d.querySelector('#cms-linked #cl-up') && !!t.d.querySelector('#cms-linked #cl-url'), 'clicking it in edit mode opens the link editor with "upload a file"');
+  // regression: the tabs of a page are NOT a list of the generic add / remove (an old saved list of tab panels, "New text" copies, must not appear)
+  const bad = { element_id: 'rep-txt-permeable-pavers-f9fe', content_value: JSON.stringify({ order: [keys[3], keys[4], 'n9cv43'], news: { n9cv43: keys[3] } }) };
+  const badTxt = { element_id: keys[3] + '~n9cv43', content_value: 'New text' };
+  const rg = load([bad, badTxt], true); await wait(300); rg.d.getElementById('cms-toggle').click(); await wait(80);
+  ok(panelsOf(rg.d).length === tabs0.length && panelsOf(rg.d)[0].querySelector('h3').textContent.trim() === 'Walls' && !/New text/.test(panelsOf(rg.d).map(p => p.textContent).join('|')), 'edit mode: the first tab still shows its own content (no "New text" copy of a tab panel)');
+  ok(!rg.d.querySelector('[data-grp-panel] ~ .pcr-addhost') && !panelsOf(rg.d).some(p => p.querySelector(':scope > .pcr-x')), 'tab panels have no generic Remove / Add item buttons');
   ok(t.errors.length === 0, 'no script errors' + (t.errors.length ? ': ' + t.errors[0] : ''));
   console.log(fail ? fail + ' FAILED' : 'all ok'); process.exit(fail ? 1 : 0);
 })();

@@ -66,6 +66,7 @@ function markRepeaters(html, pageKey) {
         const g = groups[sig], tag = g[0].name;
         const why = r => { if (process.env.PCR_DEBUG && g.length >= 2) console.log('  [' + pageKey + '] rejected', el.name + ' > ' + sig + ' x' + g.length + ': ' + r + ' | ' + $(g[0]).text().replace(/s+/g, ' ').trim().slice(0, 50)); };
         if (g.length < (single ? 1 : 2) || g.length > 80) return why('size');
+        if (g.some(c => c.attribs && c.attribs['data-grp-panel'] !== undefined)) return why('group panels (tabs): js/pc-groups.js adds / removes those');
         const leaf = !(g[0].children || []).some(x => x.type === 'tag');
         if (NO_ITEM_TAGS.has(tag) && !(tag === 'li' && leaf)) return why('tag');
         if (leaf && tag !== 'li') return why('leaf');
