@@ -123,7 +123,10 @@
       $$('.pcr-addhost', rep.el).forEach(function (h) { if (h.getAttribute('data-addrep') === rep.key) h.remove(); });
       if (!on) return;
       itemsOf(rep.el).forEach(function (it) {
-        var b = document.createElement('button'); b.type = 'button'; b.className = 'pcr-x'; b.setAttribute('contenteditable', 'false'); b.setAttribute('title', 'Remove this item'); b.textContent = '✕ Remove'; it.appendChild(b);
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'pcr-x'; b.setAttribute('contenteditable', 'false'); b.setAttribute('title', 'Remove this item'); b.textContent = '✕ Remove';
+        // the button goes to the blank part of the item, never over its text: bullets = at the end of the line, dropdown rows = next to the + / - icon
+        if (it.tagName === 'LI') b.classList.add('pcr-x-line'); else if (it.querySelector(':scope > button[data-act="acc"]')) b.classList.add('pcr-x-acc');
+        it.appendChild(b);
       });
       var host = addHost(rep), last = itemsOf(rep.el).pop();
       if (last && last.parentNode === rep.el) rep.el.insertBefore(host, last.nextSibling); else rep.el.appendChild(host);

@@ -191,3 +191,6 @@ li.pcr-addhost{list-style:none}
 .pcg-x{display:inline-block;margin-left:10px;padding:1px 7px;background:#a3200f;color:#fff;border:1px solid #fff;font:700 12px/1.4 'Archivo',sans-serif;cursor:pointer;vertical-align:middle}
 .pcg-x:hover{background:#7f160a}
 .pcg-add{align-self:center}
+/* the Remove button never covers the text of an item (js/pc-repeat.js decorate) */
+.pcr-x.pcr-x-line{position:static;flex:none;align-self:center;margin-left:auto;padding:3px 8px;font-size:10.5px}
+.pcr-x.pcr-x-acc{left:auto;right:76px;top:22px}
