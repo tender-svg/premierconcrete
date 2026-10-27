@@ -62,7 +62,7 @@
         var protoFields = fieldsOf(protoEl, true, {}), row = saved[rep], st = null;
         if (row) { try { st = JSON.parse(row); } catch (e) { st = null; } }
         var order = st && Array.isArray(st.order) ? st.order.filter(function (id) { return items[id] || (st.news && st.news[id]); }) : ids.slice();
-        var list = { rep: rep, acc: acc, protoFields: protoFields.map(function (f) { return { key: f.key, type: f.type, label: f.label, multi: f.multi }; }), items: [], ids: ids.slice(), initOrder: order.slice(), initNews: (st && st.news) || {} };
+        var list = { rep: rep, acc: acc, protoFields: protoFields.map(function (f) { return { key: f.key, type: f.type, label: f.label, multi: f.multi, orig: f.orig }; }), items: [], ids: ids.slice(), initOrder: order.slice(), initNews: (st && st.news) || {} };
         order.forEach(function (id) {
           if (items[id]) list.items.push({ id: id, isNew: false, fields: items[id] });
           else list.items.push({ id: id, isNew: true, fields: protoFields.map(function (f) { var k = f.key + '~' + id, v = saved[k]; return { key: k, type: f.type, label: f.label, multi: f.multi, orig: v === undefined ? '' : (f.type === 'text' ? toPlain(v) : (v === '__none__' ? '' : v)) }; }) });
@@ -140,6 +140,12 @@
 
   /* ---------------------------------------------------------------- clicks */
   var listOf = function (el) { var rep = el.closest('[data-rep]'), key = rep && rep.getAttribute('data-rep'); for (var i = 0; S && i < S.groups.length; i++) for (var j = 0; j < S.groups[i].lists.length; j++) if (S.groups[i].lists[j].rep === key) return S.groups[i].lists[j]; return null; };
+  // what a new dropdown / item starts with: the labels of its buttons and its label stay, a link to a page of the website stays, the rest is a placeholder
+  function newDefault(f) {
+    if (f.type === 'text') return f.label === 'Button text' || f.label === 'Label' ? (f.orig || '') : 'New text';
+    if (f.type === 'link') return f.orig && f.orig !== '#' && !/^[a-z][a-z0-9+.-]*:/i.test(f.orig) && !/\.(pdf|docx?|xlsx?)$/i.test(f.orig) ? f.orig : '';
+    return '';
+  }
   document.addEventListener('click', function (e) {
     var t = e.target; if (!t.closest) return;
     var b = t.closest('[data-tabs-edit]'); if (b) { e.preventDefault(); if (D.row()) open(D.row()); return; }
@@ -149,7 +155,7 @@
     if (t.closest('#dtSave')) { save(); return; }
     if ((x = t.closest('[data-dt-add]'))) {   // add a dropdown / item to a list of a tab of the page file
       var l = listOf(x); if (!l) return; var id = uid();
-      var it = { id: id, isNew: true, fields: l.protoFields.map(function (f) { return { key: f.key + '~' + id, type: f.type, label: f.label, multi: f.multi, orig: f.type === 'text' ? (f.label === 'Title' || /title|text/i.test(f.label) ? 'New text' : '') : '' }; }) };
+      var it = { id: id, isNew: true, fields: l.protoFields.map(function (f) { return { key: f.key + '~' + id, type: f.type, label: f.label, multi: f.multi, orig: newDefault(f) }; }) };
       l.items.push(it); var holder = x.parentNode.querySelector('.dt-items'); holder.insertAdjacentHTML('beforeend', itemHtml(l, it)); var d = holder.lastElementChild; d.open = true; return;
     }
     if ((x = t.closest('[data-dt-rm]'))) { e.preventDefault(); var d1 = x.closest('.dt-item'); d1.setAttribute('data-removed', '1'); d1.classList.add('dt-gone'); x.hidden = true; $('[data-dt-undo]', d1).hidden = false; return; }

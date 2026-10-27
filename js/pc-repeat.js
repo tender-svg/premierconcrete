@@ -56,9 +56,14 @@
       $$('[data-cms]', el).concat(el.hasAttribute('data-cms') ? [el] : []).forEach(function (e) {
         var type = e.getAttribute('data-cms-type');
         if (type === 'image') { e.setAttribute('hidden', ''); e.setAttribute('data-removed', '1'); }
+        else if (/^(A|BUTTON)$/.test(e.tagName) || e.hasAttribute('data-keep-text')) return;   // button labels ("Request a quote", "Download submittal") and fixed labels stay
         else setPlainText(e, 'New text');
       });
-      $$('[data-cms-link]', el).concat(el.hasAttribute('data-cms-link') ? [el] : []).forEach(function (e) { if (e.tagName === 'A') e.setAttribute('href', '#'); else e.setAttribute('data-href', '#'); });
+      $$('[data-cms-link]', el).concat(el.hasAttribute('data-cms-link') ? [el] : []).forEach(function (e) {
+        var cur = (e.tagName === 'A' ? e.getAttribute('href') : e.getAttribute('data-href')) || '';
+        if (cur && cur !== '#' && !/^[a-z][a-z0-9+.-]*:/i.test(cur) && !e.hasAttribute('data-pc-file')) return;   // a link to a page of this website (contact.html) stays; files / outside addresses start empty
+        if (e.tagName === 'A') e.setAttribute('href', '#'); else e.setAttribute('data-href', '#');
+      });
     }
     return el;
   }
