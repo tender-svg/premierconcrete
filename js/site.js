@@ -197,8 +197,9 @@
     var panels = $$('[data-grp-panel]');
     if (panels.length) {
       var m = /[?&]grp=(\d+)/.exec(location.search); if (m && +m[1] < panels.length) { state.grp = +m[1]; paintGroups(); }
-      var showGrp = function () { var all = body.classList.contains('cms-editing'); panels.forEach(function (p, i) { p.style.display = all || i === state.grp ? 'block' : 'none'; }); };
+      var showGrp = function () { panels = $$('[data-grp-panel]'); var all = body.classList.contains('cms-editing'); panels.forEach(function (p, i) { p.style.display = all || i === state.grp ? 'block' : 'none'; }); };
       document.addEventListener('pc-edit-mode', showGrp);
+      window.__pcShowGrp = showGrp;   // (js/pc-groups.js adds / removes groups)
       showGrp(); hooks.push(function (p) { if ('grp' in p) { showGrp(); toggleAllClosed(); } });
       if (m) { var tabs = $('[role="tablist"]'); if (tabs) setTimeout(function () { tabs.scrollIntoView({ block: 'center' }); }, 60); }
     }
@@ -351,8 +352,8 @@
     crStep(0);
   }
   // live editor (js/cms.js): in edit mode every accordion row / table is open so that all of its texts can be edited
-  document.addEventListener('pc-edit-mode', function (e) { $('[data-act="acc"],[data-act="acc-dims"]').forEach(function (b) { toggleBody(b, !!e.detail.on); }); });
+  document.addEventListener('pc-edit-mode', function (e) { $$('[data-act="acc"],[data-act="acc-dims"]').forEach(function (b) { toggleBody(b, !!e.detail.on); }); });
   paintVgroups();
   // js/pc-content.js draws lists from the CMS: after that the scripts of the changed parts start again
-  window.PC = { refresh: function () { buildGroups(); vgroups = $$('[data-vgroup]'); gal = gallery(); initHome(); initProjects(); initRes(); paintGroups(); paintVgroups(); } };
+  window.PC = { toggleBody: toggleBody, selectGroup: function (i) { state.grp = i; buildGroups(); paintGroups(); if (window.__pcShowGrp) window.__pcShowGrp(); }, refresh: function () { buildGroups(); vgroups = $$('[data-vgroup]'); gal = gallery(); initHome(); initProjects(); initRes(); paintGroups(); paintVgroups(); } };
 })();

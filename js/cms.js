@@ -120,7 +120,7 @@
   // in edit mode links / navigation buttons must not leave the page (tabs and filters keep working)
   function onClickCapture(e) {
     if (!editing) return; if (e.target.closest('#cms-admin-bar,#cms-dash,#cms-confirm,#cms-linked,.cms-img-badge,.cms-dyn-badge')) return;
-    var nav = e.target.closest('a[href]:not([href^="#"]), [data-href], [data-scroll]');
+    var nav = e.target.closest('a[href]:not([href^="#"]), a[data-pc-file], [data-href], [data-scroll]');
     if (nav && !(e.ctrlKey || e.metaKey)) {
       e.preventDefault(); e.stopImmediatePropagation();
       var lk = e.target.closest('[data-cms-link]');
@@ -139,12 +139,18 @@
     m.innerHTML = '<div class="card" role="dialog" aria-modal="true"><div class="hd"><h3>Edit link</h3><button type="button" class="x" aria-label="Close">×</button></div><div class="bd">' +
       '<label><span>Button / link text' + (host ? '' : ' (change it in the text itself)') + '</span><input type="text" id="cl-label" value="' + esc(label) + '"' + (host ? '' : ' disabled') + '></label>' +
       '<label><span>Link address</span><input type="text" id="cl-url" value="' + esc(cur) + '" placeholder="e.g. contact.html or https://…"></label>' +
+      '<label><span>Or upload a file (PDF, document, drawing)</span><button type="button" id="cl-up" class="dyn-add" style="width:100%">⬆ Choose a file…</button></label>' +
       '<label><span>Or pick a page of this website</span><select id="cl-pick"><option value="">Choose a page…</option>' + SITE_PAGES.map(function (p) { return '<option value="' + p[0] + '">' + esc(p[1]) + '</option>'; }).join('') + '</select></label>' +
       (isGlobalLink(key) ? '<p class="note">This link is part of the header / footer: the change applies on every page.</p>' : '') +
       '<div class="err" id="cl-err" role="alert"></div></div><div class="ft"><button type="button" class="no">Cancel</button><button type="button" class="yes">Apply</button></div></div>';
     document.body.appendChild(m);
     var url = $('#cl-url', m), lab = $('#cl-label', m); url.focus(); url.select();
     $('#cl-pick', m).onchange = function () { if (this.value) url.value = this.value; };
+    $('#cl-up', m).onclick = function () {   // upload a file and use its address as the link
+      var b = this; if (!window.PCE || !PCE.pickFile) return;
+      PCE.pickFile('').then(function (f) { if (!f) return; b.textContent = 'Uploading…'; return PCE.upload(f, 'resources').then(function (u) { url.value = u; b.textContent = '✓ Uploaded: ' + f.name + ' (press Apply)'; }); })
+        .catch(function (err) { b.textContent = '⬆ Choose a file…'; $('#cl-err', m).textContent = (err && err.message) || 'Upload failed'; });
+    };
     var close = function () { m.remove(); };
     $('.x', m).onclick = close; $('.no', m).onclick = close; m.addEventListener('mousedown', function (e) { if (e.target === m) close(); });
     m.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); if (e.key === 'Enter') $('.yes', m).click(); });

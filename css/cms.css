@@ -186,3 +186,8 @@ li.pcr-addhost{list-style:none}
 [data-slot-frame].pcr-has-img [data-slot-text]{display:none}
 .cms-img-x{background:#a3200f!important}
 .cms-img-x:hover{background:#7f160a!important}
+
+/* group tabs of a product page: remove (x) inside a tab, "Add group" button (js/pc-groups.js) */
+.pcg-x{display:inline-block;margin-left:10px;padding:1px 7px;background:#a3200f;color:#fff;border:1px solid #fff;font:700 12px/1.4 'Archivo',sans-serif;cursor:pointer;vertical-align:middle}
+.pcg-x:hover{background:#7f160a}
+.pcg-add{align-self:center}

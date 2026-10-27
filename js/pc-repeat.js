@@ -20,7 +20,10 @@
     $$('[data-rep]').forEach(function (c) {
       var items = {}, order = [];
       [].slice.call(c.children).forEach(function (it) { var id = it.getAttribute('data-rep-item'); if (id) { items[id] = it; order.push(id); } });
-      if (!order.length) return;
+      if (!order.length) {   // an empty list (a group without dropdowns): its first item is the prototype kept in a <template>
+        var tpl = c.parentNode && c.parentNode.querySelector('template[data-rep-proto="' + c.getAttribute('data-rep') + '"]'), first = tpl && (tpl.content || tpl).firstElementChild; if (!first) return;
+        REPS.push({ key: c.getAttribute('data-rep'), el: c, items: items, made: {}, protoId: 'dd', proto: plain(first.cloneNode(true)) }); return;
+      }
       REPS.push({ key: c.getAttribute('data-rep'), el: c, items: items, made: {}, protoId: order[0], proto: plain(items[order[0]].cloneNode(true)) });
     });
   }
@@ -66,6 +69,11 @@
     }); return o;
   }
 
+  // dropdown rows (accordion): the thin line sits ABOVE every row but the first one - kept right after every add / remove
+  function isAcc(rep) { return !!rep.proto.querySelector(':scope > button[data-act="acc"]'); }
+  function fixRows(rep) { if (!isAcc(rep)) return; itemsOf(rep.el).forEach(function (r, i) { r.style.borderTop = i ? '1px solid var(--color-divider)' : '0'; }); }
+  function openRow(el) { var b = el.querySelector(':scope > button[data-act="acc"]'); if (b && window.PC && window.PC.toggleBody) window.PC.toggleBody(b, true); }
+
   /* ---------------------------------------------------------------- structure <-> DOM */
   function stateOf(rep) {
     var order = [], news = {};
@@ -80,6 +88,7 @@
       var el = rep.items[id] || rep.made[id] || (rep.made[id] = makeNew(rep, id, false));
       rep.el.insertBefore(el, ref);
     });
+    fixRows(rep);
   }
   // js/cms.js calls this with the saved rows of the page before it puts the texts in
   function apply(rows) {
@@ -89,7 +98,7 @@
       var st; try { st = JSON.parse(row.content_value); } catch (e) { return; }
       if (!st || !Array.isArray(st.order)) return;
       var order = st.order.filter(function (id) { return rep.items[id] || (st.news && st.news[id]) || rep.made[id]; });
-      if (!order.length || sameOrder(order, stateOf(rep).order)) return;
+      if ((!order.length && st.order.length) || sameOrder(order, stateOf(rep).order)) return;   // (an empty saved list = every item was removed)
       if (dirty[rep.key]) return;   // the admin is changing it right now
       build(rep, { order: order }); changed = true;
     });
@@ -103,7 +112,7 @@
     else if (t === 'UL' || t === 'OL') h = document.createElement('li');
     else h = document.createElement('div');
     h.className = 'pcr-addhost'; h.setAttribute('contenteditable', 'false'); h.setAttribute('data-addrep', rep.key);
-    (h.querySelector('td') || h).innerHTML = '<button type="button" class="dyn-add" data-pcr-add="' + rep.key + '">＋ Add item</button>';
+    (h.querySelector('td') || h).innerHTML = '<button type="button" class="dyn-add" data-pcr-add="' + rep.key + '">＋ Add ' + (isAcc(rep) ? 'dropdown' : 'item') + '</button>';
     return h;
   }
   function decorate() {
@@ -126,7 +135,7 @@
   }
   function repOf(key) { return REPS.filter(function (r) { return r.key === key; })[0]; }
   function afterChange(rep) {
-    markDirty(rep); decorate();
+    markDirty(rep); fixRows(rep); decorate();
     if (CMS().makeEditable) CMS().makeEditable(true);
     if (CMS().rebuildBadges) CMS().rebuildBadges();
     if (window.PC && window.PC.refresh) window.PC.refresh();
@@ -140,7 +149,7 @@
       var rep = repOf(a.getAttribute('data-pcr-add')); if (!rep) return;
       var nid = 'n' + Date.now().toString(36).slice(-4) + Math.floor(Math.random() * 36).toString(36);
       var el = rep.made[nid] = makeNew(rep, nid, true), host = $('.pcr-addhost[data-addrep="' + rep.key + '"]', rep.el);
-      rep.el.insertBefore(el, host || null);
+      rep.el.insertBefore(el, host || null); if (editing()) openRow(el);
       keysOf(el).forEach(function (k) { if (CMS().markKey) CMS().markKey(k[0], k[1]); });   // the placeholder texts are saved with the new item
       afterChange(rep);
       var first = $('[data-cms][contenteditable="true"]', el); if (first) { first.focus(); try { var r = document.createRange(); r.selectNodeContents(first); var s = getSelection(); s.removeAllRanges(); s.addRange(r); } catch (err) { /* ignore */ } }

@@ -56,14 +56,16 @@ function markRepeaters(html, pageKey) {
   function walk(el) {
     if (el.type !== 'tag' || skipParent(el)) return;
     const kids = (el.children || []).filter(c => c.type === 'tag');
-    if (kids.length >= 2 && el.name !== 'main' && el.name !== 'body' && !(el.attribs && el.attribs['id'] === '__r')) {
+    // a list that holds a single accordion row / a single bullet still gets its "Add item" (a group of a product page may have just one item)
+    const single = kids.length === 1 && ((kids[0].name === 'div' && $(kids[0]).children('button[data-act="acc"]').length > 0) || ((el.name === 'ul' || el.name === 'ol') && kids[0].name === 'li'));
+    if ((kids.length >= 2 || single) && el.name !== 'main' && el.name !== 'body' && !(el.attribs && el.attribs['id'] === '__r')) {
       const groups = {};
       kids.forEach(c => { (groups[shape(c)] = groups[shape(c)] || []).push(c); });
       let best = null;
       Object.keys(groups).forEach(sig => {
         const g = groups[sig], tag = g[0].name;
         const why = r => { if (process.env.PCR_DEBUG && g.length >= 2) console.log('  [' + pageKey + '] rejected', el.name + ' > ' + sig + ' x' + g.length + ': ' + r + ' | ' + $(g[0]).text().replace(/s+/g, ' ').trim().slice(0, 50)); };
-        if (g.length < 2 || g.length > 80) return why('size');
+        if (g.length < (single ? 1 : 2) || g.length > 80) return why('size');
         const leaf = !(g[0].children || []).some(x => x.type === 'tag');
         if (NO_ITEM_TAGS.has(tag) && !(tag === 'li' && leaf)) return why('tag');
         if (leaf && tag !== 'li') return why('leaf');
@@ -83,6 +85,22 @@ function markRepeaters(html, pageKey) {
     kids.forEach(walk);
   }
   $('#__r').children().each((i, c) => walk(c));
+
+  // the groups of a product page that have no dropdown at all get an EMPTY dropdown list + a prototype row (<template>), so "Add dropdown" exists there too
+  $('#__r [data-grp-panel]').each((i, p) => {
+    const $p = $(p);
+    if ($p.find('button[data-act="acc"]').length) return;
+    const h3 = $p.find('h3[data-cms]').first().attr('data-cms'); if (!h3) return;
+    const base = slug(h3).slice(0, 40), rep = 'rep-dd-' + base;
+    const row = '<div style="border-top:0"><button data-act="acc" aria-expanded="false" style="width:100%;display:flex;align-items:center;gap:16px;padding:26px 28px;background:var(--color-accent-100);border:0;cursor:pointer;font:inherit;text-align:left;color:var(--color-text)" class="hv-6">' +
+      '<span style="width:8px;height:8px;border-radius:999px;background:var(--color-accent);flex:none"></span><span style="font-weight:600;font-size:17px;flex:1" data-cms="dd-' + base + '-t" data-cms-type="text">New dropdown</span>' +
+      '<span style="color:var(--color-accent);display:flex"><span data-ico="open" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path></svg></span><span data-ico="closed"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></span></span></button>' +
+      '<div data-acc-body hidden style="display:contents"><div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">' +
+      '<div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative;background:transparent"><img hidden alt="" src="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;mix-blend-mode:multiply" data-cms="dd-' + base + '-i" data-cms-type="image"></div>' +
+      '<div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px"><div class="pcp-rte"><p data-cms="dd-' + base + '-x" data-cms-type="text">Describe this dropdown.</p></div></div></div></div></div>';
+    $p.append('<div data-dd-wrap style="display:flex;flex-direction:column;gap:20px;margin-top:0"><div data-rep="' + rep + '" data-dd-empty style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(22,50,23,.08)"></div><template data-rep-proto="' + rep + '">' + row + '</template></div>');
+    lists++;
+  });
 
   // keys of the photo slots: slot-<item key>-<n> (the item = the list item the frame sits in), else slot-<page>-<n>
   let slots = 0; const perItem = {};

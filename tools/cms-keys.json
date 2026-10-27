@@ -155,7 +155,8 @@
   "text|privacy policy|1": "g-txt-privacy-policy-ca0f",
   "text|cookie settings|1": "g-txt-cookie-settings-a508",
   "link|privacy policy|privacy-policy.html|1": "lnk-g-privacy-policy-8583",
-  "text|privacy policy|2": "g-txt-privacy-policy-ca0f-2"
+  "text|privacy policy|2": "g-txt-privacy-policy-ca0f-2",
+  "link||#|1": "lnk-g-link-0757"
  },
  "products": {
   "text|home › products › all products|1": "txt-home-products-all-products-7f4d",
@@ -337,7 +338,19 @@
   "text|safety ends|2": "txt-safety-ends-01bc-2",
   "text|flared end sections|2": "txt-flared-end-sections-05e4-2",
   "text|bends, tees &amp; wyes|2": "txt-bends-tees-amp-wyes-bb5a-2",
-  "image|images/pcp/pipe-interior.webp|2": "img-images-pcp-pipe-interior-webp-b7ca-2"
+  "image|images/pcp/pipe-interior.webp|2": "img-images-pcp-pipe-interior-webp-b7ca-2",
+  "link|download submittal|#|1": "lnk-download-submittal-63f2",
+  "link|download submittal|#|2": "lnk-download-submittal-63f2-2",
+  "link|download submittal|#|3": "lnk-download-submittal-63f2-3",
+  "link|download submittal|#|4": "lnk-download-submittal-63f2-4",
+  "link|download submittal|#|5": "lnk-download-submittal-63f2-5",
+  "link|download submittal|#|6": "lnk-download-submittal-63f2-6",
+  "link|download submittal|#|7": "lnk-download-submittal-63f2-7",
+  "link|download submittal|#|8": "lnk-download-submittal-63f2-8",
+  "link|download submittal|#|9": "lnk-download-submittal-63f2-9",
+  "link|download submittal|#|10": "lnk-download-submittal-63f2-10",
+  "link|download submittal|#|11": "lnk-download-submittal-63f2-11",
+  "link|download submittal|#|12": "lnk-download-submittal-63f2-12"
  },
  "products-box": {
   "text|home › products › box culverts|1": "txt-home-products-box-culverts-5fe5",
@@ -438,7 +451,14 @@
   "text|headwalls|1": "txt-headwalls-6e18",
   "text|safety ends|1": "txt-safety-ends-01bc",
   "text|bends &amp; fittings|1": "txt-bends-amp-fittings-3271",
-  "image|images/pcp/box-lake.webp|2": "img-images-pcp-box-lake-webp-17b6-2"
+  "image|images/pcp/box-lake.webp|2": "img-images-pcp-box-lake-webp-17b6-2",
+  "link|download submittal|#|1": "lnk-download-submittal-63f2",
+  "link|download submittal|#|2": "lnk-download-submittal-63f2-2",
+  "link|download submittal|#|3": "lnk-download-submittal-63f2-3",
+  "link|download submittal|#|4": "lnk-download-submittal-63f2-4",
+  "link|download submittal|#|5": "lnk-download-submittal-63f2-5",
+  "link|download submittal|#|6": "lnk-download-submittal-63f2-6",
+  "link|download submittal|#|7": "lnk-download-submittal-63f2-7"
  },
  "products-drainage": {
   "text|home › products › drainage &amp; site solutions|1": "txt-home-products-drainage-amp-sit-3760",
@@ -570,7 +590,20 @@
   "text|jersey barriers|1": "txt-jersey-barriers-ef02",
   "text|v-block barriers|1": "txt-v-block-barriers-b2cd",
   "text|parking bumpers|1": "txt-parking-bumpers-d17b",
-  "image|images/ext/photo-1604762537426-c1f33f8c573b-1ab8a8.webp|3": "img-images-ext-photo-1604762537426-2bb1-3"
+  "image|images/ext/photo-1604762537426-c1f33f8c573b-1ab8a8.webp|3": "img-images-ext-photo-1604762537426-2bb1-3",
+  "link|download submittal|#|1": "lnk-download-submittal-63f2",
+  "link|download submittal|#|2": "lnk-download-submittal-63f2-2",
+  "link|download submittal|#|3": "lnk-download-submittal-63f2-3",
+  "link|download submittal|#|4": "lnk-download-submittal-63f2-4",
+  "link|download submittal|#|5": "lnk-download-submittal-63f2-5",
+  "link|download submittal|#|6": "lnk-download-submittal-63f2-6",
+  "link|download submittal|#|7": "lnk-download-submittal-63f2-7",
+  "link|download submittal|#|8": "lnk-download-submittal-63f2-8",
+  "link|download submittal|#|9": "lnk-download-submittal-63f2-9",
+  "link|download submittal|#|10": "lnk-download-submittal-63f2-10",
+  "link|download submittal|#|11": "lnk-download-submittal-63f2-11",
+  "link|download submittal|#|12": "lnk-download-submittal-63f2-12",
+  "link|download submittal|#|13": "lnk-download-submittal-63f2-13"
  },
  "products-utility": {
   "text|home › products › utility structures|1": "txt-home-products-utility-structur-1168",
@@ -631,7 +664,12 @@
   "link|masonry|products-masonry.html|1": "lnk-masonry-8fe3",
   "link|hardscapes|products-hardscapes.html|1": "lnk-hardscapes-f581",
   "link|request a quote|contact.html|1": "lnk-request-a-quote-54d6",
-  "image|images/ext/photo-1669170930713-f7c778496177-a93394.webp|5": "img-images-ext-photo-1669170930713-e2cd-5"
+  "image|images/ext/photo-1669170930713-f7c778496177-a93394.webp|5": "img-images-ext-photo-1669170930713-e2cd-5",
+  "link|download submittal|#|1": "lnk-download-submittal-63f2",
+  "link|download submittal|#|2": "lnk-download-submittal-63f2-2",
+  "link|download submittal|#|3": "lnk-download-submittal-63f2-3",
+  "link|download submittal|#|4": "lnk-download-submittal-63f2-4",
+  "link|download submittal|#|5": "lnk-download-submittal-63f2-5"
  },
  "products-bridges": {
   "text|home › products › precast bridges|1": "txt-home-products-precast-bridges-90b8",
@@ -751,7 +789,19 @@
   "text|approach slabs|3": "txt-approach-slabs-0429-3",
   "text|wharves|1": "txt-wharves-273e",
   "text|movable concrete barriers|1": "txt-movable-concrete-barriers-fd66",
-  "image|images/bridges/cypress-bayou-side.webp|3": "img-images-bridges-cypress-bayou-s-186e-3"
+  "image|images/bridges/cypress-bayou-side.webp|3": "img-images-bridges-cypress-bayou-s-186e-3",
+  "link|download submittal|#|1": "lnk-download-submittal-63f2",
+  "link|download submittal|#|2": "lnk-download-submittal-63f2-2",
+  "link|download submittal|#|3": "lnk-download-submittal-63f2-3",
+  "link|download submittal|#|4": "lnk-download-submittal-63f2-4",
+  "link|download submittal|#|5": "lnk-download-submittal-63f2-5",
+  "link|download submittal|#|6": "lnk-download-submittal-63f2-6",
+  "link|download submittal|#|7": "lnk-download-submittal-63f2-7",
+  "link|download submittal|#|8": "lnk-download-submittal-63f2-8",
+  "link|download submittal|#|9": "lnk-download-submittal-63f2-9",
+  "link|download submittal|#|10": "lnk-download-submittal-63f2-10",
+  "link|download submittal|#|11": "lnk-download-submittal-63f2-11",
+  "link|download submittal|#|12": "lnk-download-submittal-63f2-12"
  },
  "products-erosion": {
   "text|home › products › erosion control|1": "txt-home-products-erosion-control-16ce",
@@ -960,7 +1010,27 @@
   "text|baselok® geocell layer|1": "txt-baselok-geocell-layer-0b63",
   "text|shoreblock® acb layer|1": "txt-shoreblock-acb-layer-581c",
   "text|optional geosynthetic layers|1": "txt-optional-geosynthetic-layers-cb94",
-  "image|images/ext/DJI_0115_crop-efec0c.webp|2": "img-images-ext-dji-0115-crop-e22f-2"
+  "image|images/ext/DJI_0115_crop-efec0c.webp|2": "img-images-ext-dji-0115-crop-e22f-2",
+  "link|download submittal|#|1": "lnk-download-submittal-63f2",
+  "link|download submittal|#|2": "lnk-download-submittal-63f2-2",
+  "link|download submittal|#|3": "lnk-download-submittal-63f2-3",
+  "link|download submittal|#|4": "lnk-download-submittal-63f2-4",
+  "link|download submittal|#|5": "lnk-download-submittal-63f2-5",
+  "link|download submittal|#|6": "lnk-download-submittal-63f2-6",
+  "link|download submittal|#|7": "lnk-download-submittal-63f2-7",
+  "link|download submittal|#|8": "lnk-download-submittal-63f2-8",
+  "link|download submittal|#|9": "lnk-download-submittal-63f2-9",
+  "link|download submittal|#|10": "lnk-download-submittal-63f2-10",
+  "link|download submittal|#|11": "lnk-download-submittal-63f2-11",
+  "link|download submittal|#|12": "lnk-download-submittal-63f2-12",
+  "link|download submittal|#|13": "lnk-download-submittal-63f2-13",
+  "link|download submittal|#|14": "lnk-download-submittal-63f2-14",
+  "link|download submittal|#|15": "lnk-download-submittal-63f2-15",
+  "link|download submittal|#|16": "lnk-download-submittal-63f2-16",
+  "link|download submittal|#|17": "lnk-download-submittal-63f2-17",
+  "link|download submittal|#|18": "lnk-download-submittal-63f2-18",
+  "link|download submittal|#|19": "lnk-download-submittal-63f2-19",
+  "link|download submittal|#|20": "lnk-download-submittal-63f2-20"
  },
  "products-pipeline": {
   "text|home › products › pipeline|1": "txt-home-products-pipeline-4a1e",
@@ -1087,7 +1157,18 @@
   "text|sb101 standard — white|1": "txt-sb101-standard-white-a133",
   "text|sb1010hd heavy duty — orange|1": "txt-sb1010hd-heavy-duty-orange-0dc5",
   "text|3:1 sand-cement bag — 60 lb|1": "txt-3-1-sand-cement-bag-7a07",
-  "image|images/osmat/img-5.webp|2": "img-images-osmat-img-5-webp-ff8a-2"
+  "image|images/osmat/img-5.webp|2": "img-images-osmat-img-5-webp-ff8a-2",
+  "link|download submittal|#|1": "lnk-download-submittal-63f2",
+  "link|download submittal|#|2": "lnk-download-submittal-63f2-2",
+  "link|download submittal|#|3": "lnk-download-submittal-63f2-3",
+  "link|download submittal|#|4": "lnk-download-submittal-63f2-4",
+  "link|download submittal|#|5": "lnk-download-submittal-63f2-5",
+  "link|download submittal|#|6": "lnk-download-submittal-63f2-6",
+  "link|download submittal|#|7": "lnk-download-submittal-63f2-7",
+  "link|download submittal|#|8": "lnk-download-submittal-63f2-8",
+  "link|download submittal|#|9": "lnk-download-submittal-63f2-9",
+  "link|download submittal|#|10": "lnk-download-submittal-63f2-10",
+  "link|download submittal|#|11": "lnk-download-submittal-63f2-11"
  },
  "products-masonry": {
   "text|home › products › masonry|1": "txt-home-products-masonry-6c17",
@@ -1253,7 +1334,24 @@
   "text|6 × 8 × 16|1": "txt-6-8-16-d56b",
   "text|utility brick 2 × 4 × 8|1": "txt-utility-brick-2-4-8-c31c",
   "text|jumbo brick 4 × 4 × 8|1": "txt-jumbo-brick-4-4-8-2074",
-  "image|images/masonry/masonry-staple.webp|2": "img-images-masonry-masonry-staple-c9fa-2"
+  "image|images/masonry/masonry-staple.webp|2": "img-images-masonry-masonry-staple-c9fa-2",
+  "link|download submittal|#|1": "lnk-download-submittal-63f2",
+  "link|download submittal|#|2": "lnk-download-submittal-63f2-2",
+  "link|download submittal|#|3": "lnk-download-submittal-63f2-3",
+  "link|download submittal|#|4": "lnk-download-submittal-63f2-4",
+  "link|download submittal|#|5": "lnk-download-submittal-63f2-5",
+  "link|download submittal|#|6": "lnk-download-submittal-63f2-6",
+  "link|download submittal|#|7": "lnk-download-submittal-63f2-7",
+  "link|download submittal|#|8": "lnk-download-submittal-63f2-8",
+  "link|download submittal|#|9": "lnk-download-submittal-63f2-9",
+  "link|download submittal|#|10": "lnk-download-submittal-63f2-10",
+  "link|download submittal|#|11": "lnk-download-submittal-63f2-11",
+  "link|download submittal|#|12": "lnk-download-submittal-63f2-12",
+  "link|download submittal|#|13": "lnk-download-submittal-63f2-13",
+  "link|download submittal|#|14": "lnk-download-submittal-63f2-14",
+  "link|download submittal|#|15": "lnk-download-submittal-63f2-15",
+  "link|download submittal|#|16": "lnk-download-submittal-63f2-16",
+  "link|download submittal|#|17": "lnk-download-submittal-63f2-17"
  },
  "products-hardscapes": {
   "text|home › products › hardscapes|1": "txt-home-products-hardscapes-c92b",
@@ -1448,7 +1546,24 @@
   "text|mandeville tumble wall|2": "txt-mandeville-tumble-wall-f5d1-2",
   "text|square fire pit | mandeville wall|1": "txt-square-fire-pit-mandeville-wal-5142",
   "text|mandeville wall|2": "txt-mandeville-wall-d650-2",
-  "image|images/hs/wall8-terrace.webp|3": "img-images-hs-wall8-terrace-webp-db5d-3"
+  "image|images/hs/wall8-terrace.webp|3": "img-images-hs-wall8-terrace-webp-db5d-3",
+  "link|download submittal|#|1": "lnk-download-submittal-63f2",
+  "link|download submittal|#|2": "lnk-download-submittal-63f2-2",
+  "link|download submittal|#|3": "lnk-download-submittal-63f2-3",
+  "link|download submittal|#|4": "lnk-download-submittal-63f2-4",
+  "link|download submittal|#|5": "lnk-download-submittal-63f2-5",
+  "link|download submittal|#|6": "lnk-download-submittal-63f2-6",
+  "link|download submittal|#|7": "lnk-download-submittal-63f2-7",
+  "link|download submittal|#|8": "lnk-download-submittal-63f2-8",
+  "link|download submittal|#|9": "lnk-download-submittal-63f2-9",
+  "link|download submittal|#|10": "lnk-download-submittal-63f2-10",
+  "link|download submittal|#|11": "lnk-download-submittal-63f2-11",
+  "link|download submittal|#|12": "lnk-download-submittal-63f2-12",
+  "link|download submittal|#|13": "lnk-download-submittal-63f2-13",
+  "link|download submittal|#|14": "lnk-download-submittal-63f2-14",
+  "link|download submittal|#|15": "lnk-download-submittal-63f2-15",
+  "link|download submittal|#|16": "lnk-download-submittal-63f2-16",
+  "link|download submittal|#|17": "lnk-download-submittal-63f2-17"
  },
  "about": {
   "text|home › about › our story|1": "txt-home-about-our-story-0bcd",
@@ -1466,7 +1581,8 @@
   "link||https://ncma.org/|1": "lnk-link-0e21",
   "link||https://precast.org/certification/|1": "lnk-link-a9c0",
   "link||https://www.concretepipe.org/|1": "lnk-link-65d9",
-  "image|images/ext/pcp-home-main-photo-2025-fa49d9.webp|2": "img-images-ext-pcp-home-main-1c04-2"
+  "image|images/ext/pcp-home-main-photo-2025-fa49d9.webp|2": "img-images-ext-pcp-home-main-1c04-2",
+  "link||#|1": "lnk-link-0757"
  },
  "team": {
   "text|about › our team|1": "txt-about-our-team-da48",

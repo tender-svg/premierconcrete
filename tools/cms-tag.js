@@ -130,11 +130,14 @@ function tagPage(html, pageKey, registry) {
     if (el.name === 'header' || el.name === 'footer') chromeScope = true;
     if (skipEl(el, chromeScope)) return;
     if (a['data-vgroup']) { if (DYNAMIC_GROUPS.has(a['data-vgroup'])) return; counters = {}; }
-    const isA = el.name === 'a' && a.href && !/^\s*(#|javascript:|mailto:|tel:)/i.test(a.href);
+    // a placeholder file link ("Download submittal": href="#" target="_blank") is editable too: the admin attaches a file / address; visitors do not see it until it has one
+    const placeholder = el.name === 'a' && a.href === '#' && a.target === '_blank';
+    const isA = el.name === 'a' && a.href && (placeholder || !/^\s*(#|javascript:|mailto:|tel:)/i.test(a.href));
     const isBtn = a['data-href'] !== undefined && a['data-set'] === undefined && a['data-act'] === undefined;
     if (isA || isBtn) {
       const label = norm($.html(el.children)).replace(/\s+/g, ' ');
       el.attribs['data-cms-link'] = linkKey(chromeScope, label, isA ? a.href : a['data-href'], counters); linked++;
+      if (placeholder && !chromeScope) el.attribs['data-pc-file'] = '';
       return;
     }
     for (const c of el.children || []) walkLinks(c, counters, chromeScope);

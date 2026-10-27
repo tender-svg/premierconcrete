@@ -87,3 +87,10 @@ table { max-width: 100%; }
   [data-hover-set] { gap: 14px !important; padding-left: 0 !important; }
   [data-hover-set] > span:nth-of-type(2) { font-size: clamp(19px, 5.2vw, 26px) !important; }
 }
+
+/* product page groups without dropdowns: the empty dropdown list is invisible for visitors (the editor adds dropdowns there) */
+[data-dd-empty]:empty { display: none; }
+
+/* "Download submittal" and the other file links with no file yet: visitors do not see a dead button; the editor shows it so a file can be attached */
+a[data-pc-file][href="#"] { display: none !important; }
+body.cms-editing a[data-pc-file][href="#"] { display: inline-flex !important; opacity: .75; outline: 2px dashed var(--color-accent); outline-offset: 3px; }
