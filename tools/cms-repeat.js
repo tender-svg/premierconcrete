@@ -108,6 +108,17 @@ function markRepeaters(html, pageKey) {
     lists++;
   });
 
+  // a dropdown row whose text has no bullet list (e.g. Trinity 6 of Pavers) gets an EMPTY bullet list + a prototype bullet, so it can get "Add item" like the other rows
+  $('#__r div[data-rep-item]').each((i, row) => {
+    const $r = $(row);
+    if (!$r.children('button[data-act="acc"]').length) return;
+    const rte = $r.find('.pcp-rte').first(); if (!rte.length || rte.find('ul').length) return;
+    const k = rte.find('[data-cms]').first().attr('data-cms'); if (!k) return;
+    const base = slug(k).slice(0, 40), rep = 'rep-dd-' + base + '-b';
+    rte.append('<ul class="pts" data-rep="' + rep + '" data-dd-empty></ul><template data-rep-proto="' + rep + '"><li data-cms="dd-' + base + '-b" data-cms-type="text" data-rep-item="dd-' + base + '-b">New text</li></template>');
+    lists++;
+  });
+
   // keys of the photo slots: slot-<item key>-<n> (the item = the list item the frame sits in), else slot-<page>-<n>
   let slots = 0; const perItem = {};
   $('#__r img[data-slot]').each((i, el) => {
