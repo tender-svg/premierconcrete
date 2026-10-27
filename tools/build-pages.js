@@ -353,6 +353,8 @@ function page(file, title, desc, bodyHtml, bodyClass) {
   if (editor) bodyHtml = markSlots(bodyHtml).html;
   const tagged = tagPage(bodyHtml, bodyClass, registry); bodyHtml = tagged.html;
   const rep = editor ? markRepeaters(bodyHtml, bodyClass) : { html: bodyHtml, lists: 0, slots: 0 }; bodyHtml = rep.html;
+  // an italic placeholder text ("Add a description of Pavers.") is one editable paragraph: the key moves from the inline <em> to its <p> (an inline element shows one outline box per wrapped line in the editor)
+  bodyHtml = bodyHtml.replace(/<p([^>]*)><em (data-cms="[^"]*"(?: data-cms-type="[^"]*")?)>([^<]*)<\/em><\/p>/g, '<p$1 $2>$3</p>');
   bodyHtml = lazyImgs(bodyHtml);
   tagStats[file] = tagged.tagged + (tagged.created ? ' (' + tagged.created + ' new keys)' : '') + (rep.lists || rep.slots ? ' [' + rep.lists + ' lists' + (rep.slots ? ', ' + rep.slots + ' photo slots' : '') + ']' : '');
   return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
