@@ -30,9 +30,8 @@
     var cur = read();
     box = document.createElement('div'); box.id = 'pc-consent'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'Cookie settings');
     box.innerHTML = '<div class="pcc-in"><button type="button" class="pcc-x" data-c="x" aria-label="Close">&times;</button><div class="pcc-main"><h2>Our Site Uses Cookies</h2>' +
-      '<p>We use cookies to make our website work and to remember your preferences. We also use a third-party tracking tag from ZoomInfo to understand which businesses visit our website.</p>' +
-      '<p>See our <a href="privacy-policy.html#cookies">Cookie Policy</a> and <a href="privacy-policy.html">Privacy Statement</a> for details, including your privacy rights.</p>' +
-      '<div class="pcc-btns"><button type="button" class="pcc-b pri" data-c="all">Accept</button><button type="button" class="pcc-b" data-c="none">Deny</button><button type="button" class="pcc-b" data-c="set">View preferences</button></div>' +
+      '<p>We use cookies to make our website work and to remember your preferences. See our <a href="privacy-policy.html#cookies">Cookie Policy</a> and <a href="privacy-policy.html">Privacy Statement</a> for details.</p>' +
+      '<div class="pcc-btns"><button type="button" class="pcc-b pri" data-c="all">Accept</button><button type="button" class="pcc-b" data-c="none">Deny</button><button type="button" class="pcc-b" data-c="set">Preferences</button></div>' +
       '<a href="#" class="pcc-dns" data-c="set">Do Not Sell or Share My Personal Information</a></div>' +
       '<div class="pcc-pane"><h2>Cookie preferences</h2><label class="pcc-row"><span><b>Necessary</b><small>Keeps the website working: staff login, page speed, and remembering this choice. Always on.</small></span><input type="checkbox" checked disabled></label>' +
       '<label class="pcc-row"><span><b>Marketing &amp; analytics (ZoomInfo)</b><small>Lets ZoomInfo, a third-party business information service, recognise which companies visit the website. Turn off to opt out of this sharing.</small></span><input type="checkbox" id="pcc-m"' + (cur && cur.marketing ? ' checked' : '') + '></label>' +
