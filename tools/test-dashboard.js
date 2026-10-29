@@ -71,6 +71,14 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
     const pu = writes.filter(x => x.m === 'PATCH' && /api\/v2\/resources\//.test(x.url)).pop(); ok(pu && /^\[product:pipe-culverts,box-culverts\]/.test(pu.body.description), 'saving it does not lose the second product'); }
   w.document.querySelector('#modal').hidden = true;
   go('email'); await wait(100);
+  const recInput = d.getElementById('smtp-recipient-email');
+  ok(recInput, 'Email Configuration: Recipient Email input (#smtp-recipient-email) exists');
+  ok(d.body.textContent.includes('Recipient Email (Inquiry Inbox)'), 'Email Configuration: Recipient Email label is rendered');
+  recInput.value = 'inquiry@premier-concrete.com';
+  d.getElementById('emailForm').dispatchEvent(new w.Event('submit', { bubbles: true, cancelable: true })); await wait(100);
+  const pe = writes.filter(x => x.m === 'PUT' && /api\/v2\/email-config/.test(x.url)).pop();
+  ok(pe && pe.body.recipient_email === 'inquiry@premier-concrete.com' && pe.body.from_email === 'inquiry@premier-concrete.com', 'Save sends recipient_email and from_email in PUT payload');
+  ok(typeof w.renderSmtpConfigFields === 'function' && typeof w.loadEmailConfig === 'function', 'renderSmtpConfigFields and loadEmailConfig exported');
   const cc = [...d.querySelectorAll('[data-ccadd]')]; click(cc[0]); await wait(30);
   ok([...d.querySelectorAll('.db-checks input[data-cc="prod"]')].map(i => i.value).join('|') === D.solutions.sort((a, b) => a.display_order - b.display_order).map(s => s.title).join('|'), 'Email Configuration: CC products = the products of the site');
   console.log(fail ? fail + ' failed' : 'all ok'); process.exit(fail ? 1 : 0);

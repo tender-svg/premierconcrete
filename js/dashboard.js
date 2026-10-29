@@ -367,16 +367,23 @@
       (needs ? '<input type="text" data-cc="values" value="' + esc(e.values.join(', ')) + '" placeholder="' + (e.type === 'us_state' ? 'State codes, e.g. TX, OK' : 'Country codes, e.g. CA, GB') + '">' : '') + '</label>' +
       '<button type="button" class="db-btn db-btn-danger db-btn-sm" data-ccdel="' + i + '">Remove</button></div>';
   }
+  function renderSmtpConfigFields(config) {
+    var c = config || emailCfg || {};
+    var recEmail = c.recipient_email || c.from_email || '';
+    return '<label class="db-field"><span>Recipient Email (Inquiry Inbox)</span><input type="email" id="smtp-recipient-email" name="recipient_email" value="' + esc(recEmail) + '" placeholder="e.g. info@yourdomain.com"><small>Inquiries from the website contact forms will be sent to this email address.</small></label>';
+  }
   function drawEmail() {
     var c = emailCfg || {}, rows = ccAll.map(function (e, i) { return e.form === ccForm ? ccRow(e, i) : ''; }).join('');
     $('#main').innerHTML = '<div class="db-head"><div><h1>Email Configuration</h1><p>The mail account the website forms are sent through, and who gets a copy of each form.</p></div></div>' +
       '<form class="db-panel" id="emailForm" novalidate><h2>SMTP</h2><div class="db-grid2"><label class="db-field"><span>SMTP host</span><input type="text" name="smtp_host" value="' + esc(c.smtp_host) + '" placeholder="e.g. smtp.gmail.com"></label><label class="db-field"><span>Port</span><input type="number" name="smtp_port" value="' + esc(c.smtp_port) + '" placeholder="587"></label></div>' +
       '<label class="db-field"><span>SMTP username</span><input type="text" name="smtp_username" value="' + esc(c.smtp_username) + '" placeholder="your@email.com" autocomplete="off"><small>This is also the "From" address of the form emails, and the address they are delivered to.</small></label>' +
       '<label class="db-field"><span>SMTP password ' + (c.smtp_password_set ? '<b class="db-okc">(saved, leave blank to keep it)</b>' : '') + '</span><input type="password" name="smtp_password" placeholder="' + (c.smtp_password_set ? '••••••••' : 'Enter the SMTP password') + '" autocomplete="new-password"></label>' +
+      renderSmtpConfigFields(c) +
       '<h2>CC mail</h2><p class="db-sub">Each form keeps its own list. A row needs a product or a region (or both): with both set, the visitor\'s choice must match both for the person to get a copy.</p>' +
       '<div class="db-tabs">' + ccForms().map(function (f) { return '<button type="button" class="' + (ccForm === f[0] ? 'on' : '') + '" data-ccform="' + f[0] + '">' + esc(f[1]) + '</button>'; }).join('') + '</div>' +
       '<div id="ccList">' + (rows || '<div class="db-sub" style="padding:10px 0">No one is copied on this form yet.</div>') + '</div><button type="button" class="db-btn db-btn-ghost-dark db-btn-sm" data-ccadd="1">+ Add CC</button>' +
       '<div class="db-panel-foot"><div class="db-test"><input type="text" id="emailTestTo" class="db-search" placeholder="Send a test email to…"><button type="button" class="db-btn db-btn-ghost-dark" data-emailtest="1">Send test</button></div><span class="db-form-msg" id="emailMsg" role="alert"></span><button type="submit" class="db-btn db-btn-red" id="emailSave">Save configuration</button></div></form>';
+    var f = $('#emailForm'); if (f) f.addEventListener('submit', saveEmail);
   }
   function readCc(el) {
     var i = parseInt(el.closest('[data-ci]').getAttribute('data-ci'), 10), e = ccAll[i], k = el.getAttribute('data-cc'); if (!e) return false;
@@ -387,7 +394,9 @@
     return false;
   }
   function saveEmail(ev) {
-    ev.preventDefault(); var f = $('#emailForm'), msg = $('#emailMsg'), btn = $('#emailSave'); msg.textContent = '';
+    if (ev && ev.preventDefault) ev.preventDefault();
+    var f = $('#emailForm'), msg = $('#emailMsg'), btn = $('#emailSave');
+    if (msg) msg.textContent = '';
     var bad = null;
     ccAll.forEach(function (e, i) {
       if (bad || !e.email) return; var f2 = (ccForms().filter(function (x) { return x[0] === e.form; })[0] || [0, e.form])[1];
@@ -395,14 +404,52 @@
       else if (e.type === 'none' && !e.products.length && (e.form === 'support' || e.form === 'credit_application')) bad = f2 + ': choose a product or a region for ' + e.email + '.';
       else if ((e.type === 'us_state' || e.type === 'country') && !e.values.length) bad = f2 + ': enter the ' + (e.type === 'us_state' ? 'state' : 'country') + ' codes for ' + e.email + '.';
     });
-    if (bad) { msg.textContent = bad; return; }
-    var port = parseInt(f.elements.smtp_port.value, 10), body = { provider_mode: 'smtp', smtp_host: f.elements.smtp_host.value.trim() || null, smtp_port: port || null, smtp_username: f.elements.smtp_username.value.trim() || null,
-      cc_emails: ccAll.filter(function (e) { return e.email; }).map(function (e) { return { name: e.name, email: e.email, form: e.form, type: e.type, values: e.values, products: e.products }; }) };
-    if (f.elements.smtp_password.value) body.smtp_password = f.elements.smtp_password.value;
-    btn.disabled = true; btn.textContent = 'Saving…';
-    api('PUT', '/api/v2/email-config', body).then(function (cfg) { setEmail(cfg); drawEmail(); toast('Email configuration saved.'); logHistory('email-config', 'Email configuration', 'Updated'); })
-      .catch(function (e) { msg.textContent = e.message; btn.disabled = false; btn.textContent = 'Save configuration'; });
+    if (bad) { if (msg) msg.textContent = bad; return; }
+    var recEl = (f && f.querySelector('#smtp-recipient-email')) || document.getElementById('smtp-recipient-email') || (f && f.elements && f.elements.recipient_email);
+    var recVal = recEl ? recEl.value.trim() : '';
+    var port = f && f.elements && f.elements.smtp_port ? parseInt(f.elements.smtp_port.value, 10) : null;
+    var body = {
+      provider_mode: 'smtp',
+      smtp_host: (f && f.elements && f.elements.smtp_host && f.elements.smtp_host.value.trim()) || null,
+      smtp_port: port || null,
+      smtp_username: (f && f.elements && f.elements.smtp_username && f.elements.smtp_username.value.trim()) || null,
+      recipient_email: recVal || null,
+      from_email: recVal || null,
+      cc_emails: ccAll.filter(function (e) { return e.email; }).map(function (e) { return { name: e.name, email: e.email, form: e.form, type: e.type, values: e.values, products: e.products }; })
+    };
+    if (f && f.elements && f.elements.smtp_password && f.elements.smtp_password.value) body.smtp_password = f.elements.smtp_password.value;
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+    return api('PUT', '/api/v2/email-config', body).then(function (cfg) { setEmail(cfg); drawEmail(); toast('Email configuration saved.'); logHistory('email-config', 'Email configuration', 'Updated'); return cfg; })
+      .catch(function (e) { if (msg) msg.textContent = e.message; if (btn) { btn.disabled = false; btn.textContent = 'Save configuration'; } throw e; });
   }
+  function loadEmailConfig() {
+    return api('GET', '/api/v2/email-config').then(function (cfg) {
+      setEmail(cfg);
+      var el = document.getElementById('smtp-recipient-email');
+      if (el) el.value = cfg.recipient_email || cfg.from_email || '';
+      return cfg;
+    });
+  }
+  function saveEmailConfig(extra) {
+    var recEl = document.getElementById('smtp-recipient-email');
+    var recVal = recEl ? recEl.value.trim() : '';
+    var f = $('#emailForm');
+    var port = f && f.elements && f.elements.smtp_port ? parseInt(f.elements.smtp_port.value, 10) : null;
+    var body = Object.assign({
+      provider_mode: 'smtp',
+      smtp_host: (f && f.elements && f.elements.smtp_host && f.elements.smtp_host.value.trim()) || null,
+      smtp_port: port || null,
+      smtp_username: (f && f.elements && f.elements.smtp_username && f.elements.smtp_username.value.trim()) || null,
+      recipient_email: recVal || null,
+      from_email: recVal || null,
+      cc_emails: ccAll.filter(function (e) { return e.email; }).map(function (e) { return { name: e.name, email: e.email, form: e.form, type: e.type, values: e.values, products: e.products }; })
+    }, extra);
+    if (f && f.elements && f.elements.smtp_password && f.elements.smtp_password.value) body.smtp_password = f.elements.smtp_password.value;
+    return api('PUT', '/api/v2/email-config', body);
+  }
+  window.renderSmtpConfigFields = renderSmtpConfigFields;
+  window.loadEmailConfig = loadEmailConfig;
+  window.saveEmailConfig = saveEmailConfig;
   function testEmail() {
     var to = ($('#emailTestTo').value || '').trim(), msg = $('#emailMsg');
     if (!EMAILRE.test(to)) { msg.textContent = 'Enter a valid email address to send the test to.'; return; }

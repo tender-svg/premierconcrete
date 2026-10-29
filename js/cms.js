@@ -297,6 +297,34 @@
   window.addEventListener('message', function (e) { if (e.data === 'pc-cms-changed') dashChanged = true; });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && $('#cms-dash.open')) closeDashboard(); });
 
+  /* ---------------------------------------------------------------- Email configuration helpers (shared Baselok CMS backend) */
+  function renderSmtpConfigFields(config) {
+    var c = config || {};
+    var recEmail = c.recipient_email || c.from_email || '';
+    return '<label class="db-field"><span>Recipient Email (Inquiry Inbox)</span><input type="email" id="smtp-recipient-email" name="recipient_email" value="' + esc(recEmail) + '" placeholder="e.g. info@yourdomain.com"><small>Inquiries from the website contact forms will be sent to this email address.</small></label>';
+  }
+  function loadEmailConfig() {
+    return fetch('/api/v2/email-config', { credentials: 'include' }).then(function (r) { return r.ok ? r.json() : {}; }).then(function (cfg) {
+      var el = document.getElementById('smtp-recipient-email');
+      if (el) el.value = cfg.recipient_email || cfg.from_email || '';
+      return cfg;
+    });
+  }
+  function saveEmailConfig(extra) {
+    var el = document.getElementById('smtp-recipient-email');
+    var val = el ? el.value.trim() : '';
+    var payload = Object.assign({}, extra, { recipient_email: val || null, from_email: val || null });
+    return fetch('/api/v2/email-config', { method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+  }
+  window.renderSmtpConfigFields = renderSmtpConfigFields;
+  window.loadEmailConfig = loadEmailConfig;
+  window.saveEmailConfig = saveEmailConfig;
+  if (window.PCCMS) {
+    window.PCCMS.renderSmtpConfigFields = renderSmtpConfigFields;
+    window.PCCMS.loadEmailConfig = loadEmailConfig;
+    window.PCCMS.saveEmailConfig = saveEmailConfig;
+  }
+
   /* ---------------------------------------------------------------- start */
   var hold = function () { if (window.PCL) PCL.hold(); }, release = function () { if (window.PCL) PCL.release(); };   // the page loader stays until the CMS texts are in
   hold(); var loaded = loadSaved(); loaded.then(release, release);
@@ -306,7 +334,7 @@
     if (!s || !s.loggedIn) { PCC.admin(false); return; }
     PCC.admin(true);   // flag of a signed-in admin (the cache is cleared when it changes and after every save)
     buildBar(s);
-    Object.assign(window.PCCMS, { admin: true, setEditing: setEditing, save: save, uploadImage: uploadImage, openDashboard: openDashboard, dirty: dirty, markDirty: markDirty, badges: function () { return badges; }, slug: slug, keyEls: keyEls, makeEditable: makeEditable, rebuildBadges: rebuildBadges, isGlobalKey: isGlobalKey, markKey: function (key, type) { dirty[key] = type; refreshSave(); } });   // also used by tools/test-cms.js
+    Object.assign(window.PCCMS, { admin: true, setEditing: setEditing, save: save, uploadImage: uploadImage, openDashboard: openDashboard, dirty: dirty, markDirty: markDirty, badges: function () { return badges; }, slug: slug, keyEls: keyEls, makeEditable: makeEditable, rebuildBadges: rebuildBadges, isGlobalKey: isGlobalKey, markKey: function (key, type) { dirty[key] = type; refreshSave(); }, renderSmtpConfigFields: renderSmtpConfigFields, loadEmailConfig: loadEmailConfig, saveEmailConfig: saveEmailConfig });   // also used by tools/test-cms.js
     document.dispatchEvent(new CustomEvent('pc-admin', { detail: {} }));
     document.addEventListener('input', onInput); document.addEventListener('keydown', onKey, true); document.addEventListener('paste', onPaste, true); document.addEventListener('click', onClickCapture, true);
     if (location.hash === '#edit') setEditing(true);

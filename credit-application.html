@@ -20,6 +20,7 @@
 <link rel="stylesheet" href="css/pc-motion.css">
 <link rel="stylesheet" href="css/cms.css">
 <link rel="stylesheet" href="css/pc-consent.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=auto" async defer></script>
 </head>
 <body data-page="credit" data-state='{"grp":0,"gal":0,"crStep":0}'>
 <div id="pc-loader" role="status" aria-live="polite" aria-label="Loading"><span class="pcl-grid"></span><span class="pcl-glow a"></span><span class="pcl-glow b"></span><div class="pcl-wrap"><span class="pcl-c tl"></span><span class="pcl-c tr"></span><span class="pcl-c bl"></span><span class="pcl-c br"></span><div class="pcl-card"><img src="images/logo.webp" alt="Premier Concrete Products" width="210" height="67"></div></div><div class="pcl-line"></div><div class="pcl-tag">Concrete Products Since 1996</div></div>
@@ -911,6 +912,10 @@
                 
                   <label style="display:flex;gap:12px;align-items:flex-start;font-size:15px;font-weight:500;line-height:1.55;cursor:pointer"><input type="checkbox" required style="accent-color:var(--color-accent);width:18px;height:18px;margin-top:2px;flex:none" name="taxAck"><span data-cms="txt-i-have-read-and-understand-80b6" data-cms-type="text">I have read and understand that I will not be refunded sales tax if I fail to provide a current exempt certificate prior to delivery of merchandise.<span style="color:var(--color-accent-700)"> *</span></span></label>
                 
+                <div style="display:none !important; visibility:hidden !important; opacity:0; position:absolute; left:-9999px; height:0; width:0; overflow:hidden;" aria-hidden="true">
+                  <input type="text" name="website_hp" id="website_hp" tabindex="-1" autocomplete="off" value="" />
+                </div>
+                <div class="cf-turnstile" data-sitekey="0x4AAAAAAFrgpAvn0SGkLylt" data-theme="light"></div>
                 <div style="display:flex;gap:12px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--color-divider)">
                   <button type="button" data-act="cr-prev" class="btn btn-secondary" style="border-radius:999px;padding:14px 22px;border-width:1.5px">Back</button>
                   

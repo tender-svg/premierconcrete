@@ -32,12 +32,17 @@ const fillAll = (t, form) => {
 
   // contact
   t = load('contact.html', good); let form = t.d.querySelector('form[data-submit="contact"]');
+  ok(form.querySelector('.cf-turnstile[data-sitekey="0x4AAAAAAFrgpAvn0SGkLylt"]'), 'contact: Turnstile widget present with sitekey');
+  ok(form.querySelector('input[name="website_hp"]'), 'contact: invisible honeypot trap present');
+  let resetCalled = false; t.w.turnstile = { getResponse: () => 'fake-turnstile-token', reset: () => { resetCalled = true; } };
   form.querySelector('[name=name]').value = 'Test Person'; form.querySelector('[name=email]').value = 'test@example.com'; form.querySelector('[name=country]').value = 'United States'; form.querySelector('[name=city]').value = 'Baton Rouge';
   form.querySelector('[name=phone]').value = '555'; form.querySelector('[name=message]').value = 'Hello';
   const sel = form.querySelector('[name=product]'); sel.selectedIndex = 1;
   submit(t, form); await wait(30);
   const p = t.sent[0] && t.sent[0].body;
   ok(t.sent[0].url === '/api/contact' && p.form_type === 'support' && p.name === 'Test Person' && p.email === 'test@example.com' && p.project_country === 'United States' && p.project_city === 'Baton Rouge' && p.message === 'Hello' && !!p.product, 'contact: payload for /api/contact (form_type support)');
+  ok(p.captcha_token === 'fake-turnstile-token' && p.website_hp === '', 'contact: captcha_token and website_hp passed in payload');
+  ok(resetCalled, 'contact: turnstile.reset() called on successful submission');
   ok(!t.d.querySelector('[data-sent]').hidden && form.hidden, 'contact: thank-you screen shown after the mail went out');
   t = load('contact.html', bad); form = t.d.querySelector('form[data-submit="contact"]');
   form.querySelector('[name=name]').value = 'T'; form.querySelector('[name=email]').value = 'test@example.com'; form.querySelector('[name=country]').value = 'US';
@@ -49,20 +54,27 @@ const fillAll = (t, form) => {
 
   // lunch & learn
   t = load('lunch-learn.html', good); form = t.d.querySelector('form[data-submit="lunch"]');
+  ok(form.querySelector('.cf-turnstile[data-sitekey="0x4AAAAAAFrgpAvn0SGkLylt"]'), 'lunch: Turnstile widget present with sitekey');
+  ok(form.querySelector('input[name="website_hp"]'), 'lunch: invisible honeypot trap present');
   form.querySelector('[name=name]').value = 'L Person'; form.querySelector('[name=company]').value = 'ACME'; form.querySelector('[name=email]').value = 'l@example.com'; form.querySelector('[name=expected_attendees]').value = '20';
   form.querySelectorAll('[name=topics]')[0].checked = true; form.querySelectorAll('[name=topics]')[2].checked = true;
   submit(t, form); await wait(30);
   const l = t.sent[0] && t.sent[0].body;
   ok(l && l.form_type === 'lunch_learn' && l.company === 'ACME' && /Pipe Culverts, Drainage/.test(l.product) && /Expected attendees: 20/.test(l.message), 'lunch: payload (form_type lunch_learn, topics, attendees)');
+  ok(l && l.captcha_token !== undefined && l.website_hp === '', 'lunch: captcha_token and website_hp included');
   ok(!t.d.querySelector('[data-sent]').hidden, 'lunch: thank-you screen shown');
 
   // credit application
   t = load('credit-application.html', good); form = t.d.querySelector('form[data-submit="credit"]');
+  ok(form.querySelector('.cf-turnstile[data-sitekey="0x4AAAAAAFrgpAvn0SGkLylt"]'), 'credit: Turnstile widget present with sitekey');
+  ok(form.querySelector('input[name="website_hp"]'), 'credit: invisible honeypot trap present');
   fillAll(t, form);
+  form.querySelector('input[name="website_hp"]').value = '';
   form.querySelector('[name="cr-0-0-0"]').value = 'ACME Inc'; form.querySelector('[name="cr-0-0-19"]').value = 'credit@acme.test'; form.querySelector('[name="cr-7-0-0"]').value = 'Jane Signer';
   submit(t, form); await wait(30);
   const c = t.sent[0] && t.sent[0].body;
   ok(c && c.form_type === 'credit_application' && c.company === 'ACME Inc' && c.email === 'credit@acme.test' && c.name === 'Jane Signer' && c.sign_name === 'Jane Signer', 'credit: payload (company, email, signer)');
+  ok(c && c.captcha_token !== undefined && c.website_hp === '', 'credit: captcha_token and website_hp included');
   ok(c && c.ref1_company && c.bank_name && c.owners && c.fed_tax_id && c.business_type && c.po_required && c.agree_terms === 'Yes' && c.agree_guaranty === 'Yes' && c.agree_tos === 'Yes' && c.guarantor_name, 'credit: references, bank, owners, tax id, agreements are all sent');
   ok(!t.d.querySelector('[data-sent]').hidden, 'credit: thank-you screen shown');
   console.log(fail ? fail + ' failed' : 'all ok'); process.exit(fail ? 1 : 0);

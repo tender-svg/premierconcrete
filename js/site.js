@@ -275,7 +275,14 @@
     form.hidden = true; var after = form.nextElementSibling; if (after && after.tagName === 'SECTION') after.hidden = true;
     sent.hidden = false; window.scrollTo(0, 0);
   }
-  // what the backend (ContactController /api/contact) expects, per form; form_type decides which CC rows of Dashboard > Email Configuration apply
+  // Cloudflare Turnstile dynamic loader
+  if (typeof document !== 'undefined' && !document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]')) {
+    var tsScript = document.createElement('script');
+    tsScript.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=auto';
+    tsScript.async = true;
+    tsScript.defer = true;
+    (document.head || document.body || document.documentElement).appendChild(tsScript);
+  }
   function formValues(form) {
     var o = {};
     $$('input,select,textarea', form).forEach(function (f) {
@@ -288,25 +295,47 @@
   }
   function payloadOf(kind, form) {
     var v = formValues(form), g = function (k) { return v[k] || ''; }, lines = function (a) { return a.filter(Boolean).join('\n'); };
+    const turnstileToken = form.querySelector('[name="cf-turnstile-response"]')?.value || (window.turnstile ? window.turnstile.getResponse() : '') || '';
+    const hpValue = form.querySelector('input[name="website_hp"]')?.value || '';
+    var base = { captcha_token: turnstileToken, website_hp: hpValue };
     if (kind === 'contact') {
-      return { form_type: 'support', subject: g('subject') || 'Contact form', name: g('name'), email: g('email'), phone: g('phone'), company: g('company'), product: g('product'),
-        project_country: g('country'), project_state: g('state'), project_city: g('city'), company_address: g('address'), message: g('message') };
+      return Object.assign({ form_type: 'support', subject: g('subject') || 'Contact form', name: g('name'), email: g('email'), phone: g('phone'), company: g('company'), product: g('product'),
+        project_country: g('country'), project_state: g('state'), project_city: g('city'), company_address: g('address'), message: g('message') }, base);
     }
     if (kind === 'lunch') {
-      return { form_type: 'lunch_learn', subject: 'Lunch & Learn request', name: g('name'), email: g('email'), phone: g('phone'), company: g('company'), product: g('topics'), company_address: g('office_address'),
-        message: lines([g('expected_attendees') && 'Expected attendees: ' + g('expected_attendees'), g('preferred_date') && 'Preferred date: ' + g('preferred_date'), g('alternate_date') && 'Alternate date: ' + g('alternate_date'), g('topics') && 'Topics of interest: ' + g('topics'), g('dietary_needs_or_notes') && 'Dietary needs or notes: ' + g('dietary_needs_or_notes')]) };
+      return Object.assign({ form_type: 'lunch_learn', subject: 'Lunch & Learn request', name: g('name'), email: g('email'), phone: g('phone'), company: g('company'), product: g('topics'), company_address: g('office_address'),
+        message: lines([g('expected_attendees') && 'Expected attendees: ' + g('expected_attendees'), g('preferred_date') && 'Preferred date: ' + g('preferred_date'), g('alternate_date') && 'Alternate date: ' + g('alternate_date'), g('topics') && 'Topics of interest: ' + g('topics'), g('dietary_needs_or_notes') && 'Dietary needs or notes: ' + g('dietary_needs_or_notes')]) }, base);
     }
     // credit application: the fields are named cr-<step>-<block>-<field> by tools/build-pages.js (the order of CR_SECTIONS in the design)
     var c = function (k) { return g('cr-' + k); };
-    return { form_type: 'credit_application', subject: 'Credit Application', name: c('7-0-0') || c('0-0-0'), email: c('0-0-19'), phone: c('0-0-13'), company: c('0-0-0'), product: c('0-0-2'), message: lines([c('3-0-1') && 'Tax contact: ' + c('3-0-1'), c('7-0-3') && 'Signature date: ' + c('7-0-3'), g('taxAck') && 'Acknowledged: sales tax is not refunded without a current exemption certificate']),
+    return Object.assign({ form_type: 'credit_application', subject: 'Credit Application', name: c('7-0-0') || c('0-0-0'), email: c('0-0-19'), phone: c('0-0-13'), company: c('0-0-0'), product: c('0-0-2'), message: lines([c('3-0-1') && 'Tax contact: ' + c('3-0-1'), c('7-0-3') && 'Signature date: ' + c('7-0-3'), g('taxAck') && 'Acknowledged: sales tax is not refunded without a current exemption certificate']),
       company_address: c('0-0-3'), project_city: c('0-0-4'), project_state: c('0-0-5'), zip: c('0-0-6'), county: c('0-0-7'), date_started: c('0-0-8'), mailing_address: c('0-0-9'), mailing_city: c('0-0-10'), mailing_state: c('0-0-11'), mailing_zip: c('0-0-12'), fax: c('0-0-14'),
       owners: c('0-0-15'), fed_tax_id: c('0-0-16'), duns: c('0-0-17'), accounting_contact: c('0-0-18'), business_type: c('0-0-20'), credit_amount: c('0-0-21'), po_required: c('0-0-22'), salesperson: c('0-0-1'),
       ref1_company: c('1-0-0'), ref1_email: c('1-0-1'), ref1_phone: c('1-0-2'), ref2_company: c('1-1-0'), ref2_email: c('1-1-1'), ref2_phone: c('1-1-2'), ref3_company: c('1-2-0'), ref3_email: c('1-2-1'), ref3_phone: c('1-2-2'),
       bank_name: c('2-0-0'), bank_phone: c('2-0-1'), bank_account: c('2-0-2'), bank_contact: c('2-0-3'), bank_address: c('2-0-4'), bank_city: c('2-0-5'), bank_state: c('2-0-6'), bank_zip: c('2-0-7'),
       tax_business_type: c('3-0-0'), tax_exempt_all: c('3-0-2'), tax_exempt_some: c('3-0-3'), agree_terms: g('agreeTerms') ? 'Yes' : '', agree_guaranty: g('agreeGuaranty') ? 'Yes' : '', agree_tos: g('agreeSale') ? 'Yes' : '',
-      guarantor_name: c('5-0-0'), guarantor_title: c('5-0-1'), sign_name: c('7-0-0'), sign_signature: c('7-0-1'), sign_title: c('7-0-2') };
+      guarantor_name: c('5-0-0'), guarantor_title: c('5-0-1'), sign_name: c('7-0-0'), sign_signature: c('7-0-1'), sign_title: c('7-0-2') }, base);
   }
   $$('form[data-submit]').forEach(function (form) {
+    if (!form.querySelector('input[name="website_hp"]')) {
+      var hp = document.createElement('div');
+      hp.style.cssText = 'display:none !important; visibility:hidden !important; opacity:0; position:absolute; left:-9999px; height:0; width:0; overflow:hidden;';
+      hp.setAttribute('aria-hidden', 'true');
+      hp.innerHTML = '<input type="text" name="website_hp" id="website_hp" tabindex="-1" autocomplete="off" value="" />';
+      form.insertBefore(hp, form.firstChild);
+    }
+    if (!form.querySelector('.cf-turnstile')) {
+      var btn = form.querySelector('button[type="submit"]');
+      var cf = document.createElement('div');
+      cf.className = 'cf-turnstile';
+      cf.setAttribute('data-sitekey', '0x4AAAAAAFrgpAvn0SGkLylt');
+      cf.setAttribute('data-theme', 'light');
+      if (btn && btn.parentNode) {
+        btn.parentNode.insertBefore(cf, btn);
+      } else {
+        form.appendChild(cf);
+      }
+    }
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var kind = form.getAttribute('data-submit');
@@ -319,7 +348,12 @@
       msg.textContent = ''; if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
       fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payloadOf(kind, form)) })
         .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok || j.success === false) throw new Error(j.message || ('Error ' + r.status)); }); })
-        .then(function () { sentScreen(form); })   // the thank-you screen shows only after the mail went out
+        .then(function () {
+          if (window.turnstile) {
+            try { window.turnstile.reset(); } catch (e) {}
+          }
+          sentScreen(form);
+        })   // the thank-you screen shows only after the mail went out
         .catch(function (err) { msg.textContent = 'Sorry, your message could not be sent (' + (err && err.message || 'network error') + '). Please try again in a moment or call us.'; })
         .then(function () { if (btn) { btn.disabled = false; btn.innerHTML = label; } });
     });
