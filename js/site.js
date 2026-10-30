@@ -78,7 +78,7 @@
   function gallery() {
     var prev = $('[data-act="gal-prev"]'); if (!prev) return null;
     var host = prev.parentElement, main = $('img', host), count = $('span', host);
-    var thumbs = $$('[data-set]').filter(function (b) { var p = jsonOf(b, 'data-set'); return p && ('gal' in p || 'phImg' in p); });
+    var thumbs = $$('[data-set]').filter(function (b) { var p = jsonOf(b, 'data-set'); return p && ('gal' in p || 'phImg' in p) && !b.hidden; });   // (a removed photo has a hidden thumbnail, js/pc-gallery.js)
     var key = thumbs.length ? ('gal' in jsonOf(thumbs[0], 'data-set') ? 'gal' : 'phImg') : 'gal';
     var srcs = thumbs.map(function (b) { var i = $('img', b); return i ? i.getAttribute('src') : ''; });
     return {
@@ -418,5 +418,5 @@
   document.addEventListener('pc-edit-mode', function (e) { $$('[data-act="acc"],[data-act="acc-dims"]').forEach(function (b) { toggleBody(b, !!e.detail.on); }); });
   paintVgroups();
   // js/pc-content.js draws lists from the CMS: after that the scripts of the changed parts start again
-  window.PC = { toggleBody: toggleBody, selectGroup: function (i) { state.grp = i; buildGroups(); paintGroups(); if (window.__pcShowGrp) window.__pcShowGrp(); }, refresh: function () { buildGroups(); vgroups = $$('[data-vgroup]'); gal = gallery(); initHome(); initProjects(); initRes(); paintGroups(); paintVgroups(); } };
+  window.PC = { galIndex: function () { return gal ? state[gal.key] || 0 : 0; }, galShow: function (i) { if (gal) gal.show(i); }, galCount: function () { return gal ? gal.n : 0; }, toggleBody: toggleBody, selectGroup: function (i) { state.grp = i; buildGroups(); paintGroups(); if (window.__pcShowGrp) window.__pcShowGrp(); }, refresh: function () { buildGroups(); vgroups = $$('[data-vgroup]'); gal = gallery(); initHome(); initProjects(); initRes(); paintGroups(); paintVgroups(); } };
 })();

@@ -64,6 +64,7 @@
         else if (type === 'text' || el.getAttribute('data-cms-type') === 'text') { if (el !== document.activeElement) el.innerHTML = clean(val); }
       });
     });
+    document.dispatchEvent(new CustomEvent('pc-applied'));   // (js/pc-gallery.js puts the gallery in order again)
   }
   var PCC = window.PCC || { usable: function () { return false; }, page: function () { return null; }, setPage: function () { }, admin: function () { }, clear: function () { } };   // data cache (js/rg-cache.js)
   function getRows(page) { return fetch('/api/v2/page-elements/' + encodeURIComponent(page), { credentials: 'include', cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); }
@@ -185,13 +186,14 @@
 
   /* ----- image badges ("Change image") and "managed in the dashboard" badges */
   var badges = [];
-  var DYN = [['[data-dyn="pf"]', 'stories', 'Edit project highlights in the Dashboard'], ['[data-dyn="pj"]', 'stories', 'Edit this project in the Dashboard'], ['[data-dyn="res"]', 'resources', 'Edit resources in the Dashboard'], ['[data-dyn="cat"]', 'solutions', 'Edit products in the Dashboard']];
+  var DYN = [['[data-dyn="pf"]', 'stories', 'Edit project highlights in the Dashboard'], ['[data-dyn="pj"]', 'stories', 'Edit this project in the Dashboard'], ['[data-dyn="cat"]', 'solutions', 'Edit products in the Dashboard']];
   function offsetOf(el) { var x = 0, y = 0, n = el; while (n) { x += n.offsetLeft || 0; y += n.offsetTop || 0; n = n.offsetParent; } return { x: x, y: y }; }
   function visible(el) { if (el.tagName === 'IMG' && el.hidden && el.parentElement) el = el.parentElement;   // a removed photo / empty slot: its frame is what is seen
     if (el.closest('[hidden]')) return false; if (!el.getClientRects().length) return false; return el.checkVisibility ? el.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true }) : true; }
   function buildBadges() {
     badges = [];
     $$('img[data-cms][data-cms-type="image"]').forEach(function (img) {
+      if (img.hasAttribute('data-gal-thumb')) return;   // (a gallery thumbnail follows the big photo, js/pc-gallery.js)
       var gone = img.hidden || !img.getAttribute('src');
       var b = document.createElement('button'); b.type = 'button'; b.className = 'cms-img-badge'; b.textContent = gone ? '＋ Add image' : '📷 Change image';
       b.onclick = function (e) { e.preventDefault(); e.stopPropagation(); pickImage(img); }; document.body.appendChild(b); badges.push({ b: b, el: img, kind: 'img' });
@@ -237,10 +239,11 @@
     if (!m) { m = document.createElement('div'); m.id = 'cms-confirm'; m.innerHTML = '<div class="card"><h3>Use this image?</h3><div class="pv"><img alt="" id="cms-confirm-img"></div><p>It is applied to the page now and kept for visitors after you press <b>SAVE</b>.</p><div class="row"><button type="button" class="no">Cancel</button><button type="button" class="yes">Use image</button></div></div>'; document.body.appendChild(m); }
     $('#cms-confirm-img').src = url; m.classList.add('open');
     $('.no', m).onclick = function () { m.classList.remove('open'); };
-    $('.yes', m).onclick = function () { m.classList.remove('open'); var key = img.getAttribute('data-cms'); keyEls(key).forEach(function (o) { if (o.tagName === 'IMG') setImage(o, url); }); dirty[key] = 'image'; refreshSave(); rebuildBadges(); positionBadges(); };
+    $('.yes', m).onclick = function () { m.classList.remove('open'); if (img.hasAttribute('data-gal-main') && window.PCGallery) { window.PCGallery.change(url); rebuildBadges(); return; } var key = img.getAttribute('data-cms'); keyEls(key).forEach(function (o) { if (o.tagName === 'IMG') setImage(o, url); }); dirty[key] = 'image'; refreshSave(); rebuildBadges(); positionBadges(); };
   }
 
   function removeImage(img) {
+    if (img.hasAttribute('data-gal-main') && window.PCGallery) { window.PCGallery.remove(); rebuildBadges(); return; }
     var key = img.getAttribute('data-cms'); keyEls(key).forEach(function (o) { if (o.tagName === 'IMG') setImage(o, '__none__'); });
     dirty[key] = 'image'; refreshSave(); rebuildBadges();
   }

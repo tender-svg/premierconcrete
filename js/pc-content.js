@@ -321,6 +321,7 @@
         if (vid) {
           var img = $('img', c); if (img) { img.setAttribute('src', r.thumb || (videoOf(link) || {}).thumb || img.getAttribute('src')); img.setAttribute('alt', r.title); }
           var sp = $$(':scope > span', c); if (sp[0]) sp[0].textContent = names.join(' · ') || 'General'; if (sp[1]) sp[1].textContent = r.title;
+          if (isArt(r.type)) { var pl = $('div > span', c); if (pl && pl.querySelector('svg')) pl.remove(); }   // a webinar / blog card has no play symbol on its photo (only the videos have)
           if (art && !editing() && sp[0]) sp[0].remove();   // a webinar card shows only its title
           if (link && !editing()) { c.style.cursor = 'pointer'; c.setAttribute('data-open', link); }
           if (editing()) {
@@ -343,7 +344,7 @@
       });
       grid.setAttribute('data-dyn', 'res');
       addHost(grid, 'res-' + tab, addBtn('New ' + (tab === 'sheets' ? 'data sheet' : tab === 'downloads' ? 'download' : tab === 'videos' ? 'video' : tab === 'webinars' ? 'webinar' : tab === 'blog' ? 'blog post' : 'technical note'), ' data-tab="' + tab + '"'));
-      bindOnce(col, ress, { add: function () { var m = ress.add({ type: TAB_TYPE[tab] }); return m; }, redraw: drawResources });
+      bindOnce(col, ress, { add: function () { var ty = TAB_TYPE[tab], m = ress.add({ type: ty, body: ARTICLE_TEMPLATE[ty] || '' }); return m; }, redraw: drawResources });
     });
     refresh();
   }
@@ -372,6 +373,7 @@
       if (ls.length > 1 && ls[0].length <= 70 && !/[.:;!?]$/.test(ls[0].trim()) && !/^\s*([•\-*]|\d+[.)])\s/.test(ls[0]) && !/^\s*\[image:/i.test(ls[0])) out += '<h3 class="art-h">' + esc(ls.shift().trim()) + '</h3>';
       var para = [], list = [], flush = function () { if (para.length) out += '<p>' + para.join('<br>') + '</p>'; if (list.length) out += '<ul>' + list.join('') + '</ul>'; para = []; list = []; };
       ls.forEach(function (l) {
+        if (/^\s*\[image:\s*(\|[^\]]*)?\]\s*$/i.test(l)) return;   // (an empty photo block of a template)
         var im = /^\s*\[image:\s*([^\]|]+?)\s*(?:\|\s*([^\]]*?)\s*)?\]\s*$/i.exec(l);
         if (im) { if (!/^(\/?images\/|\/|https:\/\/)/i.test(im[1]) || /^\s*javascript:/i.test(im[1])) return; flush(); out += '<figure class="art-fig"><img src="' + esc(im[1]) + '" alt="' + esc(im[2] || '') + '" loading="lazy">' + (im[2] ? '<figcaption>' + esc(im[2]) + '</figcaption>' : '') + '</figure>'; return; }
         var m = /^\s*(?:[•\-*]|\d+[.)])\s+(.*)$/.exec(l);
@@ -383,53 +385,117 @@
   };
   // lines like "[meta: Duration | 45 minutes]" in the page text are the facts shown above a webinar's text (the date comes from the resource itself)
   var META_RE = /^\s*\[meta:\s*([^|\]]+?)\s*\|\s*([^\]]+?)\s*\]\s*$/i;
-  function splitMeta(t) { var meta = [], keep = []; String(t || '').split('\n').forEach(function (l) { var m = META_RE.exec(l); if (m) meta.push([m[1], m[2]]); else keep.push(l); }); return { body: keep.join('\n'), meta: meta }; }
+  var BANNER_RE = /^\s*\[banner:\s*([^\]]*?)\s*\]\s*$/i;
+  function splitMeta(t) { var meta = [], keep = [], banner = ''; String(t || '').split('\n').forEach(function (l) { var m = META_RE.exec(l), b = BANNER_RE.exec(l); if (b) banner = b[1]; else if (m) meta.push([m[1], m[2]]); else keep.push(l); }); return { body: keep.join('\n'), meta: meta, banner: banner }; }
+  /* the text of a blog / webinar page as blocks (for the editor): text, photo ("[image: url | caption]"); "[banner: url]" = the photo of the top band */
+  var IMG_LINE = /^\s*\[image:\s*([^\]|]*?)\s*(?:\|\s*([^\]]*?)\s*)?\]\s*$/i;
+  function parseBody(t) {
+    var banner = '', blocks = [], meta = [];
+    String(t || '').split(/\n\s*\n/).forEach(function (blk) {
+      var txt = [];
+      var flush = function () { if (txt.length) { blocks.push({ t: 'text', text: txt.join('\n') }); txt = []; } };
+      blk.split('\n').forEach(function (l) {
+        var b = BANNER_RE.exec(l), im = IMG_LINE.exec(l), mt = META_RE.exec(l);
+        if (b) { banner = b[1]; return; }
+        if (mt) { meta.push([mt[1], mt[2]]); return; }
+        if (im) { flush(); blocks.push({ t: 'img', url: im[1] || '', cap: im[2] || '' }); return; }
+        if (l.trim()) txt.push(l.replace(/\s+$/, ''));
+      });
+      flush();
+    });
+    return { banner: banner, meta: meta, blocks: blocks };
+  }
+  function buildBody(banner, meta, blocks) {
+    var out = []; if (banner) out.push('[banner: ' + banner + ']');
+    (meta || []).forEach(function (m) { if (String(m[0]).trim() && String(m[1]).trim()) out.push('[meta: ' + String(m[0]).trim() + ' | ' + String(m[1]).trim() + ']'); });
+    blocks.forEach(function (b) { if (b.t === 'img') out.push('[image: ' + (b.url || '') + ' | ' + (b.cap || '') + ']'); else if (String(b.text || '').trim()) out.push(String(b.text).replace(/\s+$/, '')); });
+    return out.join('\n\n');
+  }
+  // what a new blog post / webinar starts with (a template to write over; the empty [image: | ] lines are not shown to visitors)
+  var ARTICLE_TEMPLATE = {
+    'Blog Post': 'Heading of the first section\nWrite the text of this section here.\n\n[image: | ]\n\nHeading of the second section\nWrite the text of this section here.',
+    'Webinar': 'About the session\nDescribe what this webinar is about.\n\n[image: | ]\n\nWhat you will learn\n• First point: a short explanation\n• Second point: a short explanation'
+  };
   function articlePage(kind) {
     var host = $('[data-article]'); if (!host || !ress) return;
     var type = kind === 'blog' ? 'Blog Post' : 'Webinar', pid = null;
     var m0 = ress.rows.filter(function (x) { return x.type === type && x.slug === routeSlug(kind); })[0];
     if (!m0) { notFound(host, kind === 'blog' ? 'blog post' : 'webinar', 'resources.html', 'See all resources'); return; } pid = m0.id;
+    var P = { banner: '', meta: [], blocks: [] };   // the text of the page as blocks (edit mode)
+    var addBar = function (i, last) { return '<div class="seg-bar' + (last ? ' seg-bar-last' : '') + '" contenteditable="false"><button type="button" class="dyn-add" data-seg-addtext="' + i + '">＋ Text</button><button type="button" class="dyn-add" data-seg-addimg="' + i + '">＋ Image</button></div>'; };
+    function segHtml() {
+      var out = P.blocks.length ? '' : addBar(-1, true);
+      P.blocks.forEach(function (b, i) {
+        if (b.t === 'img') {
+          out += '<figure class="art-fig seg seg-img" data-segw="' + i + '" contenteditable="false">' + (b.url ? '<img src="' + esc(b.url) + '" alt="">' : '<div class="seg-empty">No image yet</div>') +
+            '<div class="seg-btns"><button type="button" class="dyn-photo" data-seg-photo="' + i + '">📷 ' + (b.url ? 'Change image' : 'Add image') + '</button><button type="button" class="dyn-del" data-seg-del="' + i + '">✕ Remove image</button></div>' +
+            '<figcaption contenteditable="true" spellcheck="false" data-segcap="' + i + '" data-ph="Caption (optional)">' + esc(b.cap) + '</figcaption></figure>';
+        } else out += '<div class="seg seg-t" data-segw="' + i + '"><div class="ed-multi seg-text" contenteditable="true" spellcheck="false" data-seg="' + i + '" data-multi="1">' + esc(b.text) + '</div><button type="button" class="seg-x" contenteditable="false" data-seg-del="' + i + '" title="Remove this text">✕</button></div>';
+        out += addBar(i, i === P.blocks.length - 1);
+      });
+      return out;
+    }
     function draw(focus) {
       var r = ress.by(pid); if (!r) { location.href = 'resources.html'; return; }
       document.title = r.title + ' | Premier Concrete Products';
       var d = r.date ? new Date(r.date) : null, when = d && !isNaN(d) ? d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '';
-      var cover = r.thumb || 'images/pcp/pipe-handler.webp', words = String(r.body || '').split(/\s+/).filter(Boolean).length, mins = Math.max(1, Math.round(words / 200));
+      var cover = r.thumb || 'images/pcp/pipe-handler.webp';
       var E = function (f, multi) { return editing() ? ' contenteditable="true" spellcheck="false" data-e="' + f + '" data-id="' + esc(r.id) + '"' + (multi ? ' data-multi="1"' : '') : ''; };
       var photo = editing() ? '<button type="button" class="dyn-photo" data-eact="photo" data-id="' + esc(r.id) + '" data-field="thumb" data-folder="resources">📷 Change photo</button>' : '';
-      var parts = editing() ? { body: r.body, meta: [] } : splitMeta(r.body);
+      var parts = splitMeta(r.body), bannerUrl = parts.banner || cover;
+      if (editing()) P = parseBody(r.body);
       var words2 = String(parts.body || '').split(/\s+/).filter(Boolean).length, mins2 = Math.max(1, Math.round(words2 / 200));
       var tags = r.prods.map(function (sl) { var p = productsList().filter(function (x) { return x.slug === sl; })[0]; return p ? '<a class="ar-tag" href="' + esc(p.url) + '">' + esc(p.title) + '</a>' : ''; }).join('');
       var cta = kind === 'webinar' ? (r.file && !/^https?:/i.test(r.file) ? '<a href="' + esc(r.file) + '" class="ar-btn">Request this session →</a>' : r.file ? '<a href="' + esc(r.file) + '" target="_blank" rel="noopener" class="ar-btn">Watch / Register →</a>' : '<a href="contact.html" class="ar-btn">Contact us to register →</a>') : '';
       var strip2 = editing() ? '<div class="app-strip"><label>Product ' + selectF(r, 'prod', prodSel('General')) + '</label><button type="button" class="dyn-add" data-eact="filelink" data-id="' + esc(r.id) + '" data-field="file" data-title="Link of the ' + kind + '" data-folder="resources">🔗 ' + (r.file ? 'Change link' : 'Add link') + '</button>' + delBtn(r, 'Delete this page') + '</div>' : '';
-      var ins = editing() ? '<div class="art-ins"><button type="button" class="dyn-add" data-ins-img="1">＋ Insert image in the text</button><span>The picture is put where the cursor is in the text below (or at the end): a line like [image: /images/photo.webp | caption]. A line like [meta: Duration | 45 minutes] adds a fact above the text of a webinar.</span></div>' : '';
-      var body = '<div class="ar-content ' + (editing() ? 'ed-multi' : 'art') + '"' + E('body', true) + '>' + (editing() ? esc(r.body) : fmtArticle(parts.body, false)) + '</div>';
+      var body = '<div class="ar-content ' + (editing() ? 'ar-seg' : 'art') + '">' + (editing() ? segHtml() : fmtArticle(parts.body, false)) + '</div>';
       var title = '<h2 class="ar-title"' + E('title') + '>' + esc(r.title) + '</h2>';
-      var hero = '<section class="wb-hero ar-hero"><img src="' + esc(cover) + '" alt=""><div class="wb-ov"></div><div class="wb-hin"><h1>' + (kind === 'blog' ? 'Blog' : 'Webinar') + '</h1><div class="wb-crumb"><a href="index.html">Home</a> › <a href="resources.html">Resources</a> › <span>' + (kind === 'blog' ? 'Blog' : 'Webinar') + '</span></div></div></section>';
+      var bannerBtn = editing() ? '<button type="button" class="dyn-photo" data-seg-banner="1">📷 Change banner photo</button>' : '';
+      var hero = '<section class="wb-hero ar-hero"><img src="' + esc(bannerUrl) + '" alt=""><div class="wb-ov"></div>' + bannerBtn + '<div class="wb-hin"><h1>' + (kind === 'blog' ? 'Blog' : 'Webinar') + '</h1><div class="wb-crumb"><a href="index.html">Home</a> › <a href="resources.html">Resources</a> › <span>' + (kind === 'blog' ? 'Blog' : 'Webinar') + '</span></div></div></section>';
       var back = '<a class="ar-back" href="resources.html">← Back to Resources</a>';
       if (kind === 'blog') {
-        host.innerHTML = hero + '<section class="ar-sec"><div class="ar-wrap">' + back + strip2 + ins + '<article class="ar-card"><div class="ar-img"><img src="' + esc(cover) + '" alt="' + esc(r.title) + '">' + photo + '</div><div class="ar-body"><div class="ar-meta">' + (when ? '<span>' + esc(when) + '</span>' : '') + '<span>' + mins2 + ' min read</span></div>' + title + body + (tags ? '<div class="ar-tags">' + tags + '</div>' : '') + '</div></article></div></section>';
+        host.innerHTML = hero + '<section class="ar-sec"><div class="ar-wrap">' + back + strip2 + '<article class="ar-card"><div class="ar-img"><img src="' + esc(cover) + '" alt="' + esc(r.title) + '">' + photo + '</div><div class="ar-body"><div class="ar-meta">' + (when ? '<span>' + esc(when) + '</span>' : '') + '<span>' + mins2 + ' min read</span></div>' + title + body + (tags ? '<div class="ar-tags">' + tags + '</div>' : '') + '</div></article></div></section>';
       } else {
         var items = [['Date', when]].concat(parts.meta).filter(function (x) { return x[1]; });
-        host.innerHTML = hero + '<section class="ar-sec"><div class="ar-wrap">' + back + strip2 + ins + '<div class="ar-grid"><article class="ar-card"><div class="ar-body"><div class="ar-thumbbox"><img class="ar-thumb" src="' + esc(cover) + '" alt="' + esc(r.title) + '">' + photo + '</div><span class="ar-badge">Webinar</span>' + title +
-          (items.length ? '<div class="ar-mgrid">' + items.map(function (x) { return '<div class="ar-mitem"><strong>' + esc(x[0]) + '</strong><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div>' : '') + body + (tags ? '<div class="ar-tags">' + tags + '</div>' : '') + '</div></article>' +
+        var factsHtml = editing() ? '<div class="ar-mgrid ar-mgrid-ed">' + (when ? '<div class="ar-mitem"><strong>Date</strong><span>' + esc(when) + '</span></div>' : '') + P.meta.map(function (x, i) { return '<div class="ar-mitem"><strong contenteditable="true" spellcheck="false" data-metak="' + i + '">' + esc(x[0]) + '</strong><span contenteditable="true" spellcheck="false" data-metav="' + i + '">' + esc(x[1]) + '</span></div>'; }).join('') + '<div class="ar-mitem ar-mitem-add" contenteditable="false"><button type="button" class="dyn-add" data-metaadd="1">＋ Fact</button></div></div>'
+          : (items.length ? '<div class="ar-mgrid">' + items.map(function (x) { return '<div class="ar-mitem"><strong>' + esc(x[0]) + '</strong><span>' + esc(x[1]) + '</span></div>'; }).join('') + '</div>' : '');
+        host.innerHTML = hero + '<section class="ar-sec"><div class="ar-wrap">' + back + strip2 + '<div class="ar-grid"><article class="ar-card"><div class="ar-body"><div class="ar-thumbbox"><img class="ar-thumb" src="' + esc(cover) + '" alt="' + esc(r.title) + '">' + photo + '</div><span class="ar-badge">Webinar</span>' + title +
+          factsHtml + body + (tags ? '<div class="ar-tags">' + tags + '</div>' : '') + '</div></article>' +
           '<aside class="ar-reg"><span class="ar-lbl">Register</span><h3>Reserve your place</h3><p>Contact our team to confirm your place and to receive the details of this session.</p><a class="ar-tel" href="tel:+12256674545">+1 225.667.4545</a>' + cta + '</aside></div></div></section>';
       }
       focusEnd(host, focus); reapply();
     }
     bindOnce(host, ress, { redraw: draw, afterDelete: function () { ress.deleted = true; } });
-    host.addEventListener('click', function (e) {   // "Insert image in the text": pick a photo, upload it, put its line at the cursor
-      var b = e.target.closest('[data-ins-img]'); if (!b || !editing()) return; e.preventDefault();
-      var box = $('[data-e="body"][contenteditable]', host); if (!box) return;
+    // the blocks of the text: every change is written back into the one text of the page (photos, captions and the banner photo included)
+    var commit = function (redraw) { var r = ress.by(pid); if (!r) return; r.body = buildBody(P.banner, P.meta, P.blocks); ress.mark(r); if (redraw) draw(); };
+    var pick = function (btn, then) {
       PCE.pickFile('image/*').then(function (file) {
-        if (!file) return; b.textContent = 'Uploading…';
-        return PCE.upload(file, 'resources').then(function (url) {
-          box.focus(); var sel = window.getSelection();
-          if (!sel.rangeCount || !box.contains(sel.anchorNode)) { var rg = document.createRange(); rg.selectNodeContents(box); rg.collapse(false); sel.removeAllRanges(); sel.addRange(rg); }
-          document.execCommand('insertText', false, '\n\n[image: ' + url + ' | ]\n\n'); b.textContent = '＋ Insert image in the text';
-        });
-      }).catch(function (err) { window.PCDialog && PCDialog.alert(err.message, { title: 'Upload failed', danger: true }); b.textContent = '＋ Insert image in the text'; });
+        if (!file) return; var old = btn.textContent; btn.textContent = 'Uploading…';
+        return PCE.upload(file, 'resources').then(function (url) { then(url); }).catch(function (err) { btn.textContent = old; window.PCDialog && PCDialog.alert(err.message, { title: 'Upload failed', danger: true }); });
+      });
+    };
+    host.addEventListener('input', function (e) {
+      if (!editing()) return; var t = e.target, w;
+      if ((w = t.closest && t.closest('[data-seg]'))) { var b = P.blocks[+w.getAttribute('data-seg')]; if (b) { b.text = (w.innerText || w.textContent).split(String.fromCharCode(160)).join(' '); commit(false); } }
+      else if ((w = t.closest && t.closest('[data-metak]'))) { var mk = P.meta[+w.getAttribute('data-metak')]; if (mk) { mk[0] = w.textContent.trim(); commit(false); } }
+      else if ((w = t.closest && t.closest('[data-metav]'))) { var mv = P.meta[+w.getAttribute('data-metav')]; if (mv) { mv[1] = w.textContent.trim(); commit(false); } }
+      else if ((w = t.closest && t.closest('[data-segcap]'))) { var c = P.blocks[+w.getAttribute('data-segcap')]; if (c) { c.cap = w.textContent.split(String.fromCharCode(160)).join(' ').trim(); commit(false); } }
+    });
+    host.addEventListener('click', function (e) {
+      if (!editing() || !e.target.closest) return; var t = e.target, w;
+      if ((w = t.closest('[data-seg-photo]'))) { e.preventDefault(); var bi = +w.getAttribute('data-seg-photo'); pick(w, function (url) { if (P.blocks[bi]) { P.blocks[bi].url = url; commit(true); } }); }
+      else if ((w = t.closest('[data-seg-banner]'))) { e.preventDefault(); pick(w, function (url) { P.banner = url; commit(true); }); }
+      else if ((w = t.closest('[data-seg-addimg]'))) { e.preventDefault(); var ai = +w.getAttribute('data-seg-addimg'); pick(w, function (url) { P.blocks.splice(ai + 1, 0, { t: 'img', url: url, cap: '' }); commit(true); }); }
+      else if ((w = t.closest('[data-metaadd]'))) { e.preventDefault(); P.meta.push(['Label', 'Value']); commit(true); }
+      else if ((w = t.closest('[data-seg-addtext]'))) { e.preventDefault(); var ti = +w.getAttribute('data-seg-addtext'); P.blocks.splice(ti + 1, 0, { t: 'text', text: 'New text' }); commit(true); }
+      else if ((w = t.closest('[data-seg-del]'))) {
+        e.preventDefault(); var di = +w.getAttribute('data-seg-del'), bl = P.blocks[di]; if (!bl) return;
+        var go = bl.t === 'img' ? (window.PCDialog ? PCDialog.confirm({ title: 'Remove this image?', message: 'It is removed from the page when you press SAVE.', ok: 'Remove', danger: true }) : Promise.resolve(true)) : Promise.resolve(true);
+        go.then(function (yes) { if (yes) { P.blocks.splice(di, 1); commit(true); } });
+      }
     });
     ress.onSaved = function () { if (ress.deleted || !ress.by(pid)) { location.href = 'resources.html'; return; } draw(); };
+    document.addEventListener('pc-edit-mode', function () { draw(); });   // (switch to edit / preview: the title, photos and the blocks of the text become editable / plain)
     draw();
   }
 

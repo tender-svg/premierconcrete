@@ -348,6 +348,35 @@ function heroBand(html, bodyClass) {
   return $('#__root').html();
 }
 
+// product pages whose "Applications" is one placeholder text ("Applications to be added.", the Utility Structures groups): it becomes a one-item bullet list in the
+// same format as the other products, so the editor gets Add item / Remove there too. The text keeps its key, so a saved text stays.
+function applicationsList(html) {
+  if (html.indexOf('Applications to be added.') < 0) return html;
+  const $ = parse(html); let n = 0;
+  $('span').each((i, el) => {
+    const $el = $(el); if ($el.children().length || $el.text().trim() !== 'Applications to be added.') return;
+    $el.wrap('<li style="display:flex;align-items:flex-start;gap:10px;font-size:15px;line-height:1.45;color:var(--color-text)"></li>');
+    $el.before('<span style="flex:none;width:7px;height:7px;border-radius:999px;background:var(--color-accent);margin-top:7px"></span>');
+    $el.removeAttr('style');
+    $el.parent().wrap('<ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:8px 24px"></ul>'); n++;
+  });
+  return n ? $('#__root').html() : html;
+}
+
+// product page gallery: the big photo is marked, every thumbnail gets its own image key (<key of the big photo>-s<n>) so that changing the photo that is shown
+// changes its thumbnail too (js/pc-gallery.js)
+function tagGallery(html) {
+  if (html.indexOf('data-gal') < 0) return html;
+  const $ = parse(html); let n = 0;
+  $('[data-gal]').each((i, g) => {
+    const main = $(g).find('img[data-cms][data-cms-type="image"]').filter((j, im) => !$(im).closest('button').length).first();
+    if (!main.length) return;
+    const key = main.attr('data-cms'); main.attr('data-gal-main', '');
+    $(g).find('button[data-set] img').each((k, im) => { $(im).attr('data-cms', key + '-s' + k).attr('data-cms-type', 'image').attr('data-gal-thumb', String(k)); n++; });
+  });
+  return n ? $('#__root').html() : html;
+}
+
 // speed: every photo after the first three (header logo, hero) is loaded only when it nears the screen
 function lazyImgs(html) { let n = 0; return html.replace(/<img\b(?![^>]*\bloading=)/g, m => ++n > 3 ? '<img loading="lazy" decoding="async"' : m); }
 
@@ -357,7 +386,8 @@ function page(file, title, desc, bodyHtml, bodyClass) {
   // the logos are the backend's global keys; every other text / image / link gets its stable key here
   bodyHtml = bodyHtml.replace('<img src="images/logo.webp"', '<img data-cms="site-logo" data-cms-type="image" src="images/logo.webp"').replace('<img src="images/logo-white.webp"', '<img data-cms="footer-logo" data-cms-type="image" src="images/logo-white.webp"');
   if (editor) bodyHtml = markSlots(bodyHtml).html;
-  const tagged = tagPage(bodyHtml, bodyClass, registry); bodyHtml = tagged.html;
+  bodyHtml = applicationsList(bodyHtml);
+  const tagged = tagPage(bodyHtml, bodyClass, registry); bodyHtml = tagGallery(tagged.html);
   const rep = editor ? markRepeaters(bodyHtml, bodyClass) : { html: bodyHtml, lists: 0, slots: 0 }; bodyHtml = rep.html;
   // an italic placeholder text ("Add a description of Pavers.") is one editable paragraph: the key moves from the inline <em> to its <p> (an inline element shows one outline box per wrapped line in the editor)
   bodyHtml = bodyHtml.replace(/<p([^>]*)><em (data-cms="[^"]*"(?: data-cms-type="[^"]*")?)>([^<]*)<\/em><\/p>/g, '<p$1 $2>$3</p>');
@@ -368,7 +398,7 @@ function page(file, title, desc, bodyHtml, bodyClass) {
     '<link rel="icon" type="image/png" sizes="64x64" href="images/favicon.png">\n<link rel="apple-touch-icon" href="images/apple-touch-icon.png">\n' + (editor ? LOADER_HEAD + PRE_HOLD : '') +
     '<link rel="preload" href="fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>\n<link rel="stylesheet" href="css/styles.css">\n<link rel="stylesheet" href="css/design.css">\n<link rel="stylesheet" href="css/site.css">\n<link rel="stylesheet" href="css/hover.css">\n<link rel="stylesheet" href="css/pages.css">\n' + (editor ? '<link rel="stylesheet" href="css/pc-motion.css">\n<link rel="stylesheet" href="css/cms.css">\n<link rel="stylesheet" href="css/pc-consent.css">\n' : '') + '</head>\n' +
     '<body data-page="' + escAttr(bodyClass) + '" data-state=\'' + JSON.stringify(Object.assign({ grp: 0, gal: 0 }, STATE[bodyClass.replace(/^products-.*/, 'products')] || {})) + '\'>\n' + (editor ? LOADER_BODY : '') + bodyHtml + '\n' +
-    (/^products/.test(bodyClass) ? '<script src="js/search-index.js" defer></script>\n' : '') + '<script src="js/site.js" defer></script>\n<script src="js/pc-static.js" defer></script>\n<script src="js/pc-dialog.js" defer></script>\n<script src="js/pc-edit.js" defer></script>\n<script src="js/pc-cache.js" defer></script>\n<script src="js/pc-motion.js" defer></script>\n<script src="js/pc-content.js" defer></script>\n' + (editor ? '<script src="js/cms.js" defer></script>\n<script src="js/pc-repeat.js" defer></script>\n' + (/^products-/.test(bodyClass) ? '<script src="js/pc-groups.js" defer></script>\n' : '') + '<script src="js/pc-toolbar.js" defer></script>\n<script src="js/pc-consent.js" defer></script>\n' : '') + '</body>\n</html>\n';
+    (/^products/.test(bodyClass) ? '<script src="js/search-index.js" defer></script>\n' : '') + '<script src="js/site.js" defer></script>\n<script src="js/pc-static.js" defer></script>\n<script src="js/pc-dialog.js" defer></script>\n<script src="js/pc-edit.js" defer></script>\n<script src="js/pc-cache.js" defer></script>\n<script src="js/pc-motion.js" defer></script>\n<script src="js/pc-content.js" defer></script>\n' + (editor ? '<script src="js/cms.js" defer></script>\n<script src="js/pc-repeat.js" defer></script>\n' + (/^products-/.test(bodyClass) ? '<script src="js/pc-groups.js" defer></script>\n<script src="js/pc-gallery.js" defer></script>\n' : '') + '<script src="js/pc-toolbar.js" defer></script>\n<script src="js/pc-consent.js" defer></script>\n' : '') + '</body>\n</html>\n';
 }
 
 // ------------------------------------------------------------------ build
