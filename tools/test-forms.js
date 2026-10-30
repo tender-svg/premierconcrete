@@ -32,6 +32,7 @@ const fillAll = (t, form) => {
 
   // contact
   t = load('contact.html', good); let form = t.d.querySelector('form[data-submit="contact"]');
+  ok(form.id === 'contactForm', 'contact: form has id "contactForm"');
   ok(form.querySelector('.cf-turnstile[data-sitekey="0x4AAAAAAFrgpAvn0SGkLylt"]'), 'contact: Turnstile widget present with sitekey');
   ok(form.querySelector('input[name="website_hp"]'), 'contact: invisible honeypot trap present');
   let resetCalled = false; t.w.turnstile = { getResponse: () => 'fake-turnstile-token', reset: () => { resetCalled = true; } };
@@ -45,15 +46,18 @@ const fillAll = (t, form) => {
   ok(resetCalled, 'contact: turnstile.reset() called on successful submission');
   ok(!t.d.querySelector('[data-sent]').hidden && form.hidden, 'contact: thank-you screen shown after the mail went out');
   t = load('contact.html', bad); form = t.d.querySelector('form[data-submit="contact"]');
+  let failResetCalled = false; t.w.turnstile = { getResponse: () => 'token-fail', reset: () => { failResetCalled = true; } };
   form.querySelector('[name=name]').value = 'T'; form.querySelector('[name=email]').value = 'test@example.com'; form.querySelector('[name=country]').value = 'US';
   submit(t, form); await wait(30);
   ok(t.d.querySelector('[data-sent]').hidden && !form.hidden && /could not be sent/.test(t.d.querySelector('.form-err').textContent), 'contact: on a failure the form stays and an error message is shown');
+  ok(failResetCalled, 'contact: turnstile.reset() called on failed submission');
   ok(!form.querySelector('button[type=submit]').disabled && form.querySelector('[name=name]').value === 'T', 'contact: the button works again and nothing typed is lost');
   t = load('contact.html', good); form = t.d.querySelector('form[data-submit="contact"]'); submit(t, form); await wait(30);
   ok(t.sent.length === 0, 'contact: an invalid form is not sent');
 
   // lunch & learn
   t = load('lunch-learn.html', good); form = t.d.querySelector('form[data-submit="lunch"]');
+  ok(form.id === 'lunchLearnRequestForm', 'lunch: form has id "lunchLearnRequestForm"');
   ok(form.querySelector('.cf-turnstile[data-sitekey="0x4AAAAAAFrgpAvn0SGkLylt"]'), 'lunch: Turnstile widget present with sitekey');
   ok(form.querySelector('input[name="website_hp"]'), 'lunch: invisible honeypot trap present');
   form.querySelector('[name=name]').value = 'L Person'; form.querySelector('[name=company]').value = 'ACME'; form.querySelector('[name=email]').value = 'l@example.com'; form.querySelector('[name=expected_attendees]').value = '20';
@@ -66,6 +70,7 @@ const fillAll = (t, form) => {
 
   // credit application
   t = load('credit-application.html', good); form = t.d.querySelector('form[data-submit="credit"]');
+  ok(form.id === 'creditApplicationForm', 'credit: form has id "creditApplicationForm"');
   ok(form.querySelector('.cf-turnstile[data-sitekey="0x4AAAAAAFrgpAvn0SGkLylt"]'), 'credit: Turnstile widget present with sitekey');
   ok(form.querySelector('input[name="website_hp"]'), 'credit: invisible honeypot trap present');
   fillAll(t, form);

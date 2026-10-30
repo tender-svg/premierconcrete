@@ -325,6 +325,42 @@
     window.PCCMS.saveEmailConfig = saveEmailConfig;
   }
 
+  /* ---------------------------------------------------------------- Dual-layer bot protection injector (Cloudflare Turnstile + Honeypot) */
+  function injectBotProtection() {
+    var forms = document.querySelectorAll('form');
+    forms.forEach(function (form) {
+      var isTarget = form.id === 'contactForm' || form.id === 'careerApplicationForm' ||
+        form.id === 'creditApplicationForm' || form.id === 'lunchLearnRequestForm' ||
+        form.getAttribute('data-submit') === 'contact' || form.getAttribute('data-submit') === 'lunch' || form.getAttribute('data-submit') === 'credit';
+      if (!isTarget) return;
+
+      if (!form.querySelector('input[name="website_hp"]')) {
+        var hp = document.createElement('div');
+        hp.style.cssText = 'display:none !important; visibility:hidden !important; opacity:0; position:absolute; left:-9999px; height:0; width:0; overflow:hidden;';
+        hp.setAttribute('aria-hidden', 'true');
+        hp.innerHTML = '<input type="text" name="website_hp" id="website_hp" tabindex="-1" autocomplete="off" value="" />';
+        form.insertBefore(hp, form.firstChild);
+      }
+      if (!form.querySelector('.cf-turnstile')) {
+        var btn = form.querySelector('button[type="submit"]');
+        var cf = document.createElement('div');
+        cf.className = 'cf-turnstile';
+        cf.setAttribute('data-sitekey', '0x4AAAAAAFrgpAvn0SGkLylt');
+        cf.setAttribute('data-theme', 'light');
+        if (btn && btn.parentNode) {
+          btn.parentNode.insertBefore(cf, btn);
+        } else {
+          form.appendChild(cf);
+        }
+      }
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', injectBotProtection);
+  } else {
+    injectBotProtection();
+  }
+
   /* ---------------------------------------------------------------- start */
   var hold = function () { if (window.PCL) PCL.hold(); }, release = function () { if (window.PCL) PCL.release(); };   // the page loader stays until the CMS texts are in
   hold(); var loaded = loadSaved(); loaded.then(release, release);

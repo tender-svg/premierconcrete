@@ -138,7 +138,13 @@ function renderAttrs(el, scope, inst, ctx) {
         }
         continue;
       }
-      if (evt[1] === 'submit') { out.push('data-submit="' + (ctx.view || '') + '"'); continue; }
+      if (evt[1] === 'submit') {
+        const v = ctx.view || '';
+        const formId = v === 'contact' ? 'contactForm' : (v === 'lunch' ? 'lunchLearnRequestForm' : (v === 'credit' ? 'creditApplicationForm' : ''));
+        if (formId) out.push('id="' + formId + '"');
+        out.push('data-submit="' + v + '"');
+        continue;
+      }
       if (evt[1] === 'change') { const e2 = exprOf(raw) || ''; out.push('data-change="' + escAttr(e2) + '"'); continue; }
       if (evt[1] === 'mouse-enter' || evt[1] === 'focus') {
         const fn = e ? getPath(scope, e) : null;

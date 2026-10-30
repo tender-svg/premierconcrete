@@ -316,7 +316,16 @@
       tax_business_type: c('3-0-0'), tax_exempt_all: c('3-0-2'), tax_exempt_some: c('3-0-3'), agree_terms: g('agreeTerms') ? 'Yes' : '', agree_guaranty: g('agreeGuaranty') ? 'Yes' : '', agree_tos: g('agreeSale') ? 'Yes' : '',
       guarantor_name: c('5-0-0'), guarantor_title: c('5-0-1'), sign_name: c('7-0-0'), sign_signature: c('7-0-1'), sign_title: c('7-0-2') }, base);
   }
-  $$('form[data-submit]').forEach(function (form) {
+  function isContactForm(form) {
+    if (!form || !form.tagName || form.tagName !== 'FORM') return false;
+    var id = form.id || '';
+    var submitKind = form.getAttribute('data-submit') || '';
+    return id === 'contactForm' || id === 'careerApplicationForm' ||
+      id === 'creditApplicationForm' || id === 'lunchLearnRequestForm' ||
+      submitKind === 'contact' || submitKind === 'lunch' || submitKind === 'credit';
+  }
+  var targetForms = $$('form#contactForm, form#lunchLearnRequestForm, form#creditApplicationForm, form#careerApplicationForm, form[data-submit]').filter(function (f, i, arr) { return arr.indexOf(f) === i && isContactForm(f); });
+  targetForms.forEach(function (form) {
     if (!form.querySelector('input[name="website_hp"]')) {
       var hp = document.createElement('div');
       hp.style.cssText = 'display:none !important; visibility:hidden !important; opacity:0; position:absolute; left:-9999px; height:0; width:0; overflow:hidden;';
@@ -338,7 +347,7 @@
     }
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var kind = form.getAttribute('data-submit');
+      var kind = form.getAttribute('data-submit') || (form.id === 'contactForm' ? 'contact' : (form.id === 'lunchLearnRequestForm' ? 'lunch' : (form.id === 'creditApplicationForm' ? 'credit' : 'contact')));
       if (kind === 'credit') {
         var bad = $$('section', form).filter(function (s) { return !$$('input,textarea,select', s).every(function (f) { return f.checkValidity(); }); })[0];
         if (bad) { crStep($$('section', form).indexOf(bad)); setTimeout(function () { form.reportValidity(); }, 30); return; }
@@ -354,7 +363,12 @@
           }
           sentScreen(form);
         })   // the thank-you screen shows only after the mail went out
-        .catch(function (err) { msg.textContent = 'Sorry, your message could not be sent (' + (err && err.message || 'network error') + '). Please try again in a moment or call us.'; })
+        .catch(function (err) {
+          if (window.turnstile) {
+            try { window.turnstile.reset(); } catch (e) {}
+          }
+          msg.textContent = 'Sorry, your message could not be sent (' + (err && err.message || 'network error') + '). Please try again in a moment or call us.';
+        })
         .then(function () { if (btn) { btn.disabled = false; btn.innerHTML = label; } });
     });
   });
@@ -380,6 +394,21 @@
       label.style.fontWeight = cur ? 700 : 500;
     });
     var top = $('main'); if (top && window.scrollY > 300) window.scrollTo({ top: crSections[0].getBoundingClientRect().top + window.scrollY - 160, behavior: 'smooth' });
+    if (i === crSections.length - 1) {
+      setTimeout(function () {
+        var curSec = crSections[i];
+        if (!curSec) return;
+        var widget = curSec.querySelector('.cf-turnstile');
+        if (widget && window.turnstile && !widget.querySelector('iframe')) {
+          try {
+            window.turnstile.render(widget, {
+              sitekey: widget.getAttribute('data-sitekey') || '0x4AAAAAAFrgpAvn0SGkLylt',
+              theme: widget.getAttribute('data-theme') || 'light'
+            });
+          } catch (e) {}
+        }
+      }, 50);
+    }
   }
   if (crSections.length) {
     crNav.forEach(function (b, k) { b.addEventListener('click', function (e) { e.stopImmediatePropagation(); crStep(k); }, true); });
