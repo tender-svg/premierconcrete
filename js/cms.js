@@ -366,7 +366,8 @@
 
   /* ---------------------------------------------------------------- start */
   var hold = function () { if (window.PCL) PCL.hold(); }, release = function () { if (window.PCL) PCL.release(); };   // the page loader stays until the CMS texts are in
-  hold(); var loaded = loadSaved(); loaded.then(release, release);
+  var shown = function () { document.documentElement.classList.remove('pc-wait'); };   // the saved photos are in: show the photos (the default ones never flash)
+  hold(); var loaded = loadSaved(); loaded.then(release, release); loaded.then(shown, shown);
   var heldStatus = !(window.PCL && PCL.cached); if (heldStatus) hold();   // with the cache nothing waits for the sign-in check
   fetch('/api/admin/status', { credentials: 'include', cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : { loggedIn: false }; }).catch(function () { return { loggedIn: false }; }).then(function (s) {
     if (heldStatus) release();

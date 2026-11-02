@@ -378,6 +378,8 @@ function tagGallery(html) {
 }
 
 // speed: every photo after the first three (header logo, hero) is loaded only when it nears the screen
+// photos stay invisible until the saved photos of the page are in (js/cms.js removes pc-wait), so the default photo never flashes before the CMS one
+const PIC_WAIT = '<style>html.pc-wait img[data-cms-type="image"]{opacity:0}</style>' + '\n' + '<script>document.documentElement.classList.add("pc-wait");setTimeout(function(){document.documentElement.classList.remove("pc-wait")},4000)</script>' + '\n';
 function lazyImgs(html) { let n = 0; return html.replace(/<img\b(?![^>]*\bloading=)/g, m => ++n > 3 ? '<img loading="lazy" decoding="async"' : m); }
 
 function page(file, title, desc, bodyHtml, bodyClass) {
@@ -391,11 +393,15 @@ function page(file, title, desc, bodyHtml, bodyClass) {
   const rep = editor ? markRepeaters(bodyHtml, bodyClass) : { html: bodyHtml, lists: 0, slots: 0 }; bodyHtml = rep.html;
   // an italic placeholder text ("Add a description of Pavers.") is one editable paragraph: the key moves from the inline <em> to its <p> (an inline element shows one outline box per wrapped line in the editor)
   bodyHtml = bodyHtml.replace(/<p([^>]*)><em (data-cms="[^"]*"(?: data-cms-type="[^"]*")?)>([^<]*)<\/em><\/p>/g, '<p$1 $2>$3</p>');
+  // empty photo slots (cut-out frames) start with a stand-in photo of the page; the admin replaces it with "Change image"
+  const STAND_IN = { 'products-bridges': 'images/bridges/cypress-bayou-side.webp', 'products-drainage': 'images/pcp/highway-trench-drain.webp', 'products-pipeline': 'images/pcp/pipe-stack.webp' };
+  if (/^products-/.test(bodyClass)) bodyHtml = bodyHtml.replace(/(width:100%;height:100%;)object-fit:contain/g, '$1object-fit:cover');   // product photos fill their 4:3 frame (a portrait photo was a narrow strip)
+  if (STAND_IN[bodyClass]) bodyHtml = bodyHtml.replace(/<img src alt=([^>]*?)object-fit:(?:contain|cover)/g, (m, mid) => '<img src="' + STAND_IN[bodyClass] + '" alt=' + mid + 'object-fit:cover');
   bodyHtml = lazyImgs(bodyHtml);
   tagStats[file] = tagged.tagged + (tagged.created ? ' (' + tagged.created + ' new keys)' : '') + (rep.lists || rep.slots ? ' [' + rep.lists + ' lists' + (rep.slots ? ', ' + rep.slots + ' photo slots' : '') + ']' : '');
   return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
     '<title>' + esc(title) + '</title>\n<meta name="description" content="' + escAttr(desc) + '">\n' +
-    '<link rel="icon" type="image/png" sizes="64x64" href="images/favicon.png">\n<link rel="apple-touch-icon" href="images/apple-touch-icon.png">\n' + (editor ? LOADER_HEAD + PRE_HOLD : '') +
+    '<link rel="icon" type="image/png" sizes="64x64" href="images/favicon.png">\n<link rel="apple-touch-icon" href="images/apple-touch-icon.png">\n' + (editor ? LOADER_HEAD + PRE_HOLD + PIC_WAIT : '') +
     '<link rel="preload" href="fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>\n<link rel="stylesheet" href="css/styles.css">\n<link rel="stylesheet" href="css/design.css">\n<link rel="stylesheet" href="css/site.css">\n<link rel="stylesheet" href="css/hover.css">\n<link rel="stylesheet" href="css/pages.css">\n' + (editor ? '<link rel="stylesheet" href="css/pc-motion.css">\n<link rel="stylesheet" href="css/cms.css">\n<link rel="stylesheet" href="css/pc-consent.css">\n' : '') + '</head>\n' +
     '<body data-page="' + escAttr(bodyClass) + '" data-state=\'' + JSON.stringify(Object.assign({ grp: 0, gal: 0 }, STATE[bodyClass.replace(/^products-.*/, 'products')] || {})) + '\'>\n' + (editor ? LOADER_BODY : '') + bodyHtml + '\n' +
     (/^products/.test(bodyClass) ? '<script src="js/search-index.js" defer></script>\n' : '') + '<script src="js/site.js" defer></script>\n<script src="js/pc-static.js" defer></script>\n<script src="js/pc-dialog.js" defer></script>\n<script src="js/pc-edit.js" defer></script>\n<script src="js/pc-cache.js" defer></script>\n<script src="js/pc-motion.js" defer></script>\n<script src="js/pc-content.js" defer></script>\n' + (editor ? '<script src="js/cms.js" defer></script>\n<script src="js/pc-repeat.js" defer></script>\n' + (/^products-/.test(bodyClass) ? '<script src="js/pc-groups.js" defer></script>\n<script src="js/pc-gallery.js" defer></script>\n' : '') + '<script src="js/pc-toolbar.js" defer></script>\n<script src="js/pc-consent.js" defer></script>\n' : '') + '</body>\n</html>\n';

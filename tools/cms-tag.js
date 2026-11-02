@@ -93,8 +93,9 @@ function tagPage(html, pageKey, registry) {
       counters = {};
     }
     if (el.name === 'img') {
-      const src = String(a.src || '').split('?')[0]; if (!src) return;
-      el.attribs['data-cms'] = keyFor('image', src, counters, chrome); el.attribs['data-cms-type'] = 'image'; tagged++; return;
+      const src = String(a.src || '').split('?')[0];
+      if (!src && !a.alt) return;                                  // (an empty photo slot is keyed by its alt text: "Add image" in edit mode)
+      el.attribs['data-cms'] = keyFor('image', src || 'empty:' + a.alt, counters, chrome); el.attribs['data-cms-type'] = 'image'; tagged++; return;
     }
     if ((a['data-set'] !== undefined || a['data-act'] !== undefined || a['data-scroll'] !== undefined || a['data-hover-set'] !== undefined) && el.name === 'button' && a['data-edit-label'] === undefined) {   // tabs / controls keep their function; the title of an accordion row (a button) is a text of the page
       if (a['data-act'] === 'acc') for (const c of el.children || []) walk(c, counters, chrome);

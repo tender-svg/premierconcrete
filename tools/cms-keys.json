@@ -604,7 +604,8 @@
   "link|download submittal|#|10": "lnk-download-submittal-63f2-10",
   "link|download submittal|#|11": "lnk-download-submittal-63f2-11",
   "link|download submittal|#|12": "lnk-download-submittal-63f2-12",
-  "link|download submittal|#|13": "lnk-download-submittal-63f2-13"
+  "link|download submittal|#|13": "lnk-download-submittal-63f2-13",
+  "image|empty:Drop a cut-out Outlet Control Structures photo (transparent PNG)|1": "img-empty-drop-a-cut-out-75f2"
  },
  "products-utility": {
   "text|home › products › utility structures|1": "txt-home-products-utility-structur-1168",
@@ -803,7 +804,14 @@
   "link|download submittal|#|9": "lnk-download-submittal-63f2-9",
   "link|download submittal|#|10": "lnk-download-submittal-63f2-10",
   "link|download submittal|#|11": "lnk-download-submittal-63f2-11",
-  "link|download submittal|#|12": "lnk-download-submittal-63f2-12"
+  "link|download submittal|#|12": "lnk-download-submittal-63f2-12",
+  "image|empty:Drop a cut-out Full-Depth Deck Panels photo (transparent PNG)|1": "img-empty-drop-a-cut-out-8863",
+  "image|empty:Drop a cut-out Partial-Depth Deck Panels photo (transparent PNG)|1": "img-empty-drop-a-cut-out-ce0e",
+  "image|empty:Drop a cut-out Intermediate Bent Caps photo (transparent PNG)|1": "img-empty-drop-a-cut-out-5492",
+  "image|empty:Drop a cut-out Abutment Caps photo (transparent PNG)|1": "img-empty-drop-a-cut-out-57ae",
+  "image|empty:Drop a cut-out Approach Slabs photo (transparent PNG)|1": "img-empty-drop-a-cut-out-68da",
+  "image|empty:Drop a cut-out Wharves photo (transparent PNG)|1": "img-empty-drop-a-cut-out-8b77",
+  "image|empty:Drop a cut-out Movable Concrete Barriers photo (transparent PNG)|1": "img-empty-drop-a-cut-out-90ca"
  },
  "products-erosion": {
   "text|home › products › erosion control|1": "txt-home-products-erosion-control-16ce",
@@ -1170,7 +1178,8 @@
   "link|download submittal|#|8": "lnk-download-submittal-63f2-8",
   "link|download submittal|#|9": "lnk-download-submittal-63f2-9",
   "link|download submittal|#|10": "lnk-download-submittal-63f2-10",
-  "link|download submittal|#|11": "lnk-download-submittal-63f2-11"
+  "link|download submittal|#|11": "lnk-download-submittal-63f2-11",
+  "image|empty:Drop a Pipe Weights photo|1": "img-empty-drop-a-pipe-weights-b41e"
  },
  "products-masonry": {
   "text|home › products › masonry|1": "txt-home-products-masonry-6c17",
