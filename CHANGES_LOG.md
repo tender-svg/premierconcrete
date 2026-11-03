@@ -77,3 +77,5 @@ Local-testing Supabase project: iuvjtyvmhajxxewqnwik, schema `premier_concrete` 
 2026-11-02 product pages: photos in the 4:3 frames use object-fit:cover (fill the frame, no narrow portrait strip).
 2026-11-02 js/pc-groups.js: photos of newly added tabs / items also fill the 4:3 frame (object-fit:cover).
 2026-11-02 page photos stay invisible (html.pc-wait, inline in <head>) until the saved CMS photos are applied (js/cms.js removes it; 4 s fallback), so the default photo no longer flashes before the CMS photo on page switch.
+2026-11-03 js/pc-toolbar.js: colour / font / size of a SELECTED text now stays on that selection (after the first change the selection was lost and the next change went to the whole paragraph); text-node border fix in toRange.
+2026-11-03 product pages: the download icon is removed from the 'Download submittal' / 'Resources' buttons (tools/build-pages.js + css/site.css a[data-pc-file] svg).

@@ -48,7 +48,7 @@
     fontSel.innerHTML = '<option value="">Font...</option>' + FONTS.map(function (f) { return '<option value="' + f + '">' + f + '</option>'; }).join('');
     colorBtn.style.background = '#000000';
 
-    var activeEl = null, saved = null;   // saved = { start, end }: the selection as character offsets (kept while the focus is in the toolbar)
+    var activeEl = null, saved = null, lastUser = 0, lastApply = 0;   // saved = { start, end }: the selection as character offsets (kept while the focus is in the toolbar)
     var changed = function () { if (activeEl && window.PCCMS.markDirty) PCCMS.markDirty(activeEl); };
     var editableOf = function (node) { var el = node && (node.nodeType === 1 ? node : node.parentElement); return el && el.closest ? el.closest(EDITABLE) : null; };
 
@@ -73,10 +73,11 @@
       var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), i = 0, sn = null, so = 0, en = null, eo = 0, n;
       while ((n = w.nextNode())) {
         var len = n.textContent.length;
-        if (!sn && i + len >= start) { sn = n; so = start - i; }
+        if (!sn && i + len > start) { sn = n; so = start - i; }   // (a start on the border of two text nodes belongs to the NEXT one, else the range reaches into the text before the selection)
         if (!en && i + len >= end) { en = n; eo = end - i; break; }
         i += len;
       }
+      if (!sn && en && start >= end) { sn = en; so = eo; }
       if (!sn || !en) return null;
       var r = document.createRange(); r.setStart(sn, Math.max(0, so)); r.setEnd(en, Math.max(0, eo)); return r;
     }
@@ -108,9 +109,12 @@
       var range = sel.getRangeAt(0), el = editableOf(range.commonAncestorContainer); if (!el) return;
       activeEl = el;
       if (el._rgInitial === undefined) { el._rgInitial = el.innerHTML; el._rgInitialStyle = el.getAttribute('style') || ''; }
-      if (!sel.isCollapsed) { var off = toOffsets(el, range); if (off && off.start < off.end) saved = off; } else saved = null;
+      if (!sel.isCollapsed) { var off = toOffsets(el, range); if (off && off.start < off.end) saved = off; }
+      else if (lastUser > lastApply) saved = null;   // only the user's own click / key in the text drops the selection (our own change of the text or the focus moving to the toolbar must not: the format would go to the whole text)
       reflect(range);
     }
+    var userIn = function (e) { if (editableOf(e.target)) lastUser = performance.now(); };
+    document.addEventListener('mousedown', userIn, true); document.addEventListener('keydown', userIn, true);
     document.addEventListener('selectionchange', onSelection);
     document.addEventListener('focusin', function (e) { if (window.PCCMS.editing && editableOf(e.target)) setTimeout(onSelection, 0); });
 
@@ -131,6 +135,7 @@
     }
     function apply(ch, save) {
       if (!activeEl) return false; cleanFonts(activeEl);
+      if (!hasSel()) { var ls = window.getSelection(); if (ls && ls.rangeCount && !ls.isCollapsed && editableOf(ls.getRangeAt(0).commonAncestorContainer) === activeEl) { var lo = toOffsets(activeEl, ls.getRangeAt(0)); if (lo && lo.start < lo.end) saved = lo; } }   // (the text that is selected right now)
       var target = null, isNew = false;
       if (hasSel()) {
         var range = toRange(activeEl, saved.start, saved.end);
@@ -152,7 +157,9 @@
       if (ch.color !== undefined) { target.style.setProperty('color', ch.color, 'important'); [].slice.call(target.querySelectorAll('span')).forEach(function (s) { s.style.removeProperty('color'); }); }
       if (ch.fontFamily !== undefined) { target.style.fontFamily = ch.fontFamily ? "'" + ch.fontFamily + "', sans-serif" : ''; [].slice.call(target.querySelectorAll('span')).forEach(function (s) { s.style.fontFamily = ''; }); }
       if (ch.fontSize !== undefined) { target.style.fontSize = ch.fontSize; [].slice.call(target.querySelectorAll('span')).forEach(function (s) { s.style.fontSize = ''; }); }
-      cleanSpans(activeEl); if (save !== false) changed(); return true;
+      cleanSpans(activeEl); lastApply = performance.now();
+      if (hasSel() && document.activeElement === activeEl) { var r2 = toRange(activeEl, saved.start, saved.end), sl = window.getSelection(); if (r2 && sl) { sl.removeAllRanges(); sl.addRange(r2); } }   // the text stays selected: the next change (size +/-, colour) is again for it only
+      if (save !== false) changed(); return true;
     }
 
     /* ----- buttons */
