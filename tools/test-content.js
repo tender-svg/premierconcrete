@@ -48,8 +48,8 @@ function load(file, search) {
   t = load('project-highlights.html'); await wait(150);
   const pc = [...t.d.querySelectorAll('button[data-dyn-item="pcards"]')]; ok(pc.length === DATA.stories.length, 'project cards = stories (' + pc.length + ')');
   ok(pc.every(c => /^project-highlight-.+\.html$/.test(c.getAttribute('data-href'))), 'cards link to project-highlight-<slug>.html');
-  const chips = [...t.d.querySelectorAll('button[data-dyn-item="pfilters"]')]; ok(chips.length >= 2 && chips[0].textContent === 'All', 'filter chips: All + products that have a project');
-  chips[1].click(); ok(pc.filter(c => !c.hidden).length >= 1 && pc.filter(c => !c.hidden).length < pc.length, 'a chip filters the cards');
+  const chips = [...t.d.querySelectorAll('button[data-dyn-item="pfilters"]')]; ok(chips.length === titles.length + 1 && chips[0].textContent === 'All' && titles.every((x, i) => chips[i + 1].textContent === x), 'filter chips: All + every product (in the order of the Dashboard)');
+  const withProject = chips.slice(1).find(c => pc.some(p => p.getAttribute('data-cat') === JSON.parse(c.getAttribute('data-set')).phCat)); withProject.click(); ok(pc.filter(c => !c.hidden).length >= 1 && pc.filter(c => !c.hidden).length < pc.length, 'a chip filters the cards');
 
   const slug = DATA.stories[0].slug; t = load('project-highlight.html', '?slug=' + slug); await wait(150);
   ok(t.d.querySelector('[data-pdetail] h2') && t.d.querySelector('[data-pdetail] h2').textContent === DATA.stories[0].title, 'project page shows the story');

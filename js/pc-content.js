@@ -268,11 +268,11 @@
     }, { fixEmpty: true });
     if (!host && editing()) { var g = $('[data-dyn-item="pcards"]'); host = g && g.parentNode; }
     if (host) { host.setAttribute('data-dyn', 'pf'); addHost(host, 'story', addBtn('New project highlight')); bindOnce(host, stories, { redraw: drawStories }); reapply(); focusEnd(host, focus); }
-    // filter chips: All + one per product that has a project
+    // filter chips: All + one per product
     var chips = items('pfilters'); if (chips.length > 1) {
       if (!PROTO.chipOn) { PROTO.chipOn = chips[0].getAttribute('style'); PROTO.chipOff = chips[1].getAttribute('style'); }
-      var used = []; rows.forEach(function (s) { if (s.prod && used.indexOf(s.prod) < 0) used.push(s.prod); });
-      var list = [{ slug: 'all', title: 'All' }].concat(used.map(function (k) { return { slug: k, title: prodTitle(k) || k }; }));
+      // the chips are the products (the same list, in the same order, as the Products section of the Dashboard); a product without a project shows none
+      var list = [{ slug: 'all', title: 'All' }].concat(productsList().map(function (p) { return { slug: p.slug, title: p.title }; }));
       swap('chip', chips, list, function (b, c, i) { b.setAttribute('data-set', JSON.stringify({ phCat: c.slug })); b.textContent = c.title; b.setAttribute('style', i === 0 ? PROTO.chipOn : PROTO.chipOff); });
     }
     refresh();

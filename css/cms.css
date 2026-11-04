@@ -194,3 +194,7 @@ li.pcr-addhost{list-style:none}
 /* the Remove button never covers the text of an item (js/pc-repeat.js decorate) */
 .pcr-x.pcr-x-line{position:static;flex:none;align-self:center;margin-left:auto;padding:3px 8px;font-size:10.5px}
 .pcr-x.pcr-x-acc{left:auto;right:76px;top:22px}
+/* texts on a dark green surface (the contact band of the home page, the title bands, the footer): the edit outline is white, so it can be seen and clicked */
+body.cms-editing :is([style*="background:var(--color-accent)"], [style*="--color-accent-900"], [style*="--color-accent-800"], .pc-hero, footer) [contenteditable="true"]{outline:2px dashed rgba(255,255,255,.9);outline-offset:3px;box-shadow:0 0 0 1px rgba(0,0,0,.18)}
+body.cms-editing :is([style*="background:var(--color-accent)"], [style*="--color-accent-900"], [style*="--color-accent-800"], .pc-hero, footer) [contenteditable="true"]:hover{outline-color:#fff;background:rgba(255,255,255,.14)}
+body.cms-editing :is([style*="background:var(--color-accent)"], [style*="--color-accent-900"], [style*="--color-accent-800"], .pc-hero, footer) [contenteditable="true"]:focus{outline:2px solid #fff;background:rgba(255,255,255,.16)}

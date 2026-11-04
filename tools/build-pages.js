@@ -406,7 +406,18 @@ function botProtection(html, bodyClass) {
   const at = html.lastIndexOf(anchor, sub);
   return at < 0 ? html : html.slice(0, at) + TS_BLOCK + html.slice(at);
 }
-function page(file, title, desc, bodyHtml, bodyClass) { return botProtection(pageBase(file, title, desc, bodyHtml, bodyClass), bodyClass); }
+// rows of cards that slide in preview (js/pc-slider.js; edit mode keeps the wrapping grid): the "Why Premier" cards of the home page (5 in a row) and the people of every group of the Our Team page (4 in a row)
+function whySlider(html) {
+  const why = /(<div style="display:grid;grid-template-columns:repeat\(auto-fit,minmax\(min\(100%,190px\),1fr\)\);gap:16px")( data-rep=)/;
+  const team = /(<div style="display:grid;grid-template-columns:repeat\(auto-fill,minmax\(min\(100%,2[0-9]0px\),1fr\)\);gap:40px 32px;max-width:100%")( data-rep=)/g;
+  html = html.replace(/\s*<span style="font-size:14px;color:var\(--color-neutral-800\)" data-cms="txt-\d+-people-[a-z0-9-]+" data-cms-type="text">\d+ people<\/span>/g, '');   // (the "3 people" count next to a group title of the Our Team page is not shown)
+  team.lastIndex = 0;
+  if (!why.test(html) && !team.test(html)) return html;
+  team.lastIndex = 0;
+  html = html.replace(why, (m, a1, a2) => a1 + ' data-slider' + a2).replace(team, (m, a1, a2) => a1 + ' data-slider data-slider-per="4" data-slider-gap="32" data-slider-every="2000"' + a2);
+  return html.replace('<script src="js/site.js" defer></script>', () => '<script src="js/pc-slider.js" defer></script>\n<script src="js/site.js" defer></script>');
+}
+function page(file, title, desc, bodyHtml, bodyClass) { return whySlider(botProtection(pageBase(file, title, desc, bodyHtml, bodyClass), bodyClass)); }
 function pageBase(file, title, desc, bodyHtml, bodyClass) {
   const editor = bodyClass !== 'login';
   if (editor) bodyHtml = heroBand(bodyHtml, bodyClass);
