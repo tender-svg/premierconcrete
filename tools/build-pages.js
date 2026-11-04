@@ -348,6 +348,17 @@ function heroBand(html, bodyClass) {
   return $('#__root').html();
 }
 
+// every product page has the hero file button next to "Request a quote" (the Brochure / Downloads button): where the page has none it is added. It starts with the address "#",
+// which keeps it hidden from visitors until a file is uploaded with the editor (css/site.css a[data-pc-file][href="#"]).
+function heroDownload(html, bodyClass) {
+  if (!/^products-/.test(bodyClass)) return html;
+  const $ = parse(html);
+  const row = $('div').filter((k, el) => /padding-top:6px/.test($(el).attr('style') || '') && $(el).children('button.btn-primary[data-href="contact.html"]').length).first();
+  if (!row.length || row.find('a.btn-secondary').length) return html;
+  row.append('<a href="#" target="_blank" class="btn btn-secondary" style="padding:13px 22px;border-radius:999px;border:1.5px solid var(--color-accent);color:var(--color-accent-700);text-decoration:none">Brochure</a>');
+  return $('#__root').html();
+}
+
 // product pages whose "Applications" is one placeholder text ("Applications to be added.", the Utility Structures groups): it becomes a one-item bullet list in the
 // same format as the other products, so the editor gets Add item / Remove there too. The text keeps its key, so a saved text stays.
 function applicationsList(html) {
@@ -389,6 +400,7 @@ function page(file, title, desc, bodyHtml, bodyClass) {
   bodyHtml = bodyHtml.replace('<img src="images/logo.webp"', '<img data-cms="site-logo" data-cms-type="image" src="images/logo.webp"').replace('<img src="images/logo-white.webp"', '<img data-cms="footer-logo" data-cms-type="image" src="images/logo-white.webp"');
   if (editor) bodyHtml = markSlots(bodyHtml).html;
   bodyHtml = applicationsList(bodyHtml);
+  bodyHtml = heroDownload(bodyHtml, bodyClass);
   const tagged = tagPage(bodyHtml, bodyClass, registry); bodyHtml = tagGallery(tagged.html);
   const rep = editor ? markRepeaters(bodyHtml, bodyClass) : { html: bodyHtml, lists: 0, slots: 0 }; bodyHtml = rep.html;
   // an italic placeholder text ("Add a description of Pavers.") is one editable paragraph: the key moves from the inline <em> to its <p> (an inline element shows one outline box per wrapped line in the editor)
