@@ -11,6 +11,8 @@
 <noscript><style>#pc-loader{display:none}html.pc-loading{overflow:auto}</style></noscript>
 <script>(function(){var d=document,n=0,ready=false,hid=false,t0=Date.now(),c=false;d.documentElement.classList.add("pc-loading");try{var nv=performance.getEntriesByType("navigation")[0];if(nv&&nv.type==="reload"){localStorage.removeItem("pc-cache-v1");localStorage.removeItem("pc-cache-t")}}catch(e){}try{var t=+localStorage.getItem("pc-cache-t");c=!!(t&&Date.now()-t<864e5)}catch(e){}if(c)d.documentElement.classList.add("pc-cached");function hide(){if(hid)return;hid=true;var e=d.getElementById("pc-loader");d.documentElement.classList.remove("pc-loading");d.documentElement.classList.remove("pc-cached");if(e){e.classList.add("done");setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e)},600)}}function check(){if(ready&&n<=0)setTimeout(function(){if(n<=0)hide()},Math.max(30,(PCL.cached?0:380)-(Date.now()-t0)))}window.PCL={cached:c,cachedUsed:false,hold:function(){n++},release:function(){n=Math.max(0,n-1);check()},miss:function(){PCL.cached=false;d.documentElement.classList.remove("pc-cached")}};d.addEventListener("DOMContentLoaded",function(){ready=true;check()});setTimeout(hide,c?2500:12000)})();</script>
 <script>(function(){var d=document.documentElement;if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("pcm-pre");setTimeout(function(){d.classList.remove("pcm-pre")},9000)})();</script>
+<style>html.pc-wait img[data-cms-type="image"]{opacity:0}</style>
+<script>document.documentElement.classList.add("pc-wait");setTimeout(function(){document.documentElement.classList.remove("pc-wait")},4000)</script>
 <link rel="preload" href="fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/design.css">
@@ -259,7 +261,7 @@
           <h1 style="font-size:52px;letter-spacing:-.03em;margin:0;font-weight:700" data-cms="txt-application-for-credit-9e20" data-cms-type="text">Application for Credit</h1>
           <p style="font-size:16px;margin:0;color:var(--color-neutral-800)" data-cms="txt-estimated-processing-time-2-3-b34c" data-cms-type="text">Estimated processing time 2–3 business days.</p>
         </div>
-        <a href="https://www.premier-concrete.com/wp-content/uploads/2023/05/pcp-credit-application.docx" target="_blank" class="btn btn-secondary" style="border-radius:999px;padding:12px 20px;border-width:1.5px;background:#fff" data-cms="txt-download-printable-form-f866" data-cms-type="text" data-cms-link="lnk-download-printable-form-352e"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>Download printable form</a>
+        <a data-pc-file href="https://www.premier-concrete.com/wp-content/uploads/2023/05/pcp-credit-application.docx" target="_blank" class="btn btn-secondary" style="border-radius:999px;padding:12px 20px;border-width:1.5px;background:#fff" data-cms="txt-download-printable-form-f866" data-cms-type="text" data-cms-link="lnk-download-printable-form-352e">Download printable form</a>
       </div>
     </div>
     <div style="max-width:1440px;margin:0 auto;padding-left:clamp(20px,3vw,48px);padding-right:clamp(20px,3vw,48px);padding-top:48px;padding-bottom:104px;display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start">
@@ -339,7 +341,7 @@
           </div>
         
         
-          <form id="creditApplicationForm" data-notsent data-submit="credit" novalidate style="display:flex;flex-direction:column;gap:28px">
+          <form data-notsent id="creditApplicationForm" data-submit="credit" novalidate style="display:flex;flex-direction:column;gap:28px">
             
               <section style="display:flex;flex-direction:column;gap:24px">
                 <div style="display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--color-divider);padding-bottom:16px">
@@ -370,7 +372,7 @@
                   </div>
                       
                   <div class="field" style="grid-column:auto;gap:8px"><label style="font-size:15px;font-weight:600;color:var(--color-text);letter-spacing:0;text-transform:none;opacity:1" data-cms="txt-products-8602-2" data-cms-type="text">Products</label>
-                    <input class="input" type="text" name="cr-0-0-2" placeholder="e.g. Pipe culverts, masonry" style="background:#fff;min-height:48px;font-size:16px;color:var(--color-text)">
+                    <select class="input" name="cr-0-0-2" style="background:#fff;min-height:48px;font-size:16px;color:var(--color-text)"><option value>Select a product...</option><option data-dyn-item="cprods" value="Pipe Culverts">Pipe Culverts</option><option data-dyn-item="cprods" value="Box Culverts">Box Culverts</option><option data-dyn-item="cprods" value="Drainage &amp; Site Solutions">Drainage &amp; Site Solutions</option><option data-dyn-item="cprods" value="Utility Structures">Utility Structures</option><option data-dyn-item="cprods" value="Precast Bridges">Precast Bridges</option><option data-dyn-item="cprods" value="Erosion Control">Erosion Control</option><option data-dyn-item="cprods" value="Pipeline">Pipeline</option><option data-dyn-item="cprods" value="Masonry">Masonry</option><option data-dyn-item="cprods" value="Hardscapes">Hardscapes</option></select>
                     
                     
                     
@@ -913,10 +915,10 @@
                   <label style="display:flex;gap:12px;align-items:flex-start;font-size:15px;font-weight:500;line-height:1.55;cursor:pointer"><input type="checkbox" required style="accent-color:var(--color-accent);width:18px;height:18px;margin-top:2px;flex:none" name="taxAck"><span data-cms="txt-i-have-read-and-understand-80b6" data-cms-type="text">I have read and understand that I will not be refunded sales tax if I fail to provide a current exempt certificate prior to delivery of merchandise.<span style="color:var(--color-accent-700)"> *</span></span></label>
                 
                 <div style="display:none !important; visibility:hidden !important; opacity:0; position:absolute; left:-9999px; height:0; width:0; overflow:hidden;" aria-hidden="true">
-                  <input type="text" name="website_hp" id="website_hp" tabindex="-1" autocomplete="off" value="" />
-                </div>
-                <div class="cf-turnstile" data-sitekey="0x4AAAAAAFrgpAvn0SGkLylt" data-theme="light"></div>
-                <div style="display:flex;gap:12px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--color-divider)">
+<input type="text" name="website_hp" id="website_hp" tabindex="-1" autocomplete="off" value="" />
+</div>
+<div class="cf-turnstile" data-sitekey="0x4AAAAAAFrgpAvn0SGkLylt" data-theme="light"></div>
+<div style="display:flex;gap:12px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--color-divider)">
                   <button type="button" data-act="cr-prev" class="btn btn-secondary" style="border-radius:999px;padding:14px 22px;border-width:1.5px">Back</button>
                   
                   <button type="submit" class="btn btn-primary" style="border-radius:999px;padding:14px 24px;margin-left:auto" data-cms="txt-submit-application-af3d" data-cms-type="text">Submit application<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>

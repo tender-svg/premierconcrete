@@ -239,6 +239,8 @@
     }
     // contact form: the product select
     swap('cprod', items('cprods'), products, function (o, p) { o.value = p.title; o.textContent = p.title; });
+    // Lunch & Learn form: the topics of interest are the products
+    swap('ltopic', items('ltopics'), products, function (l, p) { var i = $('input', l), sp = $('span', l); if (i) { i.value = p.title; i.checked = false; } if (sp) sp.textContent = p.title; });
     refresh();
   }
 

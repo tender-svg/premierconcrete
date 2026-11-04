@@ -11,6 +11,8 @@
 <noscript><style>#pc-loader{display:none}html.pc-loading{overflow:auto}</style></noscript>
 <script>(function(){var d=document,n=0,ready=false,hid=false,t0=Date.now(),c=false;d.documentElement.classList.add("pc-loading");try{var nv=performance.getEntriesByType("navigation")[0];if(nv&&nv.type==="reload"){localStorage.removeItem("pc-cache-v1");localStorage.removeItem("pc-cache-t")}}catch(e){}try{var t=+localStorage.getItem("pc-cache-t");c=!!(t&&Date.now()-t<864e5)}catch(e){}if(c)d.documentElement.classList.add("pc-cached");function hide(){if(hid)return;hid=true;var e=d.getElementById("pc-loader");d.documentElement.classList.remove("pc-loading");d.documentElement.classList.remove("pc-cached");if(e){e.classList.add("done");setTimeout(function(){if(e.parentNode)e.parentNode.removeChild(e)},600)}}function check(){if(ready&&n<=0)setTimeout(function(){if(n<=0)hide()},Math.max(30,(PCL.cached?0:380)-(Date.now()-t0)))}window.PCL={cached:c,cachedUsed:false,hold:function(){n++},release:function(){n=Math.max(0,n-1);check()},miss:function(){PCL.cached=false;d.documentElement.classList.remove("pc-cached")}};d.addEventListener("DOMContentLoaded",function(){ready=true;check()});setTimeout(hide,c?2500:12000)})();</script>
 <script>(function(){var d=document.documentElement;if(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)return;d.classList.add("pcm-pre");setTimeout(function(){d.classList.remove("pcm-pre")},9000)})();</script>
+<style>html.pc-wait img[data-cms-type="image"]{opacity:0}</style>
+<script>document.documentElement.classList.add("pc-wait");setTimeout(function(){document.documentElement.classList.remove("pc-wait")},4000)</script>
 <link rel="preload" href="fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/design.css">
@@ -323,7 +325,7 @@
           </div>
         
         
-          <form id="contactForm" data-notsent data-submit="contact" style="display:flex;flex-direction:column;gap:24px">
+          <form data-notsent id="contactForm" data-submit="contact" style="display:flex;flex-direction:column;gap:24px">
             <div style="display:flex;flex-direction:column;gap:8px">
               <span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--color-accent-700)" data-cms="txt-send-a-message-b3e4" data-cms-type="text">Send a message</span>
               <h2 style="font-size:30px;letter-spacing:-.02em;margin:0;font-weight:700" data-cms="txt-get-in-touch-c1cd" data-cms-type="text">Get In Touch</h2>
@@ -343,10 +345,10 @@
               <div class="field" style="grid-column:1 / -1;gap:8px"><label style="font-size:15px;font-weight:600;color:var(--color-text);letter-spacing:0;text-transform:none;opacity:1" data-cms="txt-message-78e7" data-cms-type="text">Message</label><textarea class="input" name="message" style="min-height:150px;background:#fff;font-size:16px;color:var(--color-text)"></textarea></div>
             </div>
             <div style="display:none !important; visibility:hidden !important; opacity:0; position:absolute; left:-9999px; height:0; width:0; overflow:hidden;" aria-hidden="true">
-              <input type="text" name="website_hp" id="website_hp" tabindex="-1" autocomplete="off" value="" />
-            </div>
-            <div class="cf-turnstile" data-sitekey="0x4AAAAAAFrgpAvn0SGkLylt" data-theme="light"></div>
-            <div><button type="submit" class="btn btn-primary" style="padding:15px 26px;font-size:15px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;gap:8px" data-cms="txt-send-message-da29" data-cms-type="text">Send message<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>
+<input type="text" name="website_hp" id="website_hp" tabindex="-1" autocomplete="off" value="" />
+</div>
+<div class="cf-turnstile" data-sitekey="0x4AAAAAAFrgpAvn0SGkLylt" data-theme="light"></div>
+<div><button type="submit" class="btn btn-primary" style="padding:15px 26px;font-size:15px;border-radius:999px;white-space:nowrap;display:inline-flex;align-items:center;gap:8px" data-cms="txt-send-message-da29" data-cms-type="text">Send message<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>
           </form>
         
       </div>

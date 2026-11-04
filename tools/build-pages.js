@@ -102,7 +102,7 @@ const VIEW_FLAGS = new Set(['isHome', 'isProducts', 'isAbout', 'isTeam', 'isProj
 const unhandled = new Set();
 const BOOL_ATTRS = new Set(['required', 'disabled', 'readonly', 'multiple', 'selected', 'autofocus']);
 // lists of the design that the CMS fills (solutions, project highlights, resources): the first element of every item is marked data-dyn-item="<list>[:header|footer]"
-const DYN_LISTS = { cats: 'cats', hProdRows: 'hrows', phFilters: 'pfilters', phCards: 'pcards', resDocs: 'rdocs', resVideos: 'rvideos', resFilters: 'rfilters', contactProducts: 'cprods' };
+const DYN_LISTS = { cats: 'cats', hProdRows: 'hrows', phFilters: 'pfilters', phCards: 'pcards', resDocs: 'rdocs', resVideos: 'rvideos', resFilters: 'rfilters', contactProducts: 'cprods', llTopics: 'ltopics' };
 // parts the design shows only while "open" (accordion rows, tables, filter groups): always rendered, hidden until js/site.js opens them
 const OPENERS = new Set(['it.open', 'g.dOpen', 'c.ctOpen', 'ac.open', 'rf.open']);
 const ALWAYS = new Set(['it.closed', 'ac.open', 'rf.open', 'sent', 'llSent', 'crSent', 'resEmpty']);   // + the "sent" screens of the forms and the "nothing matches" line
@@ -393,7 +393,21 @@ function tagGallery(html) {
 const PIC_WAIT = '<style>html.pc-wait img[data-cms-type="image"]{opacity:0}</style>' + '\n' + '<script>document.documentElement.classList.add("pc-wait");setTimeout(function(){document.documentElement.classList.remove("pc-wait")},4000)</script>' + '\n';
 function lazyImgs(html) { let n = 0; return html.replace(/<img\b(?![^>]*\bloading=)/g, m => ++n > 3 ? '<img loading="lazy" decoding="async"' : m); }
 
-function page(file, title, desc, bodyHtml, bodyClass) {
+const TS_SCRIPT = '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=auto" async defer></script>\n';
+const TS_BLOCK = '<div style="display:none !important; visibility:hidden !important; opacity:0; position:absolute; left:-9999px; height:0; width:0; overflow:hidden;" aria-hidden="true">\n<input type="text" name="website_hp" id="website_hp" tabindex="-1" autocomplete="off" value="" />\n</div>\n<div class="cf-turnstile" data-sitekey="0x4AAAAAAFrgpAvn0SGkLylt" data-theme="light"></div>\n';
+function botProtection(html, bodyClass) {
+  if (!/^(contact|lunch|credit)$/.test(bodyClass)) return html;
+  if (bodyClass === 'credit') html = html.replace(/<input class="input" type="text" name="cr-0-0-2"[^>]*?style="([^"]*)">/, (m, st) => '<select class="input" name="cr-0-0-2" style="' + st + '"><option value>Select a product...</option>' + CATS.map(c => '<option data-dyn-item="cprods" value="' + esc(c.name) + '">' + esc(c.name) + '</option>').join('') + '</select>');   // the Products field of the credit application is a product select like the one of the contact form (drawn from the products, js/pc-content.js)
+  const head = '<link rel="stylesheet" href="css/pc-consent.css">\n';
+  if (html.indexOf(head) >= 0) html = html.replace(head, () => head + TS_SCRIPT);
+  const sub = html.indexOf('type="submit"');
+  if (sub < 0) return html;
+  const anchor = bodyClass === 'credit' ? '<div style="display:flex;gap:12px;flex-wrap:wrap;padding-top:8px;border-top:1px solid var(--color-divider)">' : '<div><button type="submit"';
+  const at = html.lastIndexOf(anchor, sub);
+  return at < 0 ? html : html.slice(0, at) + TS_BLOCK + html.slice(at);
+}
+function page(file, title, desc, bodyHtml, bodyClass) { return botProtection(pageBase(file, title, desc, bodyHtml, bodyClass), bodyClass); }
+function pageBase(file, title, desc, bodyHtml, bodyClass) {
   const editor = bodyClass !== 'login';
   if (editor) bodyHtml = heroBand(bodyHtml, bodyClass);
   // the logos are the backend's global keys; every other text / image / link gets its stable key here
