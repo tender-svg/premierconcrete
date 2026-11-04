@@ -95,3 +95,4 @@ Local-testing Supabase project: iuvjtyvmhajxxewqnwik, schema `premier_concrete` 
 2026-11-05 Our Team: the '3 people' next to each group title is counted from the cards of the group (adding / removing a person changes it at once; not a text key any more) (js/pc-slider.js, tools/build-pages.js).
 2026-11-05 Our Team: the '3 people' count next to the group titles is removed again (js/pc-slider.js, tools/build-pages.js).
 2026-11-05 Project Highlights: the filter chips are the products (all of them, in the order of the Dashboard Products section), not only the products that have a project; a product without a project shows 0 projects (js/pc-content.js).
+2026-11-05 Project Highlights filter chips: only the products that have at least one project (none with 0 projects); a product's chip appears as soon as a project gets that product (also while the editor changes the product of a project), in the order of the Dashboard Products (js/pc-content.js).

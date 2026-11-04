@@ -271,12 +271,16 @@
     // filter chips: All + one per product
     var chips = items('pfilters'); if (chips.length > 1) {
       if (!PROTO.chipOn) { PROTO.chipOn = chips[0].getAttribute('style'); PROTO.chipOff = chips[1].getAttribute('style'); }
-      // the chips are the products (the same list, in the same order, as the Products section of the Dashboard); a product without a project shows none
-      var list = [{ slug: 'all', title: 'All' }].concat(productsList().map(function (p) { return { slug: p.slug, title: p.title }; }));
+      // the chips are the products (in the order of the Products section of the Dashboard) that have at least one project; a product gets its chip as soon as a project is added to it
+      var used = {}; rows.forEach(function (s) { if (s.prod) used[s.prod] = true; });
+      var list = [{ slug: 'all', title: 'All' }].concat(productsList().filter(function (p) { return used[p.slug]; }).map(function (p) { return { slug: p.slug, title: p.title }; }));
       swap('chip', chips, list, function (b, c, i) { b.setAttribute('data-set', JSON.stringify({ phCat: c.slug })); b.textContent = c.title; b.setAttribute('style', i === 0 ? PROTO.chipOn : PROTO.chipOff); });
     }
     refresh();
   }
+
+  // the editor gives a project another product: its filter chip appears / disappears at once
+  document.addEventListener('change', function (e) { if (e.target && e.target.matches && e.target.matches('select[data-e="prod"]') && stories && $('[data-dyn-item="pfilters"]')) setTimeout(function () { drawStories(); }, 0); });
 
   /* project page (project-highlight.html?slug= / project-highlight-<slug>.html) */
   function routeSlug(prefix) {
