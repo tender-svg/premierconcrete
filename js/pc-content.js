@@ -103,10 +103,41 @@
 
   /* ---------- products as the pages need them ---------- */
   var prodTitle = function (slug) { var p = productsList().filter(function (x) { return x.slug === slug; })[0]; return p ? p.title : ''; };
+  // the group names of each product as they are NOW (the menus and the product cards): a renamed / removed / added group of a product page is followed
+  var LIVE = {};
+  var plainText = function (h) { var t = document.createElement('template'); t.innerHTML = String(h == null ? '' : h); return (t.content.textContent || '').replace(/\s+/g, ' ').trim(); };
+  var json = function (v) { try { return JSON.parse(v); } catch (e) { return null; } };
+  function liveNames(slug, rows, info) {
+    rows = Array.isArray(rows) ? rows : [];
+    var by = {}; rows.forEach(function (r) { by[r.element_id] = r.content_value; });
+    if (info) {   // a product page that ships with the site: its group titles + grp-struct (removed / new groups)
+      var st = json(by['grp-struct']) || {}, removed = Array.isArray(st.removed) ? st.removed : [], base = STATIC.groups[slug] || [], out = [];
+      info.keys.forEach(function (k, i) { if (removed.indexOf(k) >= 0) return; var n = k && by[k] ? plainText(by[k]) : ''; out.push(n || base[i] || ''); });
+      (Array.isArray(st.extra) ? st.extra : []).forEach(function (g) { out.push(plainText(g && g.name) || 'New group'); });
+      return out.filter(Boolean);
+    }
+    var tg = json(by['tpl-groups']); return Array.isArray(tg) ? tg.map(function (g) { return plainText(g && g.name); }).filter(Boolean) : [];
+  }
+  function loadLive() {
+    if (!sols) return;
+    var cache = window.PCC, jobs = sols.rows.map(function (m) {
+      var info = (STATIC.pages || {})[m.slug], page = info ? info.page : ('product-detail-' + m.slug).toLowerCase().replace(/[^a-z0-9\-_]/g, '-');
+      var c = cache && cache.page ? cache.page(page) : null;
+      var got = c ? Promise.resolve(c) : fetch('/api/v2/page-elements/' + encodeURIComponent(page), { credentials: 'include', cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+      return got.then(function (rows) { if (rows) LIVE[m.slug] = liveNames(m.slug, rows, info); });
+    });
+    Promise.all(jobs).then(function () { drawProducts(); }).catch(function () { });
+  }
+  // the editor changes the groups of this page: the menus follow at once
+  document.addEventListener('pc-groups-changed', function () {
+    if (!window.PCGroups || !PCGroups.list) return;
+    var mine = (sols ? sols.rows : []).filter(function (m) { return (STATIC.pages || {})[m.slug] && STATIC.pages[m.slug].page + '.html' === here; })[0]; if (!mine) return;
+    LIVE[mine.slug] = PCGroups.list().map(function (g) { return plainText((g.tab.textContent || '').replace('✕', '')); }).filter(Boolean); drawProducts();
+  });
   function productsList() {
     return sols ? sols.rows.map(function (m) {
       var url = String(m.link || '').replace(/^\//, '') || ('product-detail-' + m.slug + '.html');
-      return { id: m.id, m: m, slug: m.slug, title: m.title, text: m.text, image: m.image, url: url, groups: STATIC.groups[m.slug] || [] };
+      return { id: m.id, m: m, slug: m.slug, title: m.title, text: m.text, image: m.image, url: url, groups: LIVE[m.slug] || STATIC.groups[m.slug] || [] };
     }) : [];
   }
 
@@ -517,7 +548,7 @@
     if (!m0) { notFound(host, 'product', 'products.html', 'See all products'); return; } var sid = m0.id, pageSlug = ('product-detail-' + slug).toLowerCase().replace(/[^a-z0-9\-_]/g, '-');
     var arrow = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>';
     var dl = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>';
-    var T = tplState;
+    var T = tplState; var gq = parseInt((location.search.match(/[?&]grp=(\d+)/) || [])[1], 10); if (gq >= 0) T.sel = gq;
     var E = function (path, multi) { return editing() ? ' contenteditable="true" spellcheck="false" data-t="' + path + '"' + (multi ? ' data-multi="1"' : '') : ''; };
     // a file button ("Download submittal" / "Brochure"): visitors see it when a file is set; the editor changes the text and the file
     function fileBtn(path, o, def, cls) {
@@ -618,6 +649,7 @@
         stories.onSaved = function () { if (stories.deleted && $('[data-pdetail]')) { location.href = 'project-highlights.html'; return; } drawStories(); drawProject(); };
         ress.onSaved = ress.onSaved || function () { drawResources(); };
         reapply();
+        loadLive();
         document.dispatchEvent(new CustomEvent('pc-content-ready'));
         if (window.PCL) setTimeout(function () { PCL.release(); }, 120);
       })
