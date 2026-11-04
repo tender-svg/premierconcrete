@@ -397,6 +397,8 @@ function page(file, title, desc, bodyHtml, bodyClass) {
   const STAND_IN = { 'products-bridges': 'images/bridges/cypress-bayou-side.webp', 'products-drainage': 'images/pcp/highway-trench-drain.webp', 'products-pipeline': 'images/pcp/pipe-stack.webp' };
   if (/^products-/.test(bodyClass)) bodyHtml = bodyHtml.replace(/(width:100%;height:100%;)object-fit:contain/g, '$1object-fit:cover');   // product photos fill their 4:3 frame (a portrait photo was a narrow strip)
   if (STAND_IN[bodyClass]) bodyHtml = bodyHtml.replace(/<img src alt=([^>]*?)object-fit:(?:contain|cover)/g, (m, mid) => '<img src="' + STAND_IN[bodyClass] + '" alt=' + mid + 'object-fit:cover');
+  // the "Brochure" button of a product page is a file button like "Download submittal": the editor clicks it to change its text and upload / change its file; visitors see it once a file is set
+  bodyHtml = bodyHtml.replace(/<a\b(?=[^>]*\bclass="btn btn-secondary")(?=[^>]*\bdata-cms-link=)(?![^>]*\bdata-pc-file)/g, '<a data-pc-file');
   bodyHtml = bodyHtml.replace(/(<a\b[^>]*\bdata-pc-file[^>]*>)\s*<svg[\s\S]*?<\/svg>/g, '$1');   // the download buttons ('Resources') have no download icon
   bodyHtml = lazyImgs(bodyHtml);
   tagStats[file] = tagged.tagged + (tagged.created ? ' (' + tagged.created + ' new keys)' : '') + (rep.lists || rep.slots ? ' [' + rep.lists + ' lists' + (rep.slots ? ', ' + rep.slots + ' photo slots' : '') + ']' : '');
