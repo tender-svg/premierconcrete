@@ -10,7 +10,7 @@
     'Raleway', 'Oswald', 'Merriweather', 'Playfair Display', 'Nunito', 'Ubuntu', 'PT Sans', 'Noto Sans', 'Inter', 'Work Sans', 'Source Sans Pro', 'Mulish', 'Quicksand', 'Karla', 'Fira Sans', 'Cabin',
     'DM Sans', 'Josefin Sans', 'Archivo', 'Rokkitt', 'Bitter', 'Crimson Text', 'Libre Baskerville', 'Lora', 'PT Serif', 'Arvo', 'Domine', 'Zilla Slab', 'Abril Fatface', 'Dancing Script', 'Pacifico', 'Caveat', 'Comfortaa'];
   var SAFE = ['Archivo', 'Arial', 'Helvetica', 'Georgia', 'Times New Roman', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Courier New'], loadedFonts = {};
-  var EDITABLE = '[data-cms][contenteditable="true"]';
+  var EDITABLE = '[data-cms][contenteditable="true"],[data-t][contenteditable="true"],[data-e][contenteditable="true"],[data-pcgt][contenteditable="true"]';   // (data-t / data-e: the texts of a product page made in the Dashboard, js/pc-content.js solutionPage)
   var ALIGN_SVG = {
     left: 'M1 2h12M1 5h8M1 8h12M1 11h8', center: 'M1 2h12M3 5h8M1 8h12M3 11h8', right: 'M1 2h12M5 5h8M1 8h12M5 11h8', justify: 'M1 2h12M1 5h12M1 8h12M1 11h12'
   };
@@ -49,7 +49,7 @@
     colorBtn.style.background = '#000000';
 
     var activeEl = null, saved = null, lastUser = 0, lastApply = 0;   // saved = { start, end }: the selection as character offsets (kept while the focus is in the toolbar)
-    var changed = function () { if (activeEl && window.PCCMS.markDirty) PCCMS.markDirty(activeEl); };
+    var changed = function () { if (!activeEl) return; if (activeEl.hasAttribute('data-cms')) { if (window.PCCMS.markDirty) PCCMS.markDirty(activeEl); } else activeEl.dispatchEvent(new Event('input', { bubbles: true })); };   // (a text without a CMS key tells its page by an input event)
     var editableOf = function (node) { var el = node && (node.nodeType === 1 ? node : node.parentElement); return el && el.closest ? el.closest(EDITABLE) : null; };
 
     /* ----- selection <-> character offsets */

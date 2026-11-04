@@ -5,6 +5,7 @@
   "description": "Premier Concrete Products website (static pages + CMS front end)",
   "scripts": {
     "build:pages": "node tools/build-pages.js",
+    "dist": "node tools/make-dist.js",
     "dev": "node tools/dev-server.js 5181"
   },
   "devDependencies": {

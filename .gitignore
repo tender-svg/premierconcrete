@@ -8,3 +8,6 @@ _original/
 tools/_tmp/
 .env
 .env.*
+
+# deploy build (npm run dist)
+dist/

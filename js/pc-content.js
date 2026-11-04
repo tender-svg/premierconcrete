@@ -500,61 +500,100 @@
   }
 
   /* ================================================================= solution page (product-detail-<slug>.html): hero + groups with items */
-  var tplState = { groups: [], seq: 0, dirty: false, sel: 0 };
+  var tplState = { groups: [], hero: {}, seq: 0, dirty: false, sel: 0 };
+  // texts that were formatted with the toolbar (colour / font / size) are kept as HTML; plain texts stay plain
+  var RICH = /<(span|b|i|strong|em|u|font|br)\b/i;
+  function safeHtml(h) {
+    var t = document.createElement('template'); t.innerHTML = String(h);
+    [].slice.call(t.content.querySelectorAll('script,style,iframe,object,embed,link,meta')).forEach(function (n) { n.remove(); });
+    [].slice.call(t.content.querySelectorAll('*')).forEach(function (n) { [].slice.call(n.attributes).forEach(function (a) { if (/^on/i.test(a.name)) n.removeAttribute(a.name); }); });
+    return t.innerHTML;
+  }
+  var rich = function (v) { v = String(v == null ? '' : v); return RICH.test(v) ? safeHtml(v) : esc(v); };
+  var fromEl = function (el, multi) { var h = el.innerHTML; return RICH.test(h) ? safeHtml(h).split(String.fromCharCode(160)).join(' ') : (multi ? el.innerText : el.textContent).split(String.fromCharCode(160)).join(' '); };
   function solutionPage() {
     var host = $('[data-soltpl]'); if (!host || !sols) return;
     var slug = routeSlug('product-detail'), m0 = sols.rows.filter(function (x) { return x.slug === slug; })[0];
     if (!m0) { notFound(host, 'product', 'products.html', 'See all products'); return; } var sid = m0.id, pageSlug = ('product-detail-' + slug).toLowerCase().replace(/[^a-z0-9\-_]/g, '-');
     var arrow = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>';
+    var dl = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>';
     var T = tplState;
     var E = function (path, multi) { return editing() ? ' contenteditable="true" spellcheck="false" data-t="' + path + '"' + (multi ? ' data-multi="1"' : '') : ''; };
+    // a file button ("Download submittal" / "Brochure"): visitors see it when a file is set; the editor changes the text and the file
+    function fileBtn(path, o, def, cls) {
+      var url = o.file || '', label = o.fileText || def;
+      if (!editing()) return url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener" class="' + cls + '"><span>' + rich(label) + '</span></a>' : '';
+      return '<span class="st-file"><a href="#" class="' + cls + '" onclick="return false"><span' + E(path + 'Text') + '>' + rich(label) + '</span></a><button type="button" class="dyn-photo st-fbtn" data-tfile="' + path + '">📎 ' + (url ? 'Change file' : 'Add file') + '</button>' + (url ? '<button type="button" class="dyn-del st-fbtn" data-tfilex="' + path + '">✕ Remove file</button>' : '') + '</span>';
+    }
     function draw(focus) {
       var m = sols.by(sid); if (!m) { location.href = 'products.html'; return; } document.title = m.title + ' | Premier Concrete Products';
       T.sel = Math.min(T.sel, Math.max(0, T.groups.length - 1));
-      var img = m.image || 'images/pcp/pipe-stack.webp';
+      var img = m.image || 'images/pcp/pipe-stack.webp', H = T.hero;
+      var heroT = H.titleHtml && H.title === m.title ? safeHtml(H.titleHtml) : esc(m.title), heroP = H.textHtml && H.text === m.text ? safeHtml(H.textHtml) : esc(m.text);
       var groups = T.groups.map(function (g, gi) {
         var items2 = g.items.map(function (it, ii) {
-          return '<details class="st-item"' + (editing() ? ' open' : '') + '><summary><span class="st-dot"></span><span' + E(gi + '.items.' + ii + '.name') + '>' + esc(it.name) + '</span></summary><div class="st-body">' +
+          var ip = gi + '.items.' + ii + '.file';
+          return '<details class="st-item"' + (editing() ? ' open' : '') + '><summary><span class="st-dot"></span><span' + E(gi + '.items.' + ii + '.name') + '>' + rich(it.name) + '</span></summary><div class="st-body">' +
             ((it.image || editing()) ? '<div class="st-img">' + (it.image ? '<img src="' + esc(it.image) + '" alt="' + esc(it.name) + '">' : '') + (editing() ? '<button type="button" class="dyn-photo" data-tphoto="' + gi + '.items.' + ii + '.image">📷 ' + (it.image ? 'Change photo' : 'Add photo') + '</button>' : '') + '</div>' : '') +
-            '<div class="st-txt"><div' + E(gi + '.items.' + ii + '.text', true) + ' style="white-space:pre-line">' + esc(it.text) + '</div>' + (editing() ? '<button type="button" class="dyn-del" data-tdel="' + gi + '.items.' + ii + '">🗑 Remove item</button>' : '') + '</div></div></details>';
+            '<div class="st-txt"><span class="st-lab">' + rich(g.name) + '</span><div' + E(gi + '.items.' + ii + '.text', true) + ' style="white-space:pre-line">' + rich(it.text) + '</div><div class="st-btns" style="padding-top:4px"><button type="button" class="st-q" data-href="contact.html">Request a quote</button>' + fileBtn(ip, it, 'Download submittal', 'st-dlb') + '</div>' + (editing() ? '<button type="button" class="dyn-del" data-tdel="' + gi + '.items.' + ii + '">🗑 Remove item</button>' : '') + '</div></div></details>';
         }).join('');
-        return '<div class="st-group" data-gi="' + gi + '"' + (!editing() && gi !== T.sel ? ' hidden' : '') + '><div class="st-ghead"><div><h3' + E(gi + '.name') + '>' + esc(g.name) + '</h3><p' + E(gi + '.desc', true) + '>' + esc(g.desc) + '</p>' + (editing() ? '<button type="button" class="dyn-del" data-tdel="' + gi + '">🗑 Remove group</button>' : '') + '</div>' +
+        var apps = (g.apps || []).map(function (a, k) { return '<li class="st-app"><span class="st-adot"></span><span' + E(gi + '.apps.' + k) + '>' + rich(a) + '</span>' + (editing() ? '<button type="button" class="dyn-del st-axb" data-tdel="' + gi + '.apps.' + k + '">✕ Remove</button>' : '') + '</li>'; }).join('');
+        var appBox = (apps || editing()) ? '<div class="st-apps"><span class="st-lab2">Applications</span><ul>' + apps + '</ul>' + (editing() ? '<button type="button" class="dyn-add" data-tapp="' + gi + '">＋ Add item</button>' : '') + '</div>' : '';
+        var gf = fileBtn(gi + '.file', g, 'Download submittal', 'btn btn-primary st-dlg');
+        return '<div class="st-group" data-gi="' + gi + '"' + (!editing() && gi !== T.sel ? ' hidden' : '') + '><div class="st-ghead"><div><h3' + E(gi + '.name') + '>' + rich(g.name) + '</h3><p' + E(gi + '.desc', true) + '>' + rich(g.desc) + '</p>' + appBox + (gf ? '<div style="padding-top:8px">' + gf + '</div>' : '') + (editing() ? '<button type="button" class="dyn-del" data-tdel="' + gi + '">🗑 Remove group</button>' : '') + '</div>' +
           ((g.image || editing()) ? '<div class="st-gimg">' + (g.image ? '<img src="' + esc(g.image) + '" alt="' + esc(g.name) + '">' : '') + (editing() ? '<button type="button" class="dyn-photo" data-tphoto="' + gi + '.image">📷 ' + (g.image ? 'Change photo' : 'Add photo') + '</button>' : '') + '</div>' : '') + '</div>' +
           '<div class="st-list">' + items2 + '</div>' + (editing() ? '<button type="button" class="dyn-add" data-tadd="' + gi + '">＋ Add item</button>' : '') + '</div>';
       }).join('');
-      var tabs = T.groups.length > 1 && !editing() ? '<div class="st-tabs" role="tablist">' + T.groups.map(function (g, gi) { return '<button type="button" role="tab" data-gtab="' + gi + '" class="' + (gi === T.sel ? 'on' : '') + '">' + esc(g.name) + '</button>'; }).join('') + '</div>' : '';
+      var tabs = T.groups.length > 1 && !editing() ? '<div class="st-tabs" role="tablist">' + T.groups.map(function (g, gi) { return '<button type="button" role="tab" data-gtab="' + gi + '" class="' + (gi === T.sel ? 'on' : '') + '">' + rich(g.name) + '</button>'; }).join('') + '</div>' : '';
+      var crumb = document.querySelector('[data-crumb]'); if (crumb) crumb.innerHTML = 'Home › Products › <span style="color:var(--color-accent-700);font-weight:600">' + esc(m.title) + '</span>';
+      var bro = fileBtn('hero.file', H, 'Brochure', 'btn btn-secondary st-bro');
       host.innerHTML =
-        '<section class="st-hero"><div class="st-hphoto"><img src="' + esc(img) + '" alt="' + esc(m.title) + '">' + (editing() ? '<button type="button" class="dyn-photo" data-eact="photo" data-id="' + esc(m.id) + '" data-field="image" data-folder="solutions">📷 Change photo</button>' : '') + '</div>' +
-        '<div class="st-htxt"><h2' + (editing() ? ' contenteditable="true" spellcheck="false" data-e="title" data-id="' + esc(m.id) + '"' : '') + '>' + esc(m.title) + '</h2><p style="white-space:pre-line"' + (editing() ? ' contenteditable="true" spellcheck="false" data-multi="1" data-e="text" data-id="' + esc(m.id) + '"' : '') + '>' + esc(m.text) + '</p>' +
-        '<div class="st-btns"><button class="btn btn-primary" data-href="contact.html" style="border-radius:999px;padding:13px 22px">Request a quote ' + arrow + '</button></div>' + (editing() ? '<div class="app-strip" style="margin-top:12px"><label>Order ' + inputF(m, 'order', 'number') + '</label>' + delBtn(m, 'Delete this product') + '</div>' : '') + '</div></section>' +
-        '<section class="st-sec">' + tabs + groups + (editing() ? '<button type="button" class="dyn-add" data-tgroup="1">＋ Add group</button>' : (T.groups.length ? '' : '<p class="st-empty">Product details will be added soon.</p>')) + '</section>';
+        '<div class="st-in"><section class="st-hero"><div class="st-hphoto"><img src="' + esc(img) + '" alt="' + esc(m.title) + '">' + (editing() ? '<button type="button" class="dyn-photo" data-eact="photo" data-id="' + esc(m.id) + '" data-field="image" data-folder="solutions">📷 Change photo</button>' : '') + '</div>' +
+        '<div class="st-htxt"><h2' + (editing() ? ' contenteditable="true" spellcheck="false" data-e="title" data-id="' + esc(m.id) + '"' : '') + '>' + heroT + '</h2><p' + (editing() ? ' contenteditable="true" spellcheck="false" data-multi="1" data-e="text" data-id="' + esc(m.id) + '"' : '') + '>' + heroP + '</p>' +
+        '<div class="st-btns"><button class="btn btn-primary" data-href="contact.html" style="padding:13px 22px;border-radius:999px">Request a quote ' + arrow + '</button>' + bro + '</div>' + (editing() ? '<div class="app-strip" style="margin-top:12px"><label>Order ' + inputF(m, 'order', 'number') + '</label>' + delBtn(m, 'Delete this product') + '</div>' : '') + '</div></section></div>' +
+        '<section class="st-sec"><div class="st-in">' + tabs + groups + (editing() ? '<button type="button" class="dyn-add" data-tgroup="1">＋ Add group</button>' : (T.groups.length ? '' : '<p class="st-empty">Product details will be added soon.</p>')) + '</div></section>';
       focusEnd(host, focus); refresh();
     }
-    // the list of groups is stored as ONE page element of this page (tpl-groups, JSON), saved with SAVE
+    // the groups are stored as ONE page element of this page (tpl-groups, JSON); the hero extras (brochure file, formatted title / text) as another (tpl-hero); both are saved with SAVE
     function mark() { T.dirty = true; if (window.PCCMS && PCCMS.refresh) PCCMS.refresh(); }
-    var parse = function (v) { try { var j = JSON.parse(v); return Array.isArray(j) ? j : []; } catch (e) { return []; } };
+    var parse = function (v, obj) { try { var j = JSON.parse(v); return obj ? (j && typeof j === 'object' && !Array.isArray(j) ? j : {}) : (Array.isArray(j) ? j : []); } catch (e) { return obj ? {} : []; } };
     function loadGroups() {
       return fetch('/api/v2/page-elements/' + encodeURIComponent(pageSlug), { credentials: 'include', cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }).then(function (rows) {
-        var row = (Array.isArray(rows) ? rows : []).filter(function (x) { return x.element_id === 'tpl-groups'; })[0], g = row ? parse(row.content_value) : [];
-        T.groups = g.map(function (x) { return { name: x.name || '', desc: x.desc || '', image: x.image || '', items: (x.items || []).map(function (i) { return { name: i.name || '', text: i.text || '', image: i.image || '' }; }) }; }); T.dirty = false;
+        rows = Array.isArray(rows) ? rows : [];
+        var row = rows.filter(function (x) { return x.element_id === 'tpl-groups'; })[0], g = row ? parse(row.content_value) : [], hr = rows.filter(function (x) { return x.element_id === 'tpl-hero'; })[0];
+        T.groups = g.map(function (x) { return { name: x.name || '', desc: x.desc || '', image: x.image || '', file: x.file || '', fileText: x.fileText || '', apps: (x.apps || []).map(String), items: (x.items || []).map(function (i) { return { name: i.name || '', text: i.text || '', image: i.image || '', file: i.file || '', fileText: i.fileText || '' }; }) }; });
+        T.hero = hr ? parse(hr.content_value, true) : {}; T.dirty = false;
       });
     }
-    var setPath = function (path, v) { var p = path.split('.'), o = T.groups; for (var i = 0; i < p.length - 1; i++) o = o[p[i]]; o[p[p.length - 1]] = v; };
-    host.addEventListener('input', function (e) { var t = e.target.closest && e.target.closest('[data-t]'); if (!t || !editing()) return; setPath(t.getAttribute('data-t'), (t.hasAttribute('data-multi') ? t.innerText : t.textContent).split(String.fromCharCode(160)).join(' ')); mark(); });
+    var setPath = function (path, v) { var p = path.split('.'), o = T.groups; if (p[0] === 'hero') { o = T.hero; p.shift(); } for (var i = 0; i < p.length - 1; i++) o = o[p[i]]; o[p[p.length - 1]] = v; };
+    host.addEventListener('input', function (e) {
+      var el = e.target.closest && e.target.closest('[data-t],[data-e]'); if (!el || !editing()) return;
+      var t = el.getAttribute('data-t');
+      if (t) { setPath(t, fromEl(el, el.hasAttribute('data-multi'))); mark(); return; }
+      var k = el.getAttribute('data-e');   // the title / description of the product (saved in the product; the formatting is kept in tpl-hero)
+      if (k === 'title' || k === 'text') { T.hero[k] = (el.hasAttribute('data-multi') ? el.innerText : el.textContent).split(String.fromCharCode(160)).join(' '); T.hero[k + 'Html'] = RICH.test(el.innerHTML) ? safeHtml(el.innerHTML) : ''; mark(); }
+    });
     host.addEventListener('click', function (e) {
       var t = e.target; if (!t.closest) return;
       var tab = t.closest('[data-gtab]'); if (tab) { T.sel = parseInt(tab.getAttribute('data-gtab'), 10); draw(); return; }
       if (!editing()) return;
-      var ph = t.closest('[data-tphoto]'), del = t.closest('[data-tdel]'), addI = t.closest('[data-tadd]'), addG = t.closest('[data-tgroup]');
+      var ph = t.closest('[data-tphoto]'), del = t.closest('[data-tdel]'), addI = t.closest('[data-tadd]'), addG = t.closest('[data-tgroup]'), addA = t.closest('[data-tapp]'), fl = t.closest('[data-tfile]'), flx = t.closest('[data-tfilex]');
       if (ph) { e.preventDefault(); var path = ph.getAttribute('data-tphoto'); PCE.pickFile('image/*').then(function (f) { if (!f) return; ph.textContent = 'Uploading…'; return PCE.upload(f, 'solutions').then(function (u) { setPath(path, u); mark(); draw(); }); }).catch(function (er) { PCDialog.alert(er.message, { title: 'Upload failed', danger: true }); draw(); }); }
-      else if (del) { e.preventDefault(); var p = del.getAttribute('data-tdel').split('.'); PCDialog.confirm({ title: 'Remove this ' + (p.length > 1 ? 'item' : 'group') + '?', message: 'It is removed from the page when you press SAVE.', ok: 'Remove', danger: true }).then(function (go) { if (!go) return; if (p.length > 1) T.groups[+p[0]].items.splice(+p[2], 1); else T.groups.splice(+p[0], 1); mark(); draw(); }); }
-      else if (addI) { e.preventDefault(); var g = T.groups[+addI.getAttribute('data-tadd')]; g.items.push({ name: 'New item', text: '', image: '' }); mark(); draw(); }
-      else if (addG) { e.preventDefault(); T.groups.push({ name: 'New group', desc: '', image: '', items: [] }); mark(); draw(); }
+      else if (fl) { e.preventDefault(); var fp = fl.getAttribute('data-tfile'); PCE.pickFile('').then(function (f) { if (!f) return; fl.textContent = 'Uploading…'; return PCE.upload(f, 'resources').then(function (u) { setPath(fp, u); mark(); draw(); }); }).catch(function (er) { PCDialog.alert(er.message, { title: 'Upload failed', danger: true }); draw(); }); }
+      else if (flx) { e.preventDefault(); setPath(flx.getAttribute('data-tfilex'), ''); mark(); draw(); }
+      else if (del) { e.preventDefault(); var p = del.getAttribute('data-tdel').split('.'); var what = p.length > 1 ? (p[1] === 'apps' ? 'application' : 'item') : 'group'; PCDialog.confirm({ title: 'Remove this ' + what + '?', message: 'It is removed from the page when you press SAVE.', ok: 'Remove', danger: true }).then(function (go) { if (!go) return; if (p.length > 1) T.groups[+p[0]][p[1] === 'apps' ? 'apps' : 'items'].splice(+p[2], 1); else T.groups.splice(+p[0], 1); mark(); draw(); }); }
+      else if (addI) { e.preventDefault(); var g = T.groups[+addI.getAttribute('data-tadd')]; g.items.push({ name: 'New item', text: '', image: '', file: '', fileText: '' }); mark(); draw(); }
+      else if (addA) { e.preventDefault(); var g2 = T.groups[+addA.getAttribute('data-tapp')]; (g2.apps = g2.apps || []).push('New application'); mark(); draw(); }
+      else if (addG) { e.preventDefault(); T.groups.push({ name: 'New group', desc: '', image: '', file: '', fileText: '', apps: [], items: [] }); mark(); draw(); }
     });
-    if (window.PCCMS && PCCMS.registerHook) PCCMS.registerHook('soltpl', { count: function () { return T.dirty ? 1 : 0; }, run: function () {
-      var body = JSON.stringify({ page_slug: pageSlug, element_id: 'tpl-groups', content_type: 'text', content_value: JSON.stringify(T.groups) });
-      return fetch('/api/v2/page-elements', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: body }).then(function (r) { return r.text().then(function (t) { if (!r.ok) throw new Error(t.slice(0, 120) || ('Error ' + r.status)); if (/PENDING_APPROVAL/.test(t) && PCE) PCE.pending = true; T.dirty = false; return 1; }); });
-    } });
+    var post = function (id, val) {
+      return fetch('/api/v2/page-elements', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page_slug: pageSlug, element_id: id, content_type: 'text', content_value: JSON.stringify(val) }) })
+        .then(function (r) { return r.text().then(function (t) { if (!r.ok) throw new Error(t.slice(0, 120) || ('Error ' + r.status)); if (/PENDING_APPROVAL/.test(t) && PCE) PCE.pending = true; }); });
+    };
+    var regHook = function () { if (regHook.done || !(window.PCCMS && PCCMS.registerHook)) return; regHook.done = true; PCCMS.registerHook('soltpl', { count: function () { return T.dirty ? 1 : 0; }, run: function () {
+      return post('tpl-groups', T.groups).then(function () { return post('tpl-hero', T.hero); }).then(function () { T.dirty = false; return 1; });
+    } }); };
+    regHook(); document.addEventListener('pc-admin', regHook);   // (the editor may load after this page's texts)
     sols.bindHost = host; bindOnce(host, sols, { redraw: draw, afterDelete: function () { sols.deleted = true; } });
     var prevSaved = sols.onSaved; sols.onSaved = function () { if (sols.deleted || !sols.by(sid)) { location.href = 'products.html'; return; } draw(); };
     loadGroups().then(function () { draw(); });

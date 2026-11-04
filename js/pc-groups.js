@@ -31,25 +31,51 @@
   var minus = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path></svg>';
 
   /* ---------------------------------------------------------------- the new groups */
+  // texts formatted with the toolbar (colour / font / size) are kept as HTML, plain texts stay plain
+  var RICH = /<(span|b|i|strong|em|u|font|br)\b/i;
+  function safeHtml(h) {
+    var t = document.createElement('template'); t.innerHTML = String(h);
+    [].slice.call(t.content.querySelectorAll('script,style,iframe,object,embed,link,meta')).forEach(function (n) { n.remove(); });
+    [].slice.call(t.content.querySelectorAll('*')).forEach(function (n) { [].slice.call(n.attributes).forEach(function (a) { if (/^on/i.test(a.name)) n.removeAttribute(a.name); }); });
+    return t.innerHTML;
+  }
+  var rich = function (v) { v = String(v == null ? '' : v); return RICH.test(v) ? safeHtml(v) : esc(v); };
+  var fromEl = function (el) { var h = el.innerHTML, nb = String.fromCharCode(160); return RICH.test(h) ? safeHtml(h).split(nb).join(' ') : (el.hasAttribute('data-multi') ? el.innerText : el.textContent).split(nb).join(' '); };
+  // a file button ("Download submittal"): visitors see it when a file is set; the editor changes the text and the file
+  function fileBtn(path, o, cls, style) {
+    var url = o.file || '', label = o.fileText || 'Download submittal';
+    if (!editing()) return url ? '<a href="' + esc(url) + '" target="_blank" rel="noopener" class="' + cls + '" style="' + style + '"><span>' + rich(label) + '</span></a>' : '';
+    return '<span style="display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px"><a href="#" class="' + cls + '" style="' + style + '" onclick="return false"><span' + T(path + 'Text') + '>' + rich(label) + '</span></a><button type="button" class="dyn-photo" style="position:static" data-pcgfile="' + path + '">📎 ' + (url ? 'Change file' : 'Add file') + '</button>' + (url ? '<button type="button" class="dyn-del" data-pcgfilex="' + path + '">✕ Remove file</button>' : '') + '</span>';
+  }
+  var BTN_P = 'padding:12px 22px;border-radius:999px;text-decoration:none;color:#fff;display:inline-flex;align-items:center;gap:8px';
+  var BTN_I = 'display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:var(--color-accent);border:1.5px solid var(--color-accent);border-radius:4px;padding:13px 20px;color:#fff;text-decoration:none';
   function T(path, multi) { return editing() ? ' contenteditable="true" spellcheck="false" data-pcgt="' + path + '"' + (multi ? ' data-multi="1"' : '') : ''; }
   function itemHtml(g, ii) {
     var it = g.items[ii], open = editing();
     return '<div style="border-top:0">' +
       '<button type="button" data-act="acc" aria-expanded="' + open + '" style="width:100%;display:flex;align-items:center;gap:16px;padding:26px 28px;background:' + (open ? 'var(--color-accent-100)' : '#fff') + ';border:0;cursor:pointer;font:inherit;text-align:left;color:var(--color-text)" class="hv-6">' +
-      '<span style="width:8px;height:8px;border-radius:999px;background:var(--color-accent);flex:none"></span><span style="font-weight:600;font-size:17px;flex:1"' + T('items.' + ii + '.name') + '>' + esc(it.name) + '</span>' +
+      '<span style="width:8px;height:8px;border-radius:999px;background:var(--color-accent);flex:none"></span><span style="font-weight:600;font-size:17px;flex:1"' + T('items.' + ii + '.name') + '>' + rich(it.name) + '</span>' +
       '<span style="color:var(--color-accent);display:flex"><span data-ico="open"' + (open ? '' : ' hidden') + '>' + minus + '</span><span data-ico="closed"' + (open ? ' hidden' : '') + '>' + arrow + '</span></span></button>' +
-      '<div data-acc-body' + (open ? '' : ' hidden') + ' style="display:contents"><div style="padding:24px 40px 40px 48px;display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;background:#fff">' +
-      ((it.image || editing()) ? '<div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative">' + (it.image ? '<img src="' + esc(it.image) + '" alt="' + esc(it.name) + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">' : '') +
+      '<div data-acc-body' + (open ? '' : ' hidden') + ' style="display:contents"><div style="padding:24px 40px 48px 48px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;background:#fff">' +
+      ((it.image || editing()) ? '<div style="flex:1 1 420px;max-width:520px;aspect-ratio:4/3;position:relative">' + (it.image ? '<img src="' + esc(it.image) + '" alt="' + esc(it.name) + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply">' : '') +
         (editing() ? '<button type="button" class="dyn-photo" data-pcgp="items.' + ii + '.image">📷 ' + (it.image ? 'Change photo' : 'Add photo') + '</button>' : '') + '</div>' : '') +
-      '<div style="flex:1 1 380px;display:flex;flex-direction:column;gap:18px;padding-top:8px"><div class="pcp-rte"><p style="white-space:pre-line"' + T('items.' + ii + '.text', true) + '>' + esc(it.text) + '</p></div>' +
-      (editing() ? '<button type="button" class="dyn-del" data-pcgd="' + ii + '">🗑 Remove item</button>' : '<div><button type="button" data-href="contact.html" style="font:inherit;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:transparent;border:1.5px solid var(--color-accent);border-radius:4px;padding:13px 20px;cursor:pointer;color:var(--color-accent-700)" class="hv-6">Request a quote</button></div>') +
+      '<div style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px;padding-top:8px"><span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--color-neutral-800)">' + rich(g.name) + '</span><div class="pcp-rte"><p style="white-space:pre-line"' + T('items.' + ii + '.text', true) + '>' + rich(it.text) + '</p></div>' +
+      '<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding-top:4px"><button type="button" data-href="contact.html" style="font:inherit;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:transparent;border:1.5px solid var(--color-accent);border-radius:4px;padding:13px 20px;cursor:pointer;color:var(--color-accent-700)" class="hv-6">Request a quote</button>' + fileBtn('items.' + ii + '.file', it, 'btn', BTN_I) + '</div>' +
+      (editing() ? '<button type="button" class="dyn-del" data-pcgd="' + ii + '">🗑 Remove item</button>' : '') +
       '</div></div></div></div>';
+  }
+  function appsHtml(g) {
+    var apps = g.apps || []; if (!apps.length && !editing()) return '';
+    var li = apps.map(function (a, k) { return '<li style="display:flex;align-items:center;gap:10px;font-size:15px;line-height:1.45;color:var(--color-text)"><span style="flex:none;width:7px;height:7px;border-radius:999px;background:var(--color-accent)"></span><span' + T('apps.' + k) + '>' + rich(a) + '</span>' + (editing() ? '<button type="button" class="dyn-del" style="padding:3px 8px;font-size:11px;background:#a8261b;color:#fff;border:0;white-space:nowrap" data-pcgax="' + k + '">✕ Remove</button>' : '') + '</li>'; }).join('');
+    return '<div style="display:flex;flex-direction:column;gap:10px;padding-top:4px"><span style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;color:var(--color-accent-700)">Applications</span>' +
+      '<ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:8px 24px">' + li + '</ul>' + (editing() ? '<div><button type="button" class="dyn-add" data-pcgapp="1">＋ Add item</button></div>' : '') + '</div>';
   }
   function panelHtml(g) {
     var items = g.items.map(function (it, ii) { return itemHtml(g, ii); }).join('');
     return '<div style="display:flex;flex-wrap:wrap;gap:48px;align-items:flex-start;margin-bottom:40px"><div style="flex:2 1 480px;display:flex;flex-direction:column;gap:16px">' +
-      '<h3 style="font-size:34px;letter-spacing:-.025em;line-height:1.1;margin:0;font-weight:700;color:var(--color-accent-700)"' + T('name') + '>' + esc(g.name) + '</h3>' +
-      '<p style="font-size:16px;line-height:1.7;margin:0;white-space:pre-line;color:var(--color-neutral-800);text-wrap:pretty"' + T('desc', true) + '>' + esc(g.desc) + '</p></div>' +
+      '<h3 style="font-size:34px;letter-spacing:-.025em;line-height:1.1;margin:0;font-weight:700;color:var(--color-accent-700)"' + T('name') + '>' + rich(g.name) + '</h3>' +
+      '<p style="font-size:16px;line-height:1.7;margin:0;white-space:pre-line;color:var(--color-neutral-800);text-wrap:pretty"' + T('desc', true) + '>' + rich(g.desc) + '</p>' + appsHtml(g) +
+      (function () { var b = fileBtn('file', g, 'btn btn-primary', BTN_P); return b ? '<div style="padding-top:8px">' + b + '</div>' : ''; })() + '</div>' +
       ((g.image || editing()) ? '<div style="flex:1 1 300px;aspect-ratio:4/3;position:relative;overflow:hidden">' + (g.image ? '<img src="' + esc(g.image) + '" alt="' + esc(g.name) + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply">' : '') +
         (editing() ? '<button type="button" class="dyn-photo" data-pcgp="image">📷 ' + (g.image ? 'Change photo' : 'Add photo') + '</button>' : '') + '</div>' : '') + '</div>' +
       '<div style="display:flex;flex-direction:column;gap:20px;margin-top:0"><div style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(22,50,23,.08)">' + items + '</div>' +
@@ -82,7 +108,7 @@
   function parse(rows) {
     var row = (rows || []).filter(function (r) { return r.element_id === 'grp-struct'; })[0], j = null;
     if (row && row.content_value) { try { j = JSON.parse(row.content_value); } catch (e) { j = null; } }
-    var clean = function (g) { return { id: String(g.id || ('n' + Math.random().toString(36).slice(2, 6))), name: g.name || '', desc: g.desc || '', image: g.image || '', items: (g.items || []).map(function (i) { return { name: i.name || '', text: i.text || '', image: i.image || '' }; }) }; };
+    var clean = function (g) { return { id: String(g.id || ('n' + Math.random().toString(36).slice(2, 6))), name: g.name || '', desc: g.desc || '', image: g.image || '', file: g.file || '', fileText: g.fileText || '', apps: (g.apps || []).map(String), items: (g.items || []).map(function (i) { return { name: i.name || '', text: i.text || '', image: i.image || '', file: i.file || '', fileText: i.fileText || '' }; }) }; };
     return { removed: j && Array.isArray(j.removed) ? j.removed.filter(function (k) { return STATIC.some(function (s) { return s.key === k; }); }) : [], extra: j && Array.isArray(j.extra) ? j.extra.map(clean) : [] };
   }
   function apply(rows) {
@@ -112,12 +138,12 @@
 
   document.addEventListener('click', function (e) {
     if (!editing() || !e.target.closest) return;
-    var t = e.target, rm = t.closest('[data-pcg-rm]'), add = t.closest('[data-pcg-add]'), ph = t.closest('[data-pcgp]'), del = t.closest('[data-pcgd]'), addI = t.closest('[data-pcga]');
-    if (!rm && !add && !ph && !del && !addI) return;
+    var t = e.target, rm = t.closest('[data-pcg-rm]'), add = t.closest('[data-pcg-add]'), ph = t.closest('[data-pcgp]'), del = t.closest('[data-pcgd]'), addI = t.closest('[data-pcga]'), addA = t.closest('[data-pcgapp]'), delA = t.closest('[data-pcgax]'), fl = t.closest('[data-pcgfile]'), flx = t.closest('[data-pcgfilex]');
+    if (!rm && !add && !ph && !del && !addI && !addA && !delA && !fl && !flx) return;
     e.preventDefault(); e.stopImmediatePropagation();
     var g;
     if (add) {
-      S.extra.push({ id: 'n' + Date.now().toString(36).slice(-4) + Math.floor(Math.random() * 36).toString(36), name: 'New group', desc: 'Describe this group. Click the text to edit it.', image: '', items: [{ name: 'New item', text: 'Describe this item. Click the text to edit it.', image: '' }] });
+      S.extra.push({ id: 'n' + Date.now().toString(36).slice(-4) + Math.floor(Math.random() * 36).toString(36), name: 'New group', desc: 'Describe this group. Click the text to edit it.', image: '', file: '', fileText: '', apps: [], items: [{ name: 'New item', text: 'Describe this item. Click the text to edit it.', image: '', file: '', fileText: '' }] });
       mark(); build(list.length); var np = list[list.length - 1]; if (np && np.panel.scrollIntoView) np.panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else if (rm) {
       var i = parseInt(rm.getAttribute('data-pcg-rm'), 10), item = list[i]; if (!item) return;
@@ -135,14 +161,25 @@
         .catch(function (err) { ph.textContent = '📷 Add photo'; window.PCDialog && PCDialog.alert(err.message, { title: 'Upload failed', danger: true }); });
     } else if (del && (g = groupOf(del))) {
       g.items.splice(parseInt(del.getAttribute('data-pcgd'), 10), 1); mark(); redraw(g);
+    } else if (addA && (g = groupOf(addA))) {
+      (g.apps = g.apps || []).push('New application'); mark(); redraw(g);
+    } else if (delA && (g = groupOf(delA))) {
+      var ai = parseInt(delA.getAttribute('data-pcgax'), 10), ask2 = window.PCDialog ? PCDialog.confirm({ title: 'Remove this application?', message: 'It is removed from the page when you press SAVE.', ok: 'Remove', danger: true }) : Promise.resolve(true);
+      ask2.then(function (go) { if (go) { g.apps.splice(ai, 1); mark(); redraw(g); } });
+    } else if (fl && (g = groupOf(fl)) && window.PCE) {
+      var fpath = fl.getAttribute('data-pcgfile');
+      PCE.pickFile('').then(function (f) { if (!f) return; fl.textContent = 'Uploading…'; return PCE.upload(f, 'resources').then(function (u) { setPath(g, fpath, u); mark(); redraw(g); }); })
+        .catch(function (err) { redraw(g); window.PCDialog && PCDialog.alert(err.message, { title: 'Upload failed', danger: true }); });
+    } else if (flx && (g = groupOf(flx))) {
+      setPath(g, flx.getAttribute('data-pcgfilex'), ''); mark(); redraw(g);
     } else if (addI && (g = groupOf(addI))) {
-      g.items.push({ name: 'New item', text: 'Describe this item. Click the text to edit it.', image: '' }); mark(); redraw(g);
+      g.items.push({ name: 'New item', text: 'Describe this item. Click the text to edit it.', image: '', file: '', fileText: '' }); mark(); redraw(g);
     }
   }, true);
   document.addEventListener('input', function (e) {
     var f = e.target.closest && e.target.closest('[data-pcgt]'); if (!f || !editing()) return;
     var g = groupOf(f); if (!g) return;
-    var v = (f.hasAttribute('data-multi') ? f.innerText : f.textContent).replace(/ /g, ' ');
+    var v = fromEl(f);
     var path = f.getAttribute('data-pcgt'); setPath(g, path, v); mark();
     if (path === 'name') { var cur = list.filter(function (x) { return x.extra === g; })[0]; if (cur) { var n = [].slice.call(cur.tab.childNodes).filter(function (c) { return c.nodeType === 3; })[0]; if (n) n.nodeValue = v || 'New group'; } }
   });
@@ -179,7 +216,8 @@
   }
 
   if (window.PCCMS && PCCMS.onApply) PCCMS.onApply(apply);
-  document.addEventListener('pc-admin', registerSave);
+  var registered = false, regOnce = function () { if (registered || !CMS().registerHook) return; registered = true; registerSave(); };
+  document.addEventListener('pc-admin', regOnce); regOnce();
   if (window.PCCMS && PCCMS.reapply) setTimeout(function () { PCCMS.reapply(); }, 0);   // (the page texts may have been applied before this script ran)
   window.PCGroups = { state: function () { return S; }, apply: apply, list: function () { return list; } };
 })();
