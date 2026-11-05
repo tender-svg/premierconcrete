@@ -66,9 +66,12 @@ const panelsOf = d => [...d.querySelectorAll('[data-grp-panel]')];
   ok(!!pav && !!pav.querySelector('[data-rep] > [data-rep-item] > button[data-act="acc"]'), 'a group with a single accordion item is a list too (Add item / Remove)');
   // dropdown lines + groups that have no dropdown at all + the file link of "Download submittal"
   t = load([], true); await wait(300); t.d.getElementById('cms-toggle').click(); await wait(80);
+  const rows0Has = d => { const r = d.querySelector(':scope > [data-rep-new]'); return !!r && !!r.querySelector('ul.pts[data-rep] .pcr-addhost [data-pcr-add]') && /Add item/.test(r.querySelector('ul.pts[data-rep]').textContent); };
   const pp = panelsOf(t.d).find(p => /Permeable Pavers/.test(p.querySelector('h3').textContent)), dd = pp.querySelector('[data-dd-empty]');
   ok(!!dd && !!dd.querySelector('[data-pcr-add]') && /Add dropdown/.test(dd.textContent), 'a group with no dropdown has "Add dropdown" in edit mode');
-  click(t.w, dd.querySelector('[data-pcr-add]')); await wait(40); click(t.w, dd.querySelector('[data-pcr-add]')); await wait(40);
+  const addDd = () => dd.querySelector(':scope > .pcr-addhost [data-pcr-add]');   // (a new dropdown has its own "Add item" list inside: the add button of the dropdowns is the one that is a direct child)
+  click(t.w, addDd()); await wait(40); click(t.w, addDd()); await wait(40);
+  ok(rows0Has(dd), 'a new dropdown has its own empty bullet list with "Add item"');
   const rows = [...dd.querySelectorAll(':scope > [data-rep-new]')];
   ok(rows.length === 2 && /^0/.test(rows[0].style.borderTop) && /1px solid/.test(rows[1].style.borderTop), 'new dropdowns: no line above the first one, a thin line above the next ones');
   ok(rows.every(r => !r.querySelector('[data-acc-body]').hidden), 'new dropdowns are open in edit mode');

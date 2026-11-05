@@ -16,8 +16,9 @@
 
   /* ---------------------------------------------------------------- the lists as the HTML ships them */
   function itemsOf(c) { return [].slice.call(c.children).filter(function (e) { return e.hasAttribute('data-rep-item') || e.hasAttribute('data-rep-new'); }); }
-  function collect() {
-    $$('[data-rep]').forEach(function (c) {
+  function reg(c) {
+    {
+      if (REPS.some(function (r) { return r.el === c; })) return;
       var items = {}, order = [];
       [].slice.call(c.children).forEach(function (it) { var id = it.getAttribute('data-rep-item'); if (id) { items[id] = it; order.push(id); } });
       if (!order.length) {   // an empty list (a group without dropdowns): its first item is the prototype kept in a <template>
@@ -25,8 +26,9 @@
         REPS.push({ key: c.getAttribute('data-rep'), el: c, items: items, made: {}, protoId: 'dd', proto: plain(first.cloneNode(true)) }); return;
       }
       REPS.push({ key: c.getAttribute('data-rep'), el: c, items: items, made: {}, protoId: order[0], proto: plain(items[order[0]].cloneNode(true)) });
-    });
+    }
   }
+  function collect() { $$('[data-rep]').forEach(reg); }
   // the prototype of a new item: no animation / edit leftovers, no inner lists, no state
   function plain(el) {
     [el].concat($$('*', el)).forEach(function (e) {
@@ -50,8 +52,19 @@
     if (!n) { if (el.children.length) el.insertBefore(document.createTextNode(t), el.firstChild); else el.textContent = t; return; }
     n.nodeValue = t; [].slice.call(el.childNodes).forEach(function (x) { if (x !== n && x.nodeType === 3) x.nodeValue = ''; });
   }
+  function ownList(el) {   // the bullet list of a new dropdown row: empty, with its own key (= the key of the row text + "-b") and a prototype bullet
+    var rte = el.querySelector('.pcp-rte'); if (!rte) return;
+    $$('ul, template', rte).forEach(function (n) { n.remove(); });
+    var first = rte.querySelector('[data-cms]'), k = first && first.getAttribute('data-cms'); if (!k) return;
+    var base = k + '-b', key = 'rep-' + base;
+    var ul = document.createElement('ul'); ul.className = 'pts'; ul.setAttribute('data-rep', key); ul.setAttribute('data-dd-empty', '');
+    var tpl = document.createElement('template'); tpl.setAttribute('data-rep-proto', key);
+    tpl.innerHTML = '<li data-cms="' + base + '" data-cms-type="text" data-rep-item="' + base + '">New text</li>';
+    rte.appendChild(ul); rte.appendChild(tpl); reg(ul);
+  }
   function makeNew(rep, nid, fresh) {
     var el = rep.proto.cloneNode(true); el.setAttribute('data-rep-new', nid); suffix(el, nid);
+    if (isAcc(rep)) ownList(el);
     if (fresh) {   // a brand new item: placeholder texts, no photo, empty links (all saved with SAVE)
       $$('[data-cms]', el).concat(el.hasAttribute('data-cms') ? [el] : []).forEach(function (e) {
         var type = e.getAttribute('data-cms-type');
@@ -96,8 +109,9 @@
     fixRows(rep);
   }
   // js/cms.js calls this with the saved rows of the page before it puts the texts in
+  var lastRows = [], applying = false;
   function apply(rows) {
-    var changed = false;
+    lastRows = rows || lastRows; var changed = false, before = REPS.length;
     REPS.forEach(function (rep) {
       var row = (rows || []).filter(function (r) { return r.element_id === rep.key; })[0]; if (!row || !row.content_value) return;
       var st; try { st = JSON.parse(row.content_value); } catch (e) { return; }
@@ -107,6 +121,7 @@
       if (dirty[rep.key]) return;   // the admin is changing it right now
       build(rep, { order: order }); changed = true;
     });
+    if (REPS.length > before && !applying) { applying = true; try { apply(lastRows); } finally { applying = false; } return; }
     if (changed) { if (window.PC && window.PC.refresh) window.PC.refresh(); if (editing()) decorate(); }
   }
 
