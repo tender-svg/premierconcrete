@@ -87,6 +87,17 @@
   function extraTab(g) { var t = tabProto.cloneNode(false); t.setAttribute('data-pcg-extra', g.id); t.textContent = g.name || 'New group'; return t; }
   function groupOf(el) { var p = el.closest && el.closest('[data-pcg-extra]'); return p ? S.extra.filter(function (g) { return g.id === p.getAttribute('data-pcg-extra'); })[0] : null; }
 
+  /* ---------------------------------------------------------------- the tab labels follow the group titles */
+  var plainOf = function (h) { var t = document.createElement('template'); t.innerHTML = String(h == null ? '' : h); return (t.content.textContent || '').replace(/\s+/g, ' ').trim(); };
+  function tabLabel(g) { if (g.extra) return plainOf(g.extra.name) || 'New group'; var h = $('h3[data-cms]', g.panel); return h ? plainOf(h.innerHTML) : ''; }
+  function setTabText(tab, t) {
+    var span = $('[data-pcg-tabname]', tab);
+    if (span) { if (span !== document.activeElement && span.textContent !== t) span.textContent = t; return; }
+    var n = [].slice.call(tab.childNodes).filter(function (c) { return c.nodeType === 3; })[0];
+    if (n) { if (n.nodeValue !== t) n.nodeValue = t; } else tab.insertBefore(document.createTextNode(t), tab.firstChild);
+  }
+  function syncTabs() { list.forEach(function (g) { var t = tabLabel(g); if (t) setTabText(g.tab, t); }); }
+
   /* ---------------------------------------------------------------- structure -> DOM */
   function build(select) {
     STATIC.forEach(function (s) { [s.panel, s.tab].forEach(function (n) { if (n.parentNode) n.parentNode.removeChild(n); }); });
@@ -101,7 +112,7 @@
       tablist.appendChild(g.tab); host.insertBefore(g.panel, endMark);
     });
     if (window.PC && window.PC.selectGroup) window.PC.selectGroup(select || 0);
-    decorate();
+    decorate(); syncTabs();
     document.dispatchEvent(new CustomEvent('pc-groups-changed'));
   }
   function same(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
@@ -113,15 +124,18 @@
   }
   function apply(rows) {
     if (dirty) return;   // the admin is changing it right now
-    var n = parse(rows); if (same(n, S) && (list.length || !n.removed.length)) { if (!list.length) { list = []; } else return; }
+    var n = parse(rows); if (same(n, S) && (list.length || !n.removed.length)) { if (!list.length) { list = []; } else { syncTabs(); return; } }
     S = n; build(0);
   }
 
   /* ---------------------------------------------------------------- edit mode */
   function decorate() {
     $$('.pcg-x, .pcg-add', tablist).forEach(function (e) { e.parentNode.removeChild(e); });
+    $$('[data-pcg-tabname]', tablist).forEach(function (sp) { sp.parentNode.replaceChild(document.createTextNode(sp.textContent), sp); });
     if (!editing()) return;
     list.forEach(function (g, i) {
+      var tn = [].slice.call(g.tab.childNodes).filter(function (c) { return c.nodeType === 3; })[0];
+      if (tn) { var nm = document.createElement('span'); nm.setAttribute('contenteditable', 'true'); nm.setAttribute('spellcheck', 'false'); nm.setAttribute('data-pcg-tabname', String(i)); nm.textContent = tn.nodeValue; g.tab.replaceChild(nm, tn); }
       var x = document.createElement('span'); x.className = 'pcg-x'; x.setAttribute('contenteditable', 'false'); x.setAttribute('data-pcg-rm', String(i)); x.setAttribute('title', 'Remove this group'); x.textContent = '✕'; g.tab.appendChild(x);
     });
     var a = document.createElement('button'); a.type = 'button'; a.className = 'dyn-add pcg-add'; a.setAttribute('data-pcg-add', '1'); a.textContent = '＋ Add group'; tablist.appendChild(a);
@@ -177,12 +191,32 @@
     }
   }, true);
   document.addEventListener('input', function (e) {
+    var tnEl = e.target.closest && e.target.closest('[data-pcg-tabname]');
+    if (tnEl && editing()) {   // the tab label is the title of the group
+      var gi = list[parseInt(tnEl.getAttribute('data-pcg-tabname'), 10)], text = tnEl.textContent.split(String.fromCharCode(160)).join(' ');
+      if (gi) {
+        if (gi.extra) { gi.extra.name = text; var hh = $('[data-pcgt="name"]', gi.panel); if (hh && hh !== document.activeElement) hh.textContent = text; mark(); }
+        else { var h3 = $('h3[data-cms]', gi.panel); if (h3) { h3.textContent = text; if (CMS().markDirty) CMS().markDirty(h3); } }
+      }
+      return;
+    }
+    var hEl = e.target.closest && e.target.closest('[data-grp-panel] h3[data-cms]');
+    if (hEl && editing()) { var own = list.filter(function (x) { return x.panel.contains(hEl) && !x.extra; })[0]; if (own) setTabText(own.tab, plainOf(hEl.innerHTML)); }
     var f = e.target.closest && e.target.closest('[data-pcgt]'); if (!f || !editing()) return;
     var g = groupOf(f); if (!g) return;
     var v = fromEl(f);
     var path = f.getAttribute('data-pcgt'); setPath(g, path, v); mark();
-    if (path === 'name') { var cur = list.filter(function (x) { return x.extra === g; })[0]; if (cur) { var n = [].slice.call(cur.tab.childNodes).filter(function (c) { return c.nodeType === 3; })[0]; if (n) n.nodeValue = v || 'New group'; } }
+    if (path === 'name') { var cur = list.filter(function (x) { return x.extra === g; })[0]; if (cur) setTabText(cur.tab, plainOf(v) || 'New group'); }
   });
+  document.addEventListener('keydown', function (e) {
+    var tf = e.target.closest && e.target.closest('[data-pcg-tabname]'); if (!tf || !editing()) return;
+    if (e.key === ' ') { e.preventDefault(); document.execCommand('insertText', false, ' '); } else if (e.key === 'Enter') e.preventDefault();
+  }, true);
+  document.addEventListener('paste', function (e) {
+    var tf = e.target.closest && e.target.closest('[data-pcg-tabname]'); if (!tf || !editing()) return;
+    e.preventDefault(); document.execCommand('insertText', false, ((e.clipboardData || window.clipboardData).getData('text/plain') || '').replace(/\s+/g, ' '));
+  }, true);
+  document.addEventListener('pc-applied', syncTabs);
   document.addEventListener('keydown', function (e) {   // typing inside a title that sits in a button: space must write a space, Enter must not click
     var f = e.target.closest && e.target.closest('[data-pcgt]'); if (!f || !editing()) return;
     if (e.key === ' ') { e.preventDefault(); document.execCommand('insertText', false, ' '); }
