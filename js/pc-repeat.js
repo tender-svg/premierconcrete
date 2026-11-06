@@ -139,7 +139,7 @@
     var on = editing();
     REPS.forEach(function (rep) {
       rep.el.classList.toggle('pcr-edit', on);
-      $$('.pcr-x', rep.el).forEach(function (b) { b.remove(); });
+      $$('.pcr-x, .pcr-mv', rep.el).forEach(function (b) { b.remove(); });
       $$('.pcr-addhost', rep.el).forEach(function (h) { if (h.getAttribute('data-addrep') === rep.key) h.remove(); });
       if (!on) return;
       itemsOf(rep.el).forEach(function (it) {
@@ -147,6 +147,10 @@
         // the button goes to the blank part of the item, never over its text: bullets = at the end of the line, dropdown rows = next to the + / - icon
         if (it.tagName === 'LI') b.classList.add('pcr-x-line'); else if (it.querySelector(':scope > button[data-act="acc"]')) b.classList.add('pcr-x-acc');
         it.appendChild(b);
+        if (rep.el.hasAttribute('data-rep-move')) {   // (the cards of the home page slider) the position of a card
+          var mv = document.createElement('span'); mv.className = 'pcr-mv'; mv.setAttribute('contenteditable', 'false');
+          mv.innerHTML = '<button type="button" class="pcr-mvb" data-pcr-mv="-1" title="Move left">◀</button><button type="button" class="pcr-mvb" data-pcr-mv="1" title="Move right">▶</button>'; it.appendChild(mv);
+        }
       });
       var host = addHost(rep), last = itemsOf(rep.el).pop();
       if (last && last.parentNode === rep.el) rep.el.insertBefore(host, last.nextSibling); else rep.el.appendChild(host);
@@ -165,6 +169,15 @@
   }
   document.addEventListener('click', function (e) {
     if (!editing()) return;
+    var mvb = e.target.closest && e.target.closest('[data-pcr-mv]');
+    if (mvb) {   // move an item one place
+      e.preventDefault(); e.stopImmediatePropagation();
+      var it0 = mvb.closest('[data-rep-item], [data-rep-new]'), rp0 = it0 && REPS.filter(function (r) { return r.el === it0.parentNode; })[0]; if (!rp0) return;
+      var list = itemsOf(rp0.el), i0 = list.indexOf(it0), j0 = i0 + parseInt(mvb.getAttribute('data-pcr-mv'), 10);
+      if (j0 < 0 || j0 >= list.length) return;
+      if (j0 > i0) rp0.el.insertBefore(it0, list[j0].nextSibling); else rp0.el.insertBefore(it0, list[j0]);
+      afterChange(rp0); return;
+    }
     var x = e.target.closest && e.target.closest('.pcr-x'), a = e.target.closest && e.target.closest('[data-pcr-add]');
     if (!x && !a) return;
     e.preventDefault(); e.stopImmediatePropagation();

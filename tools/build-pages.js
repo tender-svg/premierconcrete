@@ -417,7 +417,16 @@ function whySlider(html) {
   html = html.replace(why, (m, a1, a2) => a1 + ' data-slider' + a2).replace(team, (m, a1, a2) => a1 + ' data-slider data-slider-per="4" data-slider-gap="32" data-slider-every="2000"' + a2);
   return html.replace('<script src="js/site.js" defer></script>', () => '<script src="js/pc-slider.js" defer></script>\n<script src="js/site.js" defer></script>');
 }
-function page(file, title, desc, bodyHtml, bodyClass) { return whySlider(botProtection(pageBase(file, title, desc, bodyHtml, bodyClass), bodyClass)); }
+// home page, "Supplying projects onshore and offshore": the cards of the design are listed twice (for the endless loop); the page keeps each card once - js/site.js repeats them - so a card can be changed, moved, added and removed with the editor
+function marketsSlider(html) {
+  if (html.indexOf('data-hm') < 0) return html;
+  const $ = parse(html), track = $('[data-hm] > div').first();
+  if (!track.length) return html;
+  track.children('[data-rep-item$="-2"]').remove();
+  track.attr('data-rep-move', '1');
+  return $('#__root').html();
+}
+function page(file, title, desc, bodyHtml, bodyClass) { return marketsSlider(whySlider(botProtection(pageBase(file, title, desc, bodyHtml, bodyClass), bodyClass))); }
 function pageBase(file, title, desc, bodyHtml, bodyClass) {
   const editor = bodyClass !== 'login';
   if (editor) bodyHtml = heroBand(bodyHtml, bodyClass);

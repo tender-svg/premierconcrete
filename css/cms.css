@@ -198,3 +198,8 @@ li.pcr-addhost{list-style:none}
 body.cms-editing :is([style*="background:var(--color-accent)"], [style*="--color-accent-900"], [style*="--color-accent-800"], .pc-hero, footer) [contenteditable="true"]{outline:2px dashed rgba(255,255,255,.9);outline-offset:3px;box-shadow:0 0 0 1px rgba(0,0,0,.18)}
 body.cms-editing :is([style*="background:var(--color-accent)"], [style*="--color-accent-900"], [style*="--color-accent-800"], .pc-hero, footer) [contenteditable="true"]:hover{outline-color:#fff;background:rgba(255,255,255,.14)}
 body.cms-editing :is([style*="background:var(--color-accent)"], [style*="--color-accent-900"], [style*="--color-accent-800"], .pc-hero, footer) [contenteditable="true"]:focus{outline:2px solid #fff;background:rgba(255,255,255,.16)}
+
+.pcr-mv{position:absolute;top:6px;right:6px;z-index:7;display:flex;gap:4px}
+.pcr-mvb{border:2px solid #fff;background:#2c6128;color:#fff;width:34px;height:30px;cursor:pointer;font-size:13px;line-height:1;padding:0}.pcr-mvb:hover{background:#1f4a1b}
+[data-hm] .pcr-addhost{flex:0 0 100%}
+[data-hm] .pcr-mv{left:100px;right:auto}   /* the move buttons sit next to "Remove" (top right is where the image buttons are) */

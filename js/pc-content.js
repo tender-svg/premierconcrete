@@ -288,12 +288,56 @@
     var m = new RegExp(prefix + '-(.+)\\.html$').exec(location.pathname); return m ? decodeURIComponent(m[1]) : '';
   }
   function notFound(host, what, back, label) { host.innerHTML = '<p style="font-size:18px;margin:40px 0">This ' + what + ' was not found. <a href="' + back + '" style="color:var(--color-accent-700);font-weight:600">' + label + '</a></p>'; }
+  var PH = { file: '', text: '', discuss: '', discussLink: '', dirty: false, slug: '', loaded: '' };
+  function phSlug(s) { return ('project-highlight-' + s.slug).toLowerCase().replace(/[^a-z0-9\-_]/g, '-'); }
+  function phPost() {
+    return fetch('/api/v2/page-elements', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page_slug: PH.slug, element_id: 'ph-file', content_type: 'text', content_value: JSON.stringify({ file: PH.file, text: PH.text, discuss: PH.discuss, discussLink: PH.discussLink }) }) })
+      .then(function (r) { return r.text().then(function (t) { if (!r.ok) throw new Error(t.slice(0, 120) || ('Error ' + r.status)); if (/PENDING_APPROVAL/.test(t) && window.PCE) PCE.pending = true; PH.dirty = false; return 1; }); });
+  }
+  function phHook() {
+    if (phHook.done || !(window.PCCMS && PCCMS.registerHook)) return; phHook.done = true;
+    PCCMS.registerHook('phfile', { count: function () { return PH.dirty ? 1 : 0; }, run: phPost });
+  }
+  function phLinkEditor(done) {
+    var old = document.getElementById('cms-linked'); if (old) old.remove();
+    var pages = [['index.html', 'Home'], ['products.html', 'Products'], ['about.html', 'About / Our Story'], ['our-team.html', 'Our Team'], ['project-highlights.html', 'Project Highlights'], ['resources.html', 'Resources'], ['lunch-learn.html', 'Lunch & Learn'], ['credit-application.html', 'Credit Application'], ['contact.html', 'Contact Us']];
+    var m = document.createElement('div'); m.id = 'cms-linked';
+    m.innerHTML = '<div class="card" role="dialog" aria-modal="true"><div class="hd"><h3>Edit link</h3><button type="button" class="x" aria-label="Close">×</button></div><div class="bd">' +
+      '<label><span>Link address of the "Discuss a similar project" button</span><input type="text" id="cl-url" value="' + esc(PH.discussLink || 'contact.html') + '" placeholder="e.g. contact.html or https://…"></label>' +
+      '<label><span>Or upload a file (PDF, document, drawing)</span><button type="button" id="cl-up" class="dyn-add" style="width:100%">⬆ Choose a file…</button></label>' +
+      '<label><span>Or pick a page of this website</span><select id="cl-pick"><option value="">Choose a page…</option>' + pages.map(function (p) { return '<option value="' + p[0] + '">' + esc(p[1]) + '</option>'; }).join('') + '</select></label>' +
+      '<div class="err" id="cl-err" role="alert"></div></div><div class="ft"><button type="button" class="no">Cancel</button><button type="button" class="yes">Apply</button></div></div>';
+    document.body.appendChild(m);
+    var url = $('#cl-url', m), err = $('#cl-err', m); url.focus(); url.select();
+    $('#cl-pick', m).onchange = function () { if (this.value) url.value = this.value; };
+    $('#cl-up', m).onclick = function () {
+      var b = this; PCE.pickFile('').then(function (fl) { if (!fl) return; b.textContent = 'Uploading…'; return PCE.upload(fl, 'resources').then(function (u) { url.value = u; b.textContent = '✓ Uploaded: ' + fl.name + ' (press Apply)'; }); })
+        .catch(function (er) { b.textContent = '⬆ Choose a file…'; err.textContent = (er && er.message) || 'Upload failed'; });
+    };
+    var close = function () { m.remove(); };
+    $('.x', m).onclick = close; $('.no', m).onclick = close; m.addEventListener('mousedown', function (e) { if (e.target === m) close(); });
+    m.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); if (e.key === 'Enter') $('.yes', m).click(); });
+    $('.yes', m).onclick = function () {
+      var u = url.value.trim(); if (!u) { err.textContent = 'Enter the link address.'; return; }
+      if (/^\s*javascript:/i.test(u)) { err.textContent = 'This address is not allowed.'; return; }
+      PH.discussLink = u === 'contact.html' ? '' : u; PH.dirty = true; if (window.PCCMS && PCCMS.refresh) PCCMS.refresh(); close(); done();
+    };
+  }
   function drawProject(focus) {
     var host = $('[data-pdetail]'); if (!host || !stories) return;
     var pid = host._pid;
     if (!pid) { var f = stories.rows.filter(function (x) { return x.slug === routeSlug('project-highlight'); })[0]; if (!f) { notFound(host, 'project highlight', 'project-highlights.html', 'See all project highlights'); return; } pid = host._pid = f.id; }
     var s = stories.by(pid); if (!s) { location.href = 'project-highlights.html'; return; }
     document.title = s.title + ' | Premier Concrete Products';
+    if (PH.loaded !== s.id) {   // the file of this project: read once, then the page is drawn again
+      PH.loaded = s.id; PH.slug = phSlug(s); PH.file = ''; PH.text = ''; PH.discuss = ''; PH.discussLink = ''; PH.dirty = false;
+      fetch('/api/v2/page-elements/' + encodeURIComponent(PH.slug), { credentials: 'include', cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }).then(function (rows) {
+        var row = (Array.isArray(rows) ? rows : []).filter(function (x) { return x.element_id === 'ph-file'; })[0], j = null; try { j = row ? JSON.parse(row.content_value) : null; } catch (e) { j = null; }
+        if (j && !PH.dirty) { PH.file = j.file || ''; PH.text = j.text || ''; PH.discuss = j.discuss || ''; PH.discussLink = j.discussLink || ''; }
+        drawProject();
+      });
+    }
+    phHook();
     var E = function (m, f, multi) { return editing() ? ' contenteditable="true" spellcheck="false" data-e="' + f + '" data-id="' + esc(m.id) + '"' + (multi ? ' data-multi="1"' : '') : ''; };
     var arrow = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>';
     var chev = function (d) { return '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="' + d + '"></path></svg>'; };
@@ -302,6 +346,15 @@
     var thumbs = s.images.map(function (u, i) { return '<div style="position:relative"><button data-set=\'{"phImg":' + i + '}\' aria-label="Show photo" style="padding:0;border:2px solid ' + (i ? 'transparent' : 'var(--color-accent)') + ';border-radius:10px;overflow:hidden;aspect-ratio:4/3;cursor:pointer;background:var(--color-surface);position:relative;display:block;width:100%"><img src="' + esc(u) + '" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></button>' +
       (editing() ? '<button type="button" class="dyn-del thumb-x" data-eact="rmarr" data-id="' + esc(s.id) + '" data-field="images" data-i="' + i + '" title="Remove photo">×</button><button type="button" class="dyn-photo" style="top:auto;bottom:4px;right:4px;padding:3px 8px;font-size:12px" data-eact="photo" data-id="' + esc(s.id) + '" data-field="images" data-i="' + i + '" data-folder="projects">📷</button>' : '') + '</div>'; }).join('');
     var facts = [['Year', 'year'], ['Owner', 'owner'], ['Products Used', 'products']].filter(function (f) { return s[f[1]] || editing(); }).map(function (f) { return '<div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-800)">' + f[0] + '</span><span style="font-size:16px;font-weight:700"' + E(s, f[1]) + '>' + esc(s[f[1]]) + '</span></div>'; }).join('');
+    var dlIc = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>';
+    var BTN = 'padding:13px 22px;border-radius:999px;border:1.5px solid var(--color-accent);color:var(--color-accent-700);text-decoration:none;display:inline-flex;align-items:center;gap:8px';
+    function discussTxt() { var t = PH.discuss || 'Discuss a similar project'; return editing() ? '<span contenteditable="true" spellcheck="false" data-ph-d="1">' + esc(t) + '</span>' : esc(t); }
+    function phBtn() {   // "Download Project Highlight": visitors see it only when a file is attached; the editor changes its text and the file
+      var label = PH.text || 'Download Project Highlight';
+      if (!editing()) return PH.file ? '<a href="' + esc(PH.file) + '" target="_blank" rel="noopener" class="btn btn-secondary" style="' + BTN + '">' + dlIc + '<span>' + esc(label) + '</span></a>' : '';
+      return '<a href="#" class="btn btn-secondary" style="' + BTN + '" onclick="return false">' + dlIc + '<span contenteditable="true" spellcheck="false" data-ph-t="1">' + esc(label) + '</span></a>' +
+        '<span style="flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:8px"><button type="button" class="dyn-add" data-ph-link="1">🔗 Link of "Discuss" button</button><button type="button" class="dyn-photo" style="position:static" data-ph-file="1">📎 ' + (PH.file ? 'Change file' : 'Add file') + ' (download button)</button>' + (PH.file ? '<button type="button" class="dyn-del" data-ph-filex="1">✕ Remove file</button>' : '') + '</span>';
+    }
     var acc = function (title, f, open) { var body = s[f]; if (!body && !editing()) return ''; open = open || editing(); return '<div data-pacc style="border-radius:12px;overflow:hidden;border:1px solid ' + (open ? 'var(--color-accent-800)' : 'var(--color-divider)') + '"><button data-act="pacc" style="width:100%;font:inherit;text-align:left;border:0;cursor:pointer;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:17px;font-weight:700;background:' + (open ? 'var(--color-accent-800);color:#fff' : '#fff;color:var(--color-text)') + '">' + title + '<span style="flex:none;width:28px;height:28px;border-radius:999px;background:' + (open ? '#fff;color:var(--color-accent-800)' : 'var(--color-accent-100);color:var(--color-accent-800)') + ';display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1">' + (open ? '−' : '+') + '</span></button><p style="margin:0;padding:18px 20px 22px;font-size:15px;line-height:1.65;background:#fff;white-space:pre-line"' + E(s, f, true) + (open ? '' : ' hidden') + '>' + esc(body) + '</p></div>'; };
     host.innerHTML =
       '<button data-href="project-highlights.html" style="align-self:flex-start;font:inherit;font-size:14px;font-weight:600;border:0;background:none;cursor:pointer;color:var(--color-accent-700);padding:0">← All project highlights</button>' +
@@ -316,8 +369,23 @@
       (s.location || editing() ? '<span style="font-size:14px;font-weight:600;color:var(--color-neutral-800);display:flex;gap:6px;align-items:center">' + pin + '<span' + E(s, 'location') + '>' + esc(s.location) + '</span></span>' : '') + '</div>' +
       (facts ? '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px">' + facts + '</div>' : '') +
       '<div style="display:flex;flex-direction:column;gap:10px">' + acc('Client’s challenge', 'challenge', true) + acc('Premier engineered solution', 'solution', !s.challenge) + '</div>' +
-      '<div style="display:flex;gap:12px;flex-wrap:wrap"><button class="btn btn-primary" data-href="contact.html" style="border-radius:999px;padding:13px 22px">Discuss a similar project' + arrow + '</button></div></div></div>';
+      '<div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"><button class="btn btn-primary" ' + (editing() ? 'data-ph-href' : 'data-href') + '="' + esc(PH.discussLink || 'contact.html') + '" style="border-radius:999px;padding:13px 22px">' + discussTxt() + arrow + '</button>' + phBtn() + '</div></div></div>';
     bindOnce(host, stories, { redraw: drawProject, afterDelete: function () { stories.deleted = true; } });
+    if (!host._phBound) {
+      host._phBound = true;
+      host.addEventListener('input', function (e) { var t = e.target.closest && e.target.closest('[data-ph-t],[data-ph-d]'); if (!t || !editing()) return; var v = t.textContent.split(String.fromCharCode(160)).join(' ').trim(); if (t.hasAttribute('data-ph-d')) PH.discuss = v; else PH.text = v; PH.dirty = true; if (window.PCCMS && PCCMS.refresh) PCCMS.refresh(); });
+      host.addEventListener('keydown', function (e) { var t = e.target.closest && e.target.closest('[data-ph-t],[data-ph-d]'); if (!t || !editing()) return; if (e.key === ' ') { e.preventDefault(); document.execCommand('insertText', false, ' '); } else if (e.key === 'Enter') e.preventDefault(); });
+      host.addEventListener('click', function (e) {
+        if (!editing() || !e.target.closest) return;
+        var up = e.target.closest('[data-ph-file]'), rm = e.target.closest('[data-ph-filex]'), lk = e.target.closest('[data-ph-link]'), db = e.target.closest('button.btn-primary[data-ph-href]');
+        if (lk || (db && !e.target.closest('[data-ph-d]'))) { e.preventDefault(); phLinkEditor(drawProject); }
+        else if (up) {
+          e.preventDefault(); PCE.pickFile('').then(function (fl) { if (!fl) return; up.textContent = 'Uploading…'; return PCE.upload(fl, 'resources').then(function (u) { PH.file = u; PH.dirty = true; if (window.PCCMS && PCCMS.refresh) PCCMS.refresh(); drawProject(); }); })
+            .catch(function (er) { PCDialog.alert(er.message, { title: 'Upload failed', danger: true }); drawProject(); });
+        } else if (rm) { e.preventDefault(); PH.file = ''; PH.dirty = true; if (window.PCCMS && PCCMS.refresh) PCCMS.refresh(); drawProject(); }
+      });
+      document.addEventListener('pc-admin', phHook);
+    }
     refresh(); focusEnd(host, focus);
   }
   document.addEventListener('click', function (e) {   // the accordion of the project page

@@ -166,19 +166,42 @@
   initHome();
   var hm = (function () {
     var host = $('[data-hm]'); if (!host) return null;
-    var track = host.firstElementChild, slides = [].slice.call(track.children), N = slides.length / 2;
-    var dots = $$('span', host.nextElementSibling);
-    var cur = 0, paused = false, snapping = false;
+    var track = host.firstElementChild, dotsBox = host.nextElementSibling, slides = [], N = 0, clones = [];
+    var cur = 0, paused = false, snapping = false, dotProto = null;
+    var editing = function () { return body.classList.contains('cms-editing'); };
+    var cards = function () { return [].slice.call(track.children).filter(function (c) { return c.tagName === 'ARTICLE' && !c.hasAttribute('data-hm-clone'); }); };
     var pv = function () { var w = host.clientWidth; return w >= 860 ? 3 : w >= 560 ? 2 : 1; };
+    // the cards are listed once in the page: the endless loop repeats them here (not in edit mode, where they are a grid that can be edited)
+    function rebuild() {
+      clones.forEach(function (c) { if (c.parentNode) c.parentNode.removeChild(c); }); clones = [];
+      var o = cards(); N = o.length;
+      if (!editing() && N > pv()) o.forEach(function (c) {
+        var k = c.cloneNode(true); k.setAttribute('data-hm-clone', ''); k.removeAttribute('data-rep-item'); k.removeAttribute('data-rep-new');
+        [].slice.call(k.querySelectorAll('[data-cms],[data-cms-link],[data-rep-item],[contenteditable]')).forEach(function (e) { ['data-cms', 'data-cms-link', 'data-rep-item', 'contenteditable'].forEach(function (a) { e.removeAttribute(a); }); });
+        track.appendChild(k); clones.push(k);
+      });
+      slides = o.concat(clones);
+      if (dotsBox) {   // one dash per card
+        if (!dotProto) dotProto = dotsBox.firstElementChild && dotsBox.firstElementChild.cloneNode(false);
+        if (dotProto && dotsBox.children.length !== N) { dotsBox.innerHTML = ''; for (var i = 0; i < N; i++) dotsBox.appendChild(dotProto.cloneNode(false)); }
+        dotsBox.hidden = editing();
+      }
+      if (cur >= Math.max(1, N)) cur = 0;
+      layout(false);
+    }
     function layout(anim) {
       var p = pv(), gap = 16, basis = 'calc((100% - ' + ((p - 1) * gap) + 'px) / ' + p + ')';
       slides.forEach(function (s) { s.style.flex = '0 0 ' + basis; });
+      if (editing()) {   // edit mode: a wrapping grid, every card can be edited
+        track.style.transition = 'none'; track.style.transform = 'none'; track.style.flexWrap = 'wrap'; track.style.rowGap = gap + 'px'; return;
+      }
+      track.style.flexWrap = ''; track.style.rowGap = '';
       track.style.transition = anim === false ? 'none' : 'transform 700ms cubic-bezier(0.65,0,0.35,1)';
       track.style.transform = 'translateX(calc(' + (-cur) + ' * (' + basis + ' + ' + gap + 'px)))';
-      dots.forEach(function (d, i) { d.style.background = i === cur % N ? 'var(--color-accent)' : 'oklch(0.955 0.004 100 / 0.25)'; });
+      if (dotsBox) [].slice.call(dotsBox.children).forEach(function (d, i) { d.style.background = i === cur % Math.max(1, N) ? 'var(--color-accent)' : 'oklch(0.955 0.004 100 / 0.25)'; });
     }
     function step(d) {
-      if (snapping) return;
+      if (snapping || editing() || N <= pv()) return;
       cur += d;
       if (cur < 0) { cur = N; layout(false); void track.offsetWidth; cur = N - 1; layout(true); return; }
       layout(true);
@@ -186,9 +209,12 @@
     }
     host.addEventListener('mouseenter', function () { paused = true; });
     host.addEventListener('mouseleave', function () { paused = false; });
-    window.addEventListener('resize', function () { layout(false); });
-    setInterval(function () { if (!paused && !body.classList.contains('cms-editing')) step(1); }, 3200);
-    layout(false);
+    var again = (function () { var t = 0; return function () { clearTimeout(t); t = setTimeout(rebuild, 60); }; })();
+    window.addEventListener('resize', again);
+    document.addEventListener('pc-edit-mode', again);
+    new MutationObserver(function (m) { if (m.some(function (r) { return [].slice.call(r.addedNodes).concat([].slice.call(r.removedNodes)).some(function (n) { return !(n.nodeType === 1 && n.hasAttribute('data-hm-clone')); }); })) again(); }).observe(track, { childList: true });
+    setInterval(function () { if (!paused && !editing()) step(1); }, 3200);
+    rebuild();
     return { step: step };
   })();
 
