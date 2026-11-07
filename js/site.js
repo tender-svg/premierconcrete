@@ -291,7 +291,7 @@
   /* ------------------------------------------------------------ forms */
   function resetForm(scope) {
     $$('[data-sent]', scope).forEach(function (s) { s.hidden = true; });
-    $('[data-notsent]', scope).forEach(function (s) { s.hidden = false; if (s.reset) s.reset(); var after = s.nextElementSibling; if (after && after.tagName === 'SECTION') after.hidden = false; });
+    $$('[data-notsent]', scope).forEach(function (s) { s.hidden = false; if (s.reset) s.reset(); var after = s.nextElementSibling; if (after && after.tagName === 'SECTION') after.hidden = false; });
     if ('crStep' in state) crStep(0);
     window.scrollTo(0, 0);
   }
